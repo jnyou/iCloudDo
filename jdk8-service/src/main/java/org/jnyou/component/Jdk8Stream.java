@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 /**
  * @ClassName Jdk8_Stream
- * @Description:
+ * @Description: 流
  * @Author: jnyou
  **/
 public class Jdk8Stream {
