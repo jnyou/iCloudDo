@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * @module 智慧园区
  **/
 @Slf4j
-public class Lambda {
+public class LambdaDict {
 
     public static void main(String[] args) {
 

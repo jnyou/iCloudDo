@@ -4,7 +4,6 @@ import org.jnyou.entity.Goods;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.stream.LongStream;
 
 /**
  * 分类名称
@@ -15,7 +14,7 @@ import java.util.stream.LongStream;
  * @create 2020/08/13
  * @module 智慧园区
  **/
-public class OptionalDit {
+public class OptionalDict {
 
     /**
      * Optional<T> 类(java.util.Optional) 是一个容器类，代表一个值存在或不存在，原来用 null 表示一个值不存在，
@@ -87,7 +86,7 @@ public class OptionalDit {
 
 
         /**
-         * orElseGet(Supplier s)  Supplier：供给形接口
+         * orElseGet(Supplier s)  Supplier：供给形接口：提供者
          * 这个功能类似，只是参数是函数式接口，则可以内部写很复杂的逻辑，甚至根据条件返回不同的结果
          *
          */
@@ -96,7 +95,7 @@ public class OptionalDit {
 
 
         /**
-         * map(Function f)
+         * map(Function f) Function：函数形接口：
          * 判断
          */
         Optional<Goods> op = Optional.of(new Goods(1003, "摩卡", new Date(), new Date()));
@@ -108,10 +107,6 @@ public class OptionalDit {
         //和map基本相同，只是返回的必须是Optional,说白了，进一步避免空指针异常
         Optional<String> str2 = op.flatMap(e -> Optional.of(e.getGoodName()));
         System.out.println(str2.get());
-
-        LongStream.rangeClosed(0, 1000000000000L)
-                .parallel()  //并行流,如果不加则默认是串行流
-                .reduce(0, Long::sum);
 
 
     }
