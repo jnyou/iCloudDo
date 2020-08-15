@@ -1,11 +1,8 @@
 package org.jnyou.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -14,16 +11,24 @@ import java.util.Date;
  * @Author: jnyou
  **/
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Goods implements Serializable {
 
     private Integer id;
 
     private String goodName;
 
+    private double price;
+
+    private double weight;
+
     private Date createTime;
 
     private Date expire;
 
+    public Goods(Integer id, String goodName, Date createTime, Date expire) {
+        this.id = id;
+        this.goodName = goodName;
+        this.createTime = createTime;
+        this.expire = expire;
+    }
 }
