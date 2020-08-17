@@ -1,33 +1,38 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+# Folder config file
+Desktop.ini
+
+# java class file
+*.class
+
+# Package Files #
+*.war
+*.ear
+/target
+/.settings
+/.classpath
+/.project
+/.idea
+/.svn
+/logs
+
+# ignore Maven generated target folders
+target
+out
+
+# ignore eclipse files
 .project
+.classpath
 .settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
+.factorypath
+.metadata
 .idea
-*.iws
+*.yml
 *.iml
-*.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# ignore log files
+*.log
