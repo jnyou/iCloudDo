@@ -23,7 +23,7 @@ public class OptionalDemo {
 
     public static void main(String[] args) throws Exception {
         /***
-         * 1、输出商品的i
+         * 1、输出商品的id
          */
         Personal personal = loadData();
         //改造前

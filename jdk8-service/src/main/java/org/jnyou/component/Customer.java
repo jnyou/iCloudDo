@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/***
+/**
  * 给出客户ID列表查询客户列表。
  * 基于存在的客户列表中的客户ID查询订单列表。
  * 基于订单列表转换为订单DTO视图列表。
@@ -33,12 +33,24 @@ class Customer {
         private String orderId;
     }
 
-    // 模拟客户查询
+    /**
+     * 模拟客户查询
+     * @param ids
+     * @return
+     * @Author jnyou
+     * @Date 2020/8/17
+     */
     private static List<Customer> selectCustomers(List<Long> ids) {
         return null;
     }
 
-    // 模拟订单查询
+    /**
+     * 模拟订单查询
+     * @param customerIds
+     * @return
+     * @Author jnyou
+     * @Date 2020/8/17
+     */
     private static List<Order> selectOrders(List<Long> customerIds) {
         return null;
     }
