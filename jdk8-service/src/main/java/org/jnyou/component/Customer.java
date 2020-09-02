@@ -38,7 +38,6 @@ class Customer {
      * @param ids
      * @return
      * @Author jnyou
-     * @Date 2020/8/17
      */
     private static List<Customer> selectCustomers(List<Long> ids) {
         return null;
@@ -49,7 +48,6 @@ class Customer {
      * @param customerIds
      * @return
      * @Author jnyou
-     * @Date 2020/8/17
      */
     private static List<Order> selectOrders(List<Long> customerIds) {
         return null;

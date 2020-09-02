@@ -1,4 +1,4 @@
-package org.jnyou.component;
+package org.jnyou.component.lambda;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,10 +8,8 @@ import java.util.stream.Stream;
  * 分类名称
  *
  * @ClassName Lambda
- * @Description: lambda表达式
+ * @Description: lambda expression
  * @Author: jnyou
- * @create 2020/08/13
- * @module 智慧园区
  **/
 @Slf4j
 public class LambdaDict {

@@ -8,8 +8,6 @@ import java.util.stream.LongStream;
  * @ClassName ParallelIO
  * @Description: 并行流操作
  * @Author: jnyou
- * @create 2020/08/14
- * @module 智慧园区
  **/
 public class ParallelIo {
 

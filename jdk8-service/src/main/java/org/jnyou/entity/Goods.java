@@ -1,6 +1,7 @@
 package org.jnyou.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
  * @Author: jnyou
  **/
 @Data
+@NoArgsConstructor
 public class Goods implements Serializable {
 
     private Integer id;

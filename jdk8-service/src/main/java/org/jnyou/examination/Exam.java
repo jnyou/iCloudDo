@@ -15,8 +15,6 @@ import java.util.Map;
  * @ClassName Exam
  * @Description: Mp与lambda的混合操作
  * @Author: jnyou
- * @create 2020/08/14
- * @module 智慧园区
  **/
 public class Exam {
 

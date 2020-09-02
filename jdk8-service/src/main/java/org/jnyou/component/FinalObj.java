@@ -6,8 +6,6 @@ package org.jnyou.component;
  * @ClassName FinalObj
  * @Description: 内部类
  * @Author: jnyou
- * @create 2020/08/13
- * @module 智慧园区
  **/
 public class FinalObj {
 
