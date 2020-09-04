@@ -1,4 +1,4 @@
-package org.jnyou.component;
+package org.jnyou.component.optional;
 
 import org.jnyou.entity.Goods;
 

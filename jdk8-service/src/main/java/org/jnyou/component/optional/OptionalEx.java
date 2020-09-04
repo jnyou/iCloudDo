@@ -1,6 +1,5 @@
-package org.jnyou.component;
+package org.jnyou.component.optional;
 
-import org.jnyou.entity.Goods;
 import org.jnyou.entity.Personal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,9 @@ import java.util.Optional;
  * @Description: 使用Option来改造你的代码
  * @Author: jnyou
  **/
-public class OptionalDemo {
+public class OptionalEx {
 
-    private static final Logger logger = LoggerFactory.getLogger(OptionalDemo.class);
+    private static final Logger logger = LoggerFactory.getLogger(OptionalEx.class);
 
     public static void main(String[] args) throws Exception {
         /***

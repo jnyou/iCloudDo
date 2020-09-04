@@ -16,8 +16,6 @@ import java.util.List;
  * @ClassName Test
  * @Description: 测试parallelStream并行流与普通遍历得速度
  * @Author: jnyou
- * @create 2020/08/09
- * @module 智慧园区
  **/
 public class Test {
 
