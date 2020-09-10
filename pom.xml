@@ -7,6 +7,7 @@
         <module>jdk8-service</module>
         <module>design-patterns-service</module>
         <module>java-senior-service</module>
+        <module>source-code-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
