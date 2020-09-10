@@ -41,6 +41,52 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.*;
 
 /**
+ * 一个可以支持延迟或者周期性调度命令的线程池。在需要多线程能力，或者是具有更多灵活性
+ * 或者ThreadPoolExecutor类的能力时，该类比java.util.Timer更可取。
+ *
+ * 延迟任务的执行不会先于它们初始化，但是也不能实时保证它们什么时候会开始，如果它们
+ * 初始化完成了，那么它们即将开始。那些执行时间相同的调度任务按照提交顺序加入到FIFO队列中。
+ *
+ * 当提交的任务在执行前被取消，那就会禁止执行。默认情况下，被取消的任务在它延迟时间到
+ * 之前是不会从队列中自动删除的。尽管这是有检测跟监控的，但依然会导致无限制的保留被取消
+ * 的任务。可以通过setRemoveOnCancelPolicy方法设置成true来让任务被取消时就从队列
+ * 中删除。
+ *
+ * 通过scheduleAtFixedRate跟scheduleWithFixedDelay方法调度连续执行的任务是不会
+ * 重叠的。尽管不同的任务可能由不同的线程执行，优先执行可以happen-before后续任务。
+ *
+ * 尽管该类继承自ThreadPoolExecutor，一些继承的调优方法并不适用。尤其的，因为该类是
+ * 适用fixed-sized线程池，使用corePoolSize个线程跟无界队列，所以调整maximumPoolSize
+ * 值没用。另外，把corePoolSize值设为0或者使用allowCoreThreadTimeOut可不是个好
+ * 注意，因为这会导致当任务可以执行时线程池没有线程去操作。
+ *
+ * 扩展须知：
+ * 该类重写了ThreadPoolExecutor的execute方法跟AbstractExecutorService类的
+ * submit方法来生产内部的ScheduledFuture对象控制每个任务的延迟跟调度。为了保存
+ * 这些功能，子类如果重写这些方法必须执行父类的该方法，这就限制了对任务进行自定义。
+ * 然而，该类还是提供了另外的安全扩展方法decorateTask（一个对于Runnable跟Callable
+ * 都适用的版本）可以用来自定义被内部方法execute，submit，schedule，scheduleAtFixedRate
+ * 跟scheduleWithFixedDelay执行的方法。默认情况下，ScheduledThreadPoolExecutor使用
+ * 的任务类型继承自FutureTask。但是，这可以被子类使用如下形式进行修改或替换：
+ *
+ * public class CustomScheduledExecutor extends ScheduledThreadPoolExecutor {
+ *
+ *   static class CustomTask<V> implements RunnableScheduledFuture<V> { ... }
+ *
+ *   protected <V> RunnableScheduledFuture<V> decorateTask(
+ *                Runnable r, RunnableScheduledFuture<V> task) {
+ *       return new CustomTask<V>(r, task);
+ *   }
+ *
+ *   protected <V> RunnableScheduledFuture<V> decorateTask(
+ *                Callable<V> c, RunnableScheduledFuture<V> task) {
+ *       return new CustomTask<V>(c, task);
+ *   }
+ *   // ... add constructors, etc.
+ * }}
+ *
+ *
+ *
  * A {@link ThreadPoolExecutor} that can additionally schedule
  * commands to run after a given delay, or to execute
  * periodically. This class is preferable to {@link Timer}
@@ -123,6 +169,21 @@ public class ScheduledThreadPoolExecutor
         implements ScheduledExecutorService {
 
     /*
+     * 该类通过以下方式扩展了ThreadPoolExecutor的实现：
+     * 1.使用自定义任务类型，ScheduledFutureTask类，即使是不需要调度的
+     *   任务（例如那些通过ExecutorService的execute提交的任务，而不是
+     *   通过ScheduledExecutorService类的方法）也会被当成延迟为0的延迟任务。
+     *
+     * 2.使用自定义队列（DelayedWorkQueue），一个无界队列的变体。没有容量
+     *   限制且与ThreadPoolExecutor相比，corePoolSize跟maximumPoolSize属性
+     *   有效的简化了一些操作机制。
+     *
+     * 3.支持可选择的关闭后执行参数，这就导致了重写关闭方法来删除跟取消线程池
+     *   关闭以后不需要执行的任务，同时也需要不同的核对逻辑当任务提交重叠。
+     *
+     * 4.任务装饰方法来允许拦截跟修饰，这是必须的因为子类不能通过重写提交方法
+     *   来达到这个目的。这对于线程池的控制逻辑没有任何影响。
+     *
      * This class specializes ThreadPoolExecutor implementation by
      *
      * 1. Using a custom task type, ScheduledFutureTask for
@@ -269,9 +330,11 @@ public class ScheduledThreadPoolExecutor
          */
         private void setNextRunTime() {
             long p = period;
+            //大于0是scheduleAtFixedRate方法，表示执行时间是根据初始化参数计算的
             if (p > 0)
                 time += p;
             else
+            //小于0是scheduleWithFixedDelay方法，表示执行时间是根据当前时间重新计算的
                 time = triggerTime(-p);
         }
 
@@ -322,15 +385,19 @@ public class ScheduledThreadPoolExecutor
      * @param task the task
      */
     private void delayedExecute(RunnableScheduledFuture<?> task) {
+        //如果线程池已经关闭，则使用拒绝策略把提交任务拒绝掉
         if (isShutdown())
             reject(task);
         else {
+            //与ThreadPoolExecutor不同，这里直接把任务加入延迟队列
             super.getQueue().add(task);
+            //如果当前状态无法执行任务，则取消任务
             if (isShutdown() &&
                 !canRunInCurrentRunState(task.isPeriodic()) &&
                 remove(task))
                 task.cancel(false);
             else
+                //这里是增加一个worker线程，避免提交的任务没有worker去执行
                 ensurePrestart();
         }
     }
@@ -802,6 +869,9 @@ public class ScheduledThreadPoolExecutor
     }
 
     /**
+     * 特殊的延迟队列。为了与线程池ThreadPollExecutor(TPE)的生命保持一致，
+     * 即使该队列只会保存RunnableScheduledFutures
+     * 元素，但依旧声明为了BlockingQueue<Runnable>类型。
      * Specialized delay queue. To mesh with TPE declarations, this
      * class must be declared as a BlockingQueue<Runnable> even though
      * it can only hold RunnableScheduledFutures.
@@ -810,6 +880,20 @@ public class ScheduledThreadPoolExecutor
         implements BlockingQueue<Runnable> {
 
         /*
+         * DelayedWorkQueue队列跟DelayQueue，PriorityQueue一样都使用了
+         * 堆作为数据结构，不同是的是每个ScheduledFutureTask都记录了自己在
+         * 堆数组中的索引值。这是为了满足取消时查找任务的需求，极大的提升了
+         * 删除的时间复杂度（从O(n)变为了O(log n)），还可以在等待元素删除前升级
+         * 到顶端时减少垃圾保留。但由于该队列除了保存ScheduledFutureTasks之外，
+         * 还可能保存RunnableScheduledFutures，我们并不保证这种搜索是可用的。
+         * 在这种情况下，我们会退化成线性搜索。（我们期望大部分任务是不会被修饰
+         * 的，这样的话更快的搜索逻辑大部分情况下是可用的）。
+         *
+         * 所有的堆操作都必须记录索引变化，主要是在siftUp跟siftDown里。删除时，
+         * 任务的heapIndex会被设置成-1。注意，ScheduledFutureTasks最多只
+         * 能在队列中出现一次（这不适用于其他类型的任务或者队列），所以heapIndex
+         * 是唯一的。
+         *
          * A DelayedWorkQueue is based on a heap-based data structure
          * like those in DelayQueue and PriorityQueue, except that
          * every ScheduledFutureTask also records its index into the

@@ -50,6 +50,61 @@ import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
 /**
+ * 一个由元素组成的序列，支持顺序并行聚合操作。下面的例子说演示了使用Stream跟IntStream
+ * 进行的聚合操作：
+ *
+ * int sum = widgets.stream()
+ *                      .filter(w -> w.getColor() == RED)
+ *                      .mapToInt(w -> w.getWeight())
+ *                      .sum();
+ *
+ * 这里，widgets的类型为Collection<Widget>。我们通过Collection.stream()方法创建了一个
+ * 由Widget对象组成的流，对它进行过滤，只保留红色的widgets，然后把它转化成一个int类型的流，
+ * 其中每个int表示widget的重量。最后把该流中的int相加得到总的重量。
+ *
+ * 除了表示对象的流Stream，还有很多原始类型的流，比如IntStream，LongStream，DoubleStream
+ * 它们统称为stream，并符合此处描述的特征和限制。
+ *
+ * 执行计算的时候，流操作会组成一个流管道。流管道由一个来源（可以是数组，集合，函数生成器或者IO管道等等），
+ * 零个或多个中间操作（它会把当前流变成另一个流，比如Stream#filter），跟一个终止操作（它会产生一个结果或者副作用
+ * 比如Stream#count()或者Stream#forEach）。流是很懒的，对于原始数据的计算只有当终止操作初始化时
+ * 才会执行，原始元素也只有在需要的时候才会被消费。
+ *
+ * 集合和流，虽然有一些表面的相似之处，却有不同的目标。集合主要关心的是高效的管理跟访问它们的元素。
+ * 相反，流并没有提供直接访问或者操作它们元素的方法，而是声明式描述它们的来源跟在该来源进行聚合操作
+ * 时使用的计算方法。如果提供的流操作没有满足需求，可以使用iterator跟spliterator操作来执行自定义
+ * 的遍历操作。
+ *
+ * 流管道，例如上面的widgets例子，可以当成是元数据的查询。除非元数据是专门给并发修改设计的
+ * 例如ConcurrentHashMap，当你在查询流上面进行修改的时候可能发成无法预测的错误。
+ *
+ * 大部分的流操作接受描述用户指定行为的参数，比如上面例子中传给mapToInt方法
+ * 的lambda表达式w -> w.getWeight()。为了保持正确的操作，这些操作参数必须遵循以下约定：
+ * 1.必须是无干扰的（即不会修改原始流）
+ * 2.大多数情况下必须是无状态的（它们产生的结果不能依赖任何在流管道执行过程中可能改变的状态）。
+ *
+ * 这些参数都是一个functional interface的实例，例如java.util.function.Function，通常
+ * 是一个lambda表达式或者方法引用。除非特殊情况不然这些参数都必须是非空的
+ *
+ * 一个流应该只被操作（执行一个中间或者终止流操作）一次。这个规则适用于，例如fork出来的流，
+ * 原始流可能要满足两个或者更多流管道，或者在相同的流上面执行多次遍历。流的实现里，当检测到
+ * 该流被复用的时候可能抛出IllegalStateException异常。但是，由于一些流操作可能会返回
+ * 它们的接收者而不是新的流对象，并不是所有的情况都可以检测到复用。
+ *
+ * 流有一个close()方法，实现了AutoCloseable接口，但是几乎所有的流实例在使用之后都不需要
+ * 真正的关闭。一般来说，只有元数据是IO管道（例如Files#lines(Path, Charset)返回的）才需要
+ * 关闭。大部分流会通过集合，数组，函数生成的，并不需要特殊的资源管理。（如果流需要关闭，它可以
+ * 通过try-with-resouce操作声明）。
+ *
+ * 流管道串行或者并行执行。执行模式是流的一个属性。流可以通过串行或者并行两种方式创建。
+ * （例如，Collection.stream()创建一个串行流，Collection.parallelStream()创建一个
+ * 并行流）。执行模式可以通过sequential()或者parallel()方法进行修改，还可以通过isParallel()
+ * 来查询流模式
+ *
+ *
+ */
+
+/**
  * A sequence of elements supporting sequential and parallel aggregate
  * operations.  The following example illustrates an aggregate operation using
  * {@link Stream} and {@link IntStream}:
@@ -154,6 +209,9 @@ import java.util.function.UnaryOperator;
 public interface Stream<T> extends BaseStream<T, Stream<T>> {
 
     /**
+     * 返回当前流中满足传入参数predicate条件的元素组成的新流。
+     * 这是一个中间操作。
+     *
      * Returns a stream consisting of the elements of this stream that match
      * the given predicate.
      *
@@ -169,6 +227,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> filter(Predicate<? super T> predicate);
 
     /**
+     * 返回对当前流中每个元素使用传入函数生成新元素组成的新流。
+     * 这是一个中间操作。
+     *
      * Returns a stream consisting of the results of applying the given
      * function to the elements of this stream.
      *
@@ -184,6 +245,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     <R> Stream<R> map(Function<? super T, ? extends R> mapper);
 
     /**
+     * 返回对当前流中每个元素使用传入函数生成的int类型元素组成的新流。
+     * 这是一个中间操作
+     *
      * Returns an {@code IntStream} consisting of the results of applying the
      * given function to the elements of this stream.
      *
@@ -198,6 +262,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     IntStream mapToInt(ToIntFunction<? super T> mapper);
 
     /**
+     * 返回对当前流中每个元素使用传入函数生成的long类型元素组成的新流。
+     * 这是一个中间操作
+     *
      * Returns a {@code LongStream} consisting of the results of applying the
      * given function to the elements of this stream.
      *
@@ -212,6 +279,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     LongStream mapToLong(ToLongFunction<? super T> mapper);
 
     /**
+     * 返回对当前流中每个元素使用传入函数生成的double类型元素组成的新流。
+     * 这是一个中间操作
+     *
      * Returns a {@code DoubleStream} consisting of the results of applying the
      * given function to the elements of this stream.
      *
@@ -226,6 +296,29 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper);
 
     /**
+     * 返回一个由当前流中的所有元素使用参数传入的函数转换成的子流再组合成一个完整的新流的
+     * 流。该方法的意思是传入的函数会把当前流中的每个元素都转换成一个对应的流，然后在把这
+     * 些对应的流中的内容统一放在一个新流中返回。
+     * 注：每个传入函数生成的子流都是java.util.stream.BaseStream类型，当其中的元素都
+     * 加入到新流以后会调用里面的close()方法进行关闭，如果子流为null，则会用一个空的流代替。
+     *
+     * 这是一个中间操作。
+     *
+     * 注：flatMap()方法用于把一个元素映射成含有多个元素的流，然后再把这些流组合成一个
+     * 完成的流的场景。
+     *
+     * 举例1：
+     * 现在假设orders是一个采购订单流，每个采购订单又包含了一系列的商品，下面的代码会生成
+     * 一个包含所有采购订单中所有商品的流。
+     * orders.flatMap(order -> order.getLineItems().stream())
+     *
+     * 举例2：
+     * 假设path表示一个文件的路径，下面的代码会生成一个包含文件中所有单词的流。
+     * Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8);
+     * Stream<String> words = lines.flatMap(line -> Stream.of(line.split(" +")));
+     * 传给flatMap的函数使用了一个简单的表达式把一行分成一个数组，然后再基于该数组创建一个流。
+     *
+     *
      * Returns a stream consisting of the results of replacing each element of
      * this stream with the contents of a mapped stream produced by applying
      * the provided mapping function to each element.  Each mapped stream is
@@ -270,6 +363,10 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
 
     /**
+     * 详情参考flatMap方法注释，只是该方法指定了传入函数必须把原来流中的数据转换成一个
+     * int类型的流才行。
+     * 这是一个中间操作。
+     *
      * Returns an {@code IntStream} consisting of the results of replacing each
      * element of this stream with the contents of a mapped stream produced by
      * applying the provided mapping function to each element.  Each mapped
@@ -290,6 +387,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper);
 
     /**
+     * 详情参考flatMap方法注释，只是该方法指定了传入函数必须把原来流中的数据转换成一个
+     * long类型的流才行。
+     * 这是一个中间操作。
+     *
+     *
      * Returns an {@code LongStream} consisting of the results of replacing each
      * element of this stream with the contents of a mapped stream produced by
      * applying the provided mapping function to each element.  Each mapped
@@ -310,6 +412,10 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper);
 
     /**
+     * 详情参考flatMap方法注释，只是该方法指定了传入函数必须把原来流中的数据转换成一个
+     * double类型的流才行。
+     * 这是一个中间操作。
+     *
      * Returns an {@code DoubleStream} consisting of the results of replacing
      * each element of this stream with the contents of a mapped stream produced
      * by applying the provided mapping function to each element.  Each mapped
@@ -330,6 +436,21 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper);
 
     /**
+     * 返回一个由当前流中不同元素组成的新流，使用equals()方法进行判断。
+     *
+     * 对于一个已经排好序的流来说，选择不同元素时稳定的（对于重复的元素，会保留第一个出现的元素）。
+     * 对于一个未排序的流来说，没有任何稳定的保证。
+     *
+     * 这是一个中间操作。
+     *
+     * 注：
+     * distinct()方法要想在并行操作中保持稳定性是需要付出更多代价的，（需要消耗大量的缓存，
+     * 把该操作作为一个完整的屏障）而且这种稳定性通常又是不需要的。使用一个未排序的原始流
+     * （例如使用generate(Supplier)方法生成）或者使用unordered()方法删除排序约束可以提高
+     * distinct()方法在并行管道中的执行效率，前提是你允许这种情况。
+     * 如果想要保证一致性，而且你又面临distinct()在并行管道中带来的低性能，低内存利用率的问题，
+     * 那么使用串行执行的sequential()方法可能会提高性能。
+     *
      * Returns a stream consisting of the distinct elements (according to
      * {@link Object#equals(Object)}) of this stream.
      *
@@ -359,6 +480,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> distinct();
 
     /**
+     * 返回当前流中元素进行自然排序后组成的新流。如果该流中的元素不是Comparable类型，
+     * 那么在流的终止操作中会抛出ClassCastException异常。
+     * 对于已经排序的流来说，这个排序是稳定的。对于未排序的流来说，没有任何稳定保证。
+     *
+     * 这是一个中间操作。
+     *
+     *
      * Returns a stream consisting of the elements of this stream, sorted
      * according to natural order.  If the elements of this stream are not
      * {@code Comparable}, a {@code java.lang.ClassCastException} may be thrown
@@ -375,6 +503,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> sorted();
 
     /**
+     * 返回一个由当前流中元素使用传入的Comparator进行排序的新流。
+     * 对于已经排序的流来说，这个排序是稳定的。对于未排序的流来说，没有任何稳定保证。
+     *
+     * 这是一个中间操作。
+     *
      * Returns a stream consisting of the elements of this stream, sorted
      * according to the provided {@code Comparator}.
      *
@@ -392,6 +525,25 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> sorted(Comparator<? super T> comparator);
 
     /**
+     * 返回一个由原流中元素组成的流，另外在新流中的元素被消费时对每个元素使用传入的函数
+     * 进行处理。
+     *
+     * 这是一个中间操作。
+     *
+     * 对于并行流管道来说，入参函数可能在任何时间被任何线程被调用。如果该函数修改了共享状态，
+     * 那么它需要自己保证并发控制。
+     *
+     * 注：
+     * 该方法的存在主要用来支持debug，当你想要查看元素通过一个流管道之后的状态时使用。
+     * 例如：
+     * Stream.of("one", "two", "three", "four")
+     *         .filter(e -> e.length() > 3)
+     *         .peek(e -> System.out.println("Filtered value: " + e))
+     *         .map(String::toUpperCase)
+     *         .peek(e -> System.out.println("Mapped value: " + e))
+     *         .collect(Collectors.toList());
+     *
+     *
      * Returns a stream consisting of the elements of this stream, additionally
      * performing the provided action on each element as elements are consumed
      * from the resulting stream.
@@ -423,6 +575,18 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> peek(Consumer<? super T> action);
 
     /**
+     * 返回由当前流中数量小于等于maxSize的元素组成的流。
+     *
+     * 这是一个短暂的中间操作。
+     *
+     * 注：
+     * 尽管limit()方法对于串行流管道来说是一个廉价的操作，但由于limit(n)并不是返回当前流中
+     * 任意的n个元素，而是当前流中前n个元素，这就在并行流管道中，尤其是当maxSize很大是需要
+     * 很大代价。使用一个未排序的原始流（例如使用generate(Supplier)方法生成）或者使用unordered()
+     * 方法删除排序约束可以提高limit()方法在并行管道中的执行效率，前提是你允许这种情况。
+     * 如果想要保证一致性，而且你又面临limit()在并行管道中带来的低性能，低内存利用率的问题，
+     * 那么使用串行执行的sequential()方法可能会提高性能。
+     *
      * Returns a stream consisting of the elements of this stream, truncated
      * to be no longer than {@code maxSize} in length.
      *
@@ -450,6 +614,19 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> limit(long maxSize);
 
     /**
+     * 返回一个由当前流中跳过前n个元素，剩余元素组成的新流。
+     * 如果当前流中的元素小于n个，则返回一个空的流。
+     *
+     * 这是一个有状态的中间操作。
+     *
+     * 注：
+     * 尽管skip()方法对于串行流管道来说是一个廉价的操作，但由于skip(n)并不是跳过当前流中
+     * 任意的n个元素，而是当前流中前n个元素，这就在并行流管道中，尤其是当n很大是需要
+     * 很大代价。使用一个未排序的原始流（例如使用generate(Supplier)方法生成）或者使用unordered()
+     * 方法删除排序约束可以提高skip()方法在并行管道中的执行效率，前提是你允许这种情况。
+     * 如果想要保证一致性，而且你又面临skip()在并行管道中带来的低性能，低内存利用率的问题，
+     * 那么使用串行执行的sequential()方法可能会提高性能。
+     *
      * Returns a stream consisting of the remaining elements of this stream
      * after discarding the first {@code n} elements of the stream.
      * If this stream contains fewer than {@code n} elements then an
@@ -479,6 +656,14 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Stream<T> skip(long n);
 
     /**
+     * 对当前流中的每个元素都执行一次入参函数。
+     *
+     * 这是一个终止操作。
+     *
+     * 该操作是明确不确定的。对于并行流来说，它不保证操作的元素的顺序，因为这样
+     * 会牺牲并行的性能。对于给定的元素，该入参函数会在任意时间任何线程中执行，
+     * 如果入参函数需要操作共享状态，那么需要它自己保证并发控制。
+     *
      * Performs an action for each element of this stream.
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
@@ -498,6 +683,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     void forEach(Consumer<? super T> action);
 
     /**
+     * 该方法与forEach的区别是在并行流中，它依然能够保持按顺序处理元素。
+     *
+     * 这是一个终止操作。
+     *
+     * 对于一个元素执行action操作happens-befor于对该元素的后续元素执行action，
+     * 但对于任意给定元素，执行的线程是不确定的。
+     *
      * Performs an action for each element of this stream, in the encounter
      * order of the stream if the stream has a defined encounter order.
      *
@@ -517,6 +709,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     void forEachOrdered(Consumer<? super T> action);
 
     /**
+     * 返回一个包含该流中所有元素的数组。
+     *
+     * 这是一个终止操作。
+     *
+     *
      * Returns an array containing the elements of this stream.
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
@@ -527,6 +724,19 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Object[] toArray();
 
     /**
+     * 返回一个包含流中所有元素的数组，使用提供的generator函数分配返回的数组，以及做一些
+     * 额外操作，比如分片执行或者resizing。
+     *
+     * 这是一个终止操作。
+     *
+     * 注：
+     * generator函数需要一个表示数组的大小int参数，返回一个指定大小的数组，可以通过以下
+     * 方式进行简写：
+     * Person[] men = people.stream()
+     *                          .filter(p -> p.getGender() == MALE)
+     *                          .toArray(Person[]::new);
+     *
+     *
      * Returns an array containing the elements of this stream, using the
      * provided {@code generator} function to allocate the returned array, as
      * well as any additional arrays that might be required for a partitioned
@@ -556,6 +766,32 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     <A> A[] toArray(IntFunction<A[]> generator);
 
     /**
+     * 使用提供的identity值以及一个累加器函数对流中元素执行一个削减操作，返回一个削减以后的值。
+     * 类似于如下操作：
+     *     T result = identity;
+     *     for (T element : this stream)
+     *         result = accumulator.apply(result, element)
+     *     return result;
+     * 但是不保证顺序处理每个元素。
+     *
+     * 参数identity必须是accumulator函数的identity，也就是说对于所有的t， accumulator.apply(identity, t)
+     * 都等于t，函数accumulator必须是个联想函数。
+     *
+     * 这是一个终止操作。
+     *
+     * 注：
+     * 求和, 取小, 取大, 取平均数跟拼接字符串都是削减操作的特殊案例。对数字组成的流求和
+     * 可以用以下方式：
+     * Integer sum = integers.reduce(0, (a, b) -> a+b);
+     * 或者：
+     * Integer sum = integers.reduce(0, Integer::sum);
+     *
+     * 尽管与直接在循环中进行计算相比，这种方式算是一种迂回的聚合操作。但这种削减操作可以
+     * 让更优雅的进行并行执行，有效的减少额外的并发控制以及竞争。
+     *
+     *
+     *
+     *
      * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
      * elements of this stream, using the provided identity value and an
      * <a href="package-summary.html#Associativity">associative</a>
@@ -607,6 +843,27 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     T reduce(T identity, BinaryOperator<T> accumulator);
 
     /**
+     * 用一个联想累计函数对流中的元素执行一个削减操作，如果有的话，返回一个由Optional封装好的值。
+     * 该操作等同于：
+     * boolean foundAny = false;
+     *     T result = null;
+     *     for (T element : this stream) {
+     *         if (!foundAny) {
+     *             foundAny = true;
+     *             result = element;
+     *         }
+     *         else
+     *             result = accumulator.apply(result, element);
+     *     }
+     *     return foundAny ? Optional.of(result) : Optional.empty();
+     * 但并不是严格执行的。
+     *
+     * accumulator函数必须是一个联想函数。
+     *
+     * 这是一个终止操作。
+     *
+     *
+     *
      * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
      * elements of this stream, using an
      * <a href="package-summary.html#Associativity">associative</a> accumulation
@@ -647,6 +904,28 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     Optional<T> reduce(BinaryOperator<T> accumulator);
 
     /**
+     * 使用提供的identity，叠加跟合并函数对流中的元素执行一个削减操作，这等效于：
+     *
+     * U result = identity;
+     * for (T element : this stream)
+     *    result = accumulator.apply(result, element)
+     * return result;
+     *
+     * 但不是严格按顺序执行。
+     *
+     * identity的值必须满足combiner函数。意思是对于所有的类型u，combiner(identity, u)
+     * 于u相同。此外，combiner函数必须与accumulator函数一致；对于所有的u跟t,必须满足以下
+     * 条件：
+     * combiner.apply(u, accumulator.apply(identity, t)) == accumulator.apply(u, t)
+     *
+     * 这是一个终止操作。
+     *
+     * 注：
+     * 很多使用这种方式的削减操作都可以更简单的使用map跟reduce操作组合实现。accumulator函数
+     * 融合了mapper跟accumulator，很多时候可以比分开的mapping跟reduction更加高效，
+     * 比如已知了之前的一些削减操作可以让你减少一些计算。
+     *
+     *
      * Performs a <a href="package-summary.html#Reduction">reduction</a> on the
      * elements of this stream, using the provided identity, accumulation and
      * combining functions.  This is equivalent to:
@@ -967,6 +1246,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
+     * 返回一个空的顺序流。
+     *
      * Returns an empty sequential {@code Stream}.
      *
      * @param <T> the type of stream elements
@@ -977,6 +1258,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
+     * 返回一个仅含有给定的一个元素组成的顺序流。
+     *
      * Returns a sequential {@code Stream} containing a single element.
      *
      * @param t the single element
@@ -988,6 +1271,9 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
     }
 
     /**
+     *
+     * 返回一个由给定元素进行顺序排列组成的流。
+     *
      * Returns a sequential ordered stream whose elements are the specified values.
      *
      * @param <T> the type of stream elements
