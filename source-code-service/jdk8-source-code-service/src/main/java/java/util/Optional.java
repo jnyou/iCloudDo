@@ -117,6 +117,7 @@ public final class Optional<T> {
      * @return an {@code Optional} with a present value if the specified value
      * is non-null, otherwise an empty {@code Optional}
      */
+    // 创建一个 Optional，可以为空
     public static <T> Optional<T> ofNullable(T value) {
         return value == null ? empty() : of(value);
     }
@@ -142,6 +143,7 @@ public final class Optional<T> {
      *
      * @return {@code true} if there is a value present, otherwise {@code false}
      */
+    // 判断 Optional Value 有没有值
     public boolean isPresent() {
         return value != null;
     }
@@ -208,10 +210,14 @@ public final class Optional<T> {
      * @throws NullPointerException if the mapping function is null
      */
     public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
+        // 函数式接口不能为null
         Objects.requireNonNull(mapper);
+
+        // 如果当前没有值，返回一个空的Optional
         if (!isPresent())
             return empty();
         else {
+            // 如果当前有值，返回一个函数式处理该值的结果Optional
             return Optional.ofNullable(mapper.apply(value));
         }
     }

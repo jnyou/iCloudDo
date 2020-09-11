@@ -107,9 +107,13 @@
     - ThreadPoolExecutor.java(翻译线程池相关类中的部分注释.)
     - stream.
         - Stream.java(reduce函数解析.)
+        - AbstractPipeline.java
+        - ReferencePipeline.java
+        - SortedOps.java
     - ArrayList.java
     - LinkedList.java
     - Vector.java
+    - Optional.java
 
 ## java.lang 包
 

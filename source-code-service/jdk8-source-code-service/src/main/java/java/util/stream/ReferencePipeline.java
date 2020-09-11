@@ -185,17 +185,24 @@ abstract class ReferencePipeline<P_IN, P_OUT>
         Objects.requireNonNull(mapper);
         return new StatelessOp<P_OUT, R>(this, StreamShape.REFERENCE,
                                      StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
+            /*opWripSink()方法返回由回调函数包装而成Sink*/
             @Override
             Sink<P_OUT> opWrapSink(int flags, Sink<R> sink) {
                 return new Sink.ChainedReference<P_OUT, R>(sink) {
                     @Override
                     public void accept(P_OUT u) {
-                        downstream.accept(mapper.apply(u));
+                        R r = mapper.apply(u);// 1. 使用当前Sink包装的回调函数mapper处理u
+                        downstream.accept(mapper.apply(u)); // 2. 将处理结果传递给流水线下游的Sink
                     }
                 };
             }
         };
     }
+    /**
+     * 上述代码看似复杂，其实逻辑很简单，就是将回调函数*mapper*包装到一个Sink当中。
+     *
+     * 由于Stream.map()是一个无状态的中间操作，所以map()方法返回了一个StatelessOp内部类对象（一个新的Stream），调用这个新Stream的opWripSink()方法将得到一个包装了当前回调函数的Sink。
+     */
 
     @Override
     public final IntStream mapToInt(ToIntFunction<? super P_OUT> mapper) {

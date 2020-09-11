@@ -367,8 +367,16 @@ final class SortedOps {
 
     /**
      * {@link Sink} for implementing sort on reference streams.
+     *
+     * 下述代码完美的展现了Sink的四个接口方法是如何协同工作的：
+     *
+     * 1. 首先begin()方法告诉Sink参与排序的元素个数，方便确定中间结果容器的的大小；
+     * 2. 之后通过accept()方法将元素添加到中间结果当中，最终执行时调用者会不断调用该方法，直到遍历所有元素；
+     * 3. 最后end()方法告诉Sink所有元素遍历完毕，启动排序步骤，排序完成后将结果传递给下游的Sink；
+     * 4. 如果下游的Sink是短路操作，将结果传递给下游时不断询问下游cancellationRequested()是否可以结束处理。
      */
     private static final class RefSortingSink<T> extends AbstractRefSortingSink<T> {
+        // 创建一个存放排序元素的列表
         private ArrayList<T> list;
 
         RefSortingSink(Sink<? super T> sink, Comparator<? super T> comparator) {
@@ -379,20 +387,22 @@ final class SortedOps {
         public void begin(long size) {
             if (size >= Nodes.MAX_ARRAY_SIZE)
                 throw new IllegalArgumentException(Nodes.BAD_SIZE);
+            // 创建一个存放排序元素的列表
             list = (size >= 0) ? new ArrayList<T>((int) size) : new ArrayList<T>();
         }
 
         @Override
         public void end() {
+            // 只有元素全部接收之后才能开始排序
             list.sort(comparator);
             downstream.begin(list.size());
-            if (!cancellationWasRequested) {
-                list.forEach(downstream::accept);
+            if (!cancellationWasRequested) { // 下游Sink不包含短路操作
+                list.forEach(downstream::accept); // 2. 将处理结果传递给流水线下游的Sink
             }
-            else {
-                for (T t : list) {
+            else { // 下游Sink包含短路操作
+                for (T t : list) { // 每次都调用cancellationRequested()询问是否可以结束处理。
                     if (downstream.cancellationRequested()) break;
-                    downstream.accept(t);
+                    downstream.accept(t); // 2. 将处理结果传递给流水线下游的Sink
                 }
             }
             downstream.end();
@@ -401,6 +411,7 @@ final class SortedOps {
 
         @Override
         public void accept(T t) {
+            // 1. 使用当前Sink包装动作处理t，只是简单的将元素添加到中间列表当中
             list.add(t);
         }
     }
