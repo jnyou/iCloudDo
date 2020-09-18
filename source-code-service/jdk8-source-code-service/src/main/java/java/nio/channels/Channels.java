@@ -421,10 +421,10 @@ public final class Channels {
     public static WritableByteChannel newChannel(final OutputStream out) {
         checkNotNull(out, "out");
 
-        if (out instanceof FileOutputStream &&
-            FileOutputStream.class.equals(out.getClass())) {
-                return ((FileOutputStream)out).getChannel();
-        }
+//        if (out instanceof FileOutputStream &&
+//            FileOutputStream.class.equals(out.getClass())) {
+//                return ((FileOutputStream)out).getChannel();
+//        }
 
         return new WritableByteChannelImpl(out);
     }

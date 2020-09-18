@@ -156,18 +156,18 @@ public final class KerberosPrincipal
 
         // A ServicePermission with a principal in the deduced realm and
         // any action must be granted if no realm is provided by caller.
-        if (krb5Principal.isRealmDeduced() && !Realm.AUTODEDUCEREALM) {
-            SecurityManager sm = System.getSecurityManager();
-            if (sm != null) {
-                try {
-                    sm.checkPermission(new ServicePermission(
-                            "@" + krb5Principal.getRealmAsString(), "-"));
-                } catch (SecurityException se) {
-                    // Swallow the actual exception to hide info
-                    throw new SecurityException("Cannot read realm info");
-                }
-            }
-        }
+//        if (krb5Principal.isRealmDeduced() && !Realm.AUTODEDUCEREALM) {
+//            SecurityManager sm = System.getSecurityManager();
+//            if (sm != null) {
+//                try {
+//                    sm.checkPermission(new ServicePermission(
+//                            "@" + krb5Principal.getRealmAsString(), "-"));
+//                } catch (SecurityException se) {
+//                    // Swallow the actual exception to hide info
+//                    throw new SecurityException("Cannot read realm info");
+//                }
+//            }
+//        }
         this.nameType = nameType;
         fullName = krb5Principal.toString();
         realm = krb5Principal.getRealmString();

@@ -88,19 +88,19 @@ public abstract class AccessibleContext {
      */
     private volatile AppContext targetAppContext;
 
-    static {
-        AWTAccessor.setAccessibleContextAccessor(new AWTAccessor.AccessibleContextAccessor() {
-            @Override
-            public void setAppContext(AccessibleContext accessibleContext, AppContext appContext) {
-                accessibleContext.targetAppContext = appContext;
-            }
-
-            @Override
-            public AppContext getAppContext(AccessibleContext accessibleContext) {
-                return accessibleContext.targetAppContext;
-            }
-        });
-    }
+//    static {
+//        AWTAccessor.setAccessibleContextAccessor(new AWTAccessor.AccessibleContextAccessor() {
+//            @Override
+//            public void setAppContext(AccessibleContext accessibleContext, AppContext appContext) {
+//                accessibleContext.targetAppContext = appContext;
+//            }
+//
+//            @Override
+//            public AppContext getAppContext(AccessibleContext accessibleContext) {
+//                return accessibleContext.targetAppContext;
+//            }
+//        });
+//    }
 
    /**
     * Constant used to determine when the accessibleName property has

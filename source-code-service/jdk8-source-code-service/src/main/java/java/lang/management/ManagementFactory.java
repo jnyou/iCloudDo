@@ -52,7 +52,6 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import javax.management.JMX;
 import sun.management.ManagementFactoryHelper;
-import sun.management.ExtendedPlatformComponent;
 
 /**
  * The {@code ManagementFactory} class is a factory class for getting
@@ -490,12 +489,12 @@ public class ManagementFactory {
             for (Map.Entry<ObjectName, DynamicMBean> e : dynmbeans.entrySet()) {
                 addDynamicMBean(platformMBeanServer, e.getValue(), e.getKey());
             }
-            for (final PlatformManagedObject o :
-                                       ExtendedPlatformComponent.getMXBeans()) {
-                if (!platformMBeanServer.isRegistered(o.getObjectName())) {
-                    addMXBean(platformMBeanServer, o);
-                }
-            }
+//            for (final PlatformManagedObject o :
+//                                       ExtendedPlatformComponent.getMXBeans()) {
+//                if (!platformMBeanServer.isRegistered(o.getObjectName())) {
+//                    addMXBean(platformMBeanServer, o);
+//                }
+//            }
         }
         return platformMBeanServer;
     }
@@ -662,14 +661,14 @@ public class ManagementFactory {
     public static <T extends PlatformManagedObject>
             T getPlatformMXBean(Class<T> mxbeanInterface) {
         PlatformComponent pc = PlatformComponent.getPlatformComponent(mxbeanInterface);
-        if (pc == null) {
-            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
-            if (mbean != null) {
-                return mbean;
-            }
-            throw new IllegalArgumentException(mxbeanInterface.getName() +
-                " is not a platform management interface");
-        }
+//        if (pc == null) {
+//            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
+//            if (mbean != null) {
+//                return mbean;
+//            }
+//            throw new IllegalArgumentException(mxbeanInterface.getName() +
+//                " is not a platform management interface");
+//        }
         if (!pc.isSingleton())
             throw new IllegalArgumentException(mxbeanInterface.getName() +
                 " can have zero or more than one instances");
@@ -702,14 +701,14 @@ public class ManagementFactory {
     public static <T extends PlatformManagedObject> List<T>
             getPlatformMXBeans(Class<T> mxbeanInterface) {
         PlatformComponent pc = PlatformComponent.getPlatformComponent(mxbeanInterface);
-        if (pc == null) {
-            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
-            if (mbean != null) {
-                return Collections.singletonList(mbean);
-            }
-            throw new IllegalArgumentException(mxbeanInterface.getName() +
-                " is not a platform management interface");
-        }
+//        if (pc == null) {
+//            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
+//            if (mbean != null) {
+//                return Collections.singletonList(mbean);
+//            }
+//            throw new IllegalArgumentException(mxbeanInterface.getName() +
+//                " is not a platform management interface");
+//        }
         return Collections.unmodifiableList(pc.getMXBeans(mxbeanInterface));
     }
 
@@ -754,17 +753,17 @@ public class ManagementFactory {
         throws java.io.IOException
     {
         PlatformComponent pc = PlatformComponent.getPlatformComponent(mxbeanInterface);
-        if (pc == null) {
-            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
-            if (mbean != null) {
-                ObjectName on = mbean.getObjectName();
-                return ManagementFactory.newPlatformMXBeanProxy(connection,
-                                                                on.getCanonicalName(),
-                                                                mxbeanInterface);
-            }
-            throw new IllegalArgumentException(mxbeanInterface.getName() +
-                " is not a platform management interface");
-        }
+//        if (pc == null) {
+//            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
+//            if (mbean != null) {
+//                ObjectName on = mbean.getObjectName();
+//                return ManagementFactory.newPlatformMXBeanProxy(connection,
+//                                                                on.getCanonicalName(),
+//                                                                mxbeanInterface);
+//            }
+//            throw new IllegalArgumentException(mxbeanInterface.getName() +
+//                " is not a platform management interface");
+//        }
         if (!pc.isSingleton())
             throw new IllegalArgumentException(mxbeanInterface.getName() +
                 " can have zero or more than one instances");
@@ -805,17 +804,17 @@ public class ManagementFactory {
         throws java.io.IOException
     {
         PlatformComponent pc = PlatformComponent.getPlatformComponent(mxbeanInterface);
-        if (pc == null) {
-            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
-            if (mbean != null) {
-                ObjectName on = mbean.getObjectName();
-                T proxy = ManagementFactory.newPlatformMXBeanProxy(connection,
-                            on.getCanonicalName(), mxbeanInterface);
-                return Collections.singletonList(proxy);
-            }
-            throw new IllegalArgumentException(mxbeanInterface.getName() +
-                " is not a platform management interface");
-        }
+//        if (pc == null) {
+//            T mbean = ExtendedPlatformComponent.getMXBean(mxbeanInterface);
+//            if (mbean != null) {
+//                ObjectName on = mbean.getObjectName();
+//                T proxy = ManagementFactory.newPlatformMXBeanProxy(connection,
+//                            on.getCanonicalName(), mxbeanInterface);
+//                return Collections.singletonList(proxy);
+//            }
+//            throw new IllegalArgumentException(mxbeanInterface.getName() +
+//                " is not a platform management interface");
+//        }
         return Collections.unmodifiableList(pc.getMXBeans(connection, mxbeanInterface));
     }
 

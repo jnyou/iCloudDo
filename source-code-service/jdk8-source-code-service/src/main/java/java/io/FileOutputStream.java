@@ -392,14 +392,14 @@ class FileOutputStream extends OutputStream
      * @since 1.4
      * @spec JSR-51
      */
-    public FileChannel getChannel() {
-        synchronized (this) {
-            if (channel == null) {
-                channel = FileChannelImpl.open(fd, path, false, true, append, this);
-            }
-            return channel;
-        }
-    }
+//    public FileChannel getChannel() {
+//        synchronized (this) {
+//            if (channel == null) {
+//                channel = FileChannelImpl.open(fd, path, false, true, append, this);
+//            }
+//            return channel;
+//        }
+//    }
 
     /**
      * Cleans up the connection to the file, and ensures that the

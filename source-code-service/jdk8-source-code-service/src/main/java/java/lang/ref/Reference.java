@@ -26,7 +26,6 @@
 package java.lang.ref;
 
 import sun.misc.Cleaner;
-import sun.misc.JavaLangRefAccess;
 import sun.misc.SharedSecrets;
 
 /**
@@ -232,12 +231,12 @@ public abstract class Reference<T> {
         handler.start();
 
         // provide access in SharedSecrets
-        SharedSecrets.setJavaLangRefAccess(new JavaLangRefAccess() {
-            @Override
-            public boolean tryHandlePendingReference() {
-                return tryHandlePending(false);
-            }
-        });
+//        SharedSecrets.setJavaLangRefAccess(new JavaLangRefAccess() {
+//            @Override
+//            public boolean tryHandlePendingReference() {
+//                return tryHandlePending(false);
+//            }
+//        });
     }
 
     /* -- Referent accessor and setters -- */

@@ -366,7 +366,7 @@ class FileInputStream extends InputStream
     public FileChannel getChannel() {
         synchronized (this) {
             if (channel == null) {
-                channel = FileChannelImpl.open(fd, path, true, false, this);
+                channel = FileChannelImpl.open(fd, Boolean.parseBoolean(path), true, false, this);
             }
             return channel;
         }

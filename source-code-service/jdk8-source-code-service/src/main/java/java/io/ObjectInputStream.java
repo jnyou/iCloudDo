@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import static java.io.ObjectStreamClass.processQueue;
-import sun.misc.ObjectStreamClassValidator;
 import sun.misc.SharedSecrets;
 import sun.misc.Unsafe;
 import sun.reflect.misc.ReflectUtil;
@@ -1524,9 +1523,9 @@ public class ObjectInputStream
                 throw new StreamCorruptedException(
                     String.format("invalid type code: %02X", tc));
         }
-        if (descriptor != null) {
-            validateDescriptor(descriptor);
-        }
+//        if (descriptor != null) {
+//            validateDescriptor(descriptor);
+//        }
         return descriptor;
     }
 
@@ -1836,8 +1835,8 @@ public class ObjectInputStream
         throws IOException
     {
         SerialCallbackContext oldContext = curContext;
-        if (oldContext != null)
-            oldContext.check();
+//        if (oldContext != null)
+//            oldContext.check();
         curContext = null;
         try {
             boolean blocked = desc.hasBlockExternalData();
@@ -1862,9 +1861,9 @@ public class ObjectInputStream
                 skipCustomData();
             }
         } finally {
-            if (oldContext != null)
-                oldContext.check();
-            curContext = oldContext;
+//            if (oldContext != null)
+//                oldContext.check();
+//            curContext = oldContext;
         }
         /*
          * At this point, if the externalizable data was not written in
@@ -1900,8 +1899,8 @@ public class ObjectInputStream
                     ThreadDeath t = null;
                     boolean reset = false;
                     SerialCallbackContext oldContext = curContext;
-                    if (oldContext != null)
-                        oldContext.check();
+//                    if (oldContext != null)
+//                        oldContext.check();
                     try {
                         curContext = new SerialCallbackContext(obj, slotDesc);
 
@@ -1920,8 +1919,8 @@ public class ObjectInputStream
                         do {
                             try {
                                 curContext.setUsed();
-                                if (oldContext!= null)
-                                    oldContext.check();
+//                                if (oldContext!= null)
+//                                    oldContext.check();
                                 curContext = oldContext;
                                 reset = true;
                             } catch (ThreadDeath x) {
@@ -3561,20 +3560,20 @@ public class ObjectInputStream
         }
     }
 
-    private void validateDescriptor(ObjectStreamClass descriptor) {
-        ObjectStreamClassValidator validating = validator;
-        if (validating != null) {
-            validating.validateDescriptor(descriptor);
-        }
-    }
+//    private void validateDescriptor(ObjectStreamClass descriptor) {
+//        ObjectStreamClassValidator validating = validator;
+//        if (validating != null) {
+//            validating.validateDescriptor(descriptor);
+//        }
+//    }
 
     // controlled access to ObjectStreamClassValidator
-    private volatile ObjectStreamClassValidator validator;
+//    private volatile ObjectStreamClassValidator validator;
 
-    private static void setValidator(ObjectInputStream ois, ObjectStreamClassValidator validator) {
-        ois.validator = validator;
-    }
-    static {
-        SharedSecrets.setJavaObjectInputStreamAccess(ObjectInputStream::setValidator);
-    }
+//    private static void setValidator(ObjectInputStream ois, ObjectStreamClassValidator validator) {
+//        ois.validator = validator;
+//    }
+//    static {
+//        SharedSecrets.setJavaObjectInputStreamAccess(ObjectInputStream::setValidator);
+//    }
 }
