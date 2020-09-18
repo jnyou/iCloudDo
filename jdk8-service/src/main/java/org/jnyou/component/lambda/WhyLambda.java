@@ -48,7 +48,7 @@ public class WhyLambda {
             }
         });
 
-        // JDK8写法
+        // JDK8写法 , 双冒号是一种关键字
         TreeSet<String> treeSetLam=new TreeSet<>((o1, o2) -> Integer.compare(o1.length(),o2.length()));
 
         TreeSet<String> treeSetCom=new TreeSet<>(Comparator.comparingInt(String::length));
