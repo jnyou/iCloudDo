@@ -8,6 +8,7 @@
         <module>design-patterns-service</module>
         <module>java-senior-service</module>
         <module>source-code-service</module>
+        <module>temporary-storage-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
