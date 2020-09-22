@@ -36,3 +36,9 @@ out
 
 # ignore log files
 *.log
+/project-cluster-service/gmall/gmall-rear-server/coupon-service/.mvn/wrapper/
+/project-cluster-service/gmall/gmall-rear-server/member-service/.mvn/wrapper/
+/project-cluster-service/gmall/gmall-rear-server/order-service/.mvn/
+/project-cluster-service/gmall/gmall-rear-server/order-service/.mvn/wrapper/
+/project-cluster-service/gmall/gmall-rear-server/product-service/.mvn/wrapper/
+/project-cluster-service/gmall/gmall-rear-server/storage-service/.mvn/wrapper/
