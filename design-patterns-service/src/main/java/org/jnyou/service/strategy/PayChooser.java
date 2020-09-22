@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 决策 策略上下文 选择
- * @author 夏小颜
+ * @author jnyou
  */
 @Component
 public class PayChooser implements ApplicationContextAware {
@@ -23,7 +23,7 @@ public class PayChooser implements ApplicationContextAware {
      */
     private ApplicationContext context;
 
-    private Map<PayType, PayService> chooseMap = new ConcurrentHashMap<>();
+    private final Map<PayType, PayService> chooseMap = new ConcurrentHashMap<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -40,7 +40,10 @@ public class PayChooser implements ApplicationContextAware {
     }
 
 
-    @PostConstruct  // 初始化，相当于init-method
+    /**
+     * 初始化，相当于init-method
+     */
+    @PostConstruct
     public void registerPayType(){
         // 获取所有接口中所有的实现
         Map<String,PayService> beanMap = context.getBeansOfType(PayService.class);
