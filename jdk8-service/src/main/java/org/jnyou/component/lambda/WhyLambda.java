@@ -49,6 +49,8 @@ public class WhyLambda {
         });
 
         // JDK8写法 , 双冒号是一种关键字
+        // 就是把方法当做参数传到stream内部，使stream的每个元素都传入到该方法里面执行一下，
+        // 双冒号运算就是Java中的[方法引用],[方法引用]的格式是：类名::方法名,相当于对这个方法闭包的引用，类似js中的一个function
         TreeSet<String> treeSetLam=new TreeSet<>((o1, o2) -> Integer.compare(o1.length(),o2.length()));
 
         TreeSet<String> treeSetCom=new TreeSet<>(Comparator.comparingInt(String::length));
