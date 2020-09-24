@@ -22,7 +22,6 @@ import org.jnyou.common.utils.R;
  *
  * @author jnyou
  * @email xiaojian19970910@gmail.com
- * @date 2020-09-24 16:19:42
  */
 @RestController
 @RequestMapping("productservice/attrgroup")

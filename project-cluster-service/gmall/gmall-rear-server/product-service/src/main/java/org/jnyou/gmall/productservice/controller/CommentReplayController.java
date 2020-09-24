@@ -22,7 +22,6 @@ import org.jnyou.common.utils.R;
  *
  * @author jnyou
  * @email xiaojian19970910@gmail.com
- * @date 2020-09-24 16:17:14
  */
 @RestController
 @RequestMapping("productservice/commentreplay")
@@ -34,6 +33,7 @@ public class CommentReplayController {
      * 列表
      */
     @RequestMapping("/list")
+    //@RequiresPermissions("productservice:commentreplay:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = commentReplayService.queryPage(params);
 
@@ -45,6 +45,7 @@ public class CommentReplayController {
      * 信息
      */
     @RequestMapping("/info/{id}")
+    //@RequiresPermissions("productservice:commentreplay:info")
     public R info(@PathVariable("id") Long id){
 		CommentReplayEntity commentReplay = commentReplayService.getById(id);
 
@@ -55,6 +56,7 @@ public class CommentReplayController {
      * 保存
      */
     @RequestMapping("/save")
+    //@RequiresPermissions("productservice:commentreplay:save")
     public R save(@RequestBody CommentReplayEntity commentReplay){
 		commentReplayService.save(commentReplay);
 
@@ -65,6 +67,7 @@ public class CommentReplayController {
      * 修改
      */
     @RequestMapping("/update")
+    //@RequiresPermissions("productservice:commentreplay:update")
     public R update(@RequestBody CommentReplayEntity commentReplay){
 		commentReplayService.updateById(commentReplay);
 
@@ -75,6 +78,7 @@ public class CommentReplayController {
      * 删除
      */
     @RequestMapping("/delete")
+    //@RequiresPermissions("productservice:commentreplay:delete")
     public R delete(@RequestBody Long[] ids){
 		commentReplayService.removeByIds(Arrays.asList(ids));
 
