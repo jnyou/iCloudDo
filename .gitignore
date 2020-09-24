@@ -30,7 +30,6 @@ out
 .factorypath
 .metadata
 .idea
-*.yml
 *.iml
 
 
