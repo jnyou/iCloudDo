@@ -42,3 +42,11 @@ out
 /project-cluster-service/gmall/gmall-rear-server/order-service/.mvn/wrapper/
 /project-cluster-service/gmall/gmall-rear-server/product-service/.mvn/wrapper/
 /project-cluster-service/gmall/gmall-rear-server/storage-service/.mvn/wrapper/
+
+# 总文件
+**/mvnw
+**/mvnw.cmd
+**/.mvn
+**/target
+.idea
+**/HELP.md
