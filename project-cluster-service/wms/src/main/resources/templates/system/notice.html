@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统公告管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/css/public.css" media="all"/>
+    <style>
+        .layui-input-block {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+    <!-- 查询条件开始 -->
+    <blockquote class="layui-elem-quote quoteBox">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <!--                <div class="layui-input-inline">-->
+                <!--                    <div class="layui-input-block" style="width: 150px;margin-left:0px; min-height: 0px;">-->
+                <!--                        <select name="fstoreType" class="" id="monCostFstoreType">-->
+                <!--                            <option value="1">Alienware专卖店</option>-->
+                <!--                            <option value="2">体验中心-成就店</option>-->
+                <!--                            <option value="3">体验中心-家用店</option>-->
+                <!--                        </select>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">公告标题：</label>
+                    <input type="text" class="layui-input" id="title" name="title" style="width:140px"
+                           placeholder="公告标题"/>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">发布人</label>
+                    <input type="text" class="layui-input" id="opername" name="opername" style="width:140px"
+                           placeholder="发布人"/>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间：</label>
+                    <input type="text" class="layui-input" id="startTime" name="startTime" style="width:150px"
+                           placeholder="开始时间" readonly="readonly"/>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间：</label>
+                    <input type="text" class="layui-input" id="endTime" name="endTime" style="width:150px"
+                           placeholder="结束时间" readonly="readonly"/>
+                </div>
+
+                <button type="button" class="layui-btn" lay-submit="" lay-filter="doSearch" style="margin-left: 5px;">
+                    <span class="layui-icon layui-icon-search"></span>搜索
+                </button>
+                <button type="reset" class="layui-btn layui-btn-warm">
+                    <span class="layui-icon layui-icon-refresh-1">重置</span>
+                </button>
+                <button class="layui-btn layui-btn-normal" id="logInfoExport">
+                    <span class="layui-icon layui-icon-export">导出系统公告信息（按搜索结果）</span>
+                </button>
+            </div>
+        </form>
+    </blockquote>
+    <!-- 查询条件结束 -->
+
+
+    <!-- 数据表格开始 -->
+    <div>
+        <!-- 数据表格内容主体开始 -->
+        <table class="layui-hide" id="noticeTable" lay-filter="noticeTable"></table>
+        <!-- 数据表格内容主体结束 -->
+
+        <!--数据表格上部操作开始-->
+        <div id="noticeToolBar" style="display: none;">
+            <button class="layui-btn layui-btn-normal" lay-event="noticeSave"><span
+                    class="layui-icon layui-icon-add-circle">添加</span></button>
+            <button class="layui-btn layui-btn-danger" lay-event="noticeDelBatch"><span
+                    class="layui-icon layui-icon-delete">批量删除</span></button>
+        </div>
+        <!--数据表格上部操作结束-->
+
+        <!--数据表格右部操作开始-->
+        <div id="noticeRightBar" style="display: none;">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="noticeDetail"><span
+                    class="layui-icon layui-icon-about"></span>查看</a>
+            <a class="layui-btn layui-btn-xs" lay-event="noticeEdit"><span class="layui-icon layui-icon-edit"></span>编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="noticeDel"><span
+                    class="layui-icon layui-icon-delete"></span>删除</a>
+        </div>
+        <!--数据表格右部操作结束-->
+
+    </div>
+    <!-- 数据表格结束 -->
+
+
+    <!-- 添加编辑弹出层开始 -->
+    <div id="openFormDiv" style="display: none;padding: 5px;">
+        <form class="layui-form layui-form-pane" id="dataFrm" lay-filter="dataFrm">
+            <div class="layui-form-item">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">公告标题</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="id">
+                        <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">公告内容</label>
+                    <div class="layui-input-block">
+                        <textarea class="layui-textarea" lay-verify="required" name="content"
+                                  id="LAY_editor"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block" style="text-align: center;">
+                        <button type="button" class="layui-btn" lay-submit="" id="doSubmit"><span
+                                class="layui-icon layui-icon-add-1"></span>提交
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-warm"><span
+                                class="layui-icon layui-icon-refresh-1"></span>重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <!-- 添加编辑弹出层结束 -->
+
+
+    <!-- 查看弹出层的开始 -->
+    <div style="display: none;padding: 5px" id="showNoticeDiv">
+        <h2 id="show_title" align="center"></h2>
+        <div style="text-align: right;">
+            发布人:<span id="show_opername"></span>
+            发布时间:<span id="show_createtime"></span>
+        </div>
+        <hr>
+        <div id="show_content"></div>
+
+    </div>
+    <!-- 查看弹出层的结束-->
+
+</form>
+
+
+<!-- JS部分 -->
+<script type="text/javascript" src="/layui/layui.js"></script>
+<script>
+    layui.use(['jquery', 'table', 'laydate', 'layer', 'form', 'layedit'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var layedit = layui.layedit;
+        var index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+
+        layedit.set({
+            //暴露layupload参数设置接口 --详细查看layupload参数说明
+            uploadImage: {
+                url: '/Attachment/LayUploadFile',
+                accept: 'image',
+                acceptMime: 'image/*',
+                exts: 'jpg|png|gif|bmp|jpeg',
+                size: '10240'
+            }
+            , uploadVideo: {
+                url: '/Attachment/LayUploadFile',
+                accept: 'video',
+                acceptMime: 'video/*',
+                exts: 'mp4|flv|avi|rm|rmvb',
+                size: '20480'
+            }
+            //右键删除图片/视频时的回调参数，post到后台删除服务器文件等操作，
+            //传递参数：
+            //图片： imgpath --图片路径
+            //视频： filepath --视频路径 imgpath --封面路径
+            , calldel: {
+                url: '/Attachment/DeleteFile'
+            }
+            //开发者模式 --默认为false
+            , devmode: true
+            //插入代码设置
+            , codeConfig: {
+                hide: true,  //是否显示编码语言选择框
+                default: 'javascript' //hide为true时的默认语言格式
+            }
+            , tool: [
+                'html', 'code', 'strong', 'italic', 'underline', 'del', 'addhr', '|', 'fontFomatt', 'colorpicker', 'face'
+                , '|', 'left', 'center', 'right', '|', 'link', 'unlink', 'images', 'image_alt', 'video', 'anchors'
+                , '|', 'table', 'fullScreen'
+            ]
+            , height: '90%'
+        });
+        var editIndex;
+
+
+        // 初始化日期组件
+        laydate.render({
+            elem: "#startTime",
+            type: "datetime"
+        })
+        laydate.render({
+            elem: "#endTime",
+            type: "datetime"
+        })
+
+        // 初始化数据表格
+        var tableIns = table.render({
+            elem: '#noticeTable'
+            , height: "full-120"
+            , toolbar: '#noticeToolBar' //开启头部工具栏，并为其绑定左侧模板
+            , url: '/notice/list' //数据接口
+            , title: '系统公告表'
+            , page: true //开启分页
+            , limit: 20
+            , done: function (res, currPage, count) {//数据渲染完的回调
+                layui.layer.close(index);
+                // console.log(res);
+
+                //得到当前页码
+                // console.log(currPage);
+
+                //得到数据总量
+                // console.log(count);
+                if (res.data.length == 0 && currPage != 0) {
+                    // 执行重载函数
+                    // 页码
+                    // curr - 1
+                    tableIns.reload({
+                        page: {
+                            curr: (currPage - 1)
+                        }
+                    })
+                }
+            }
+            , cols: [ [ //表头
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: '公告ID', sort: true, align: 'center',}
+                , {field: 'title', title: '公告标题', align: 'center'}
+                , {field: 'opername', title: '发布人', align: 'center'}
+                , {field: 'createtime', title: '发布时间', sort: true, align: 'center'}
+                , {fixed: 'right', title: '操作', align: 'center', toolbar: '#noticeRightBar'} //右部工具栏，并为其绑定右侧模板
+            ] ]
+        })
+        // 模糊查询条件
+        form.on("submit(doSearch)", function (data) {
+            index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+            tableIns.reload({
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+
+        var url = "/notice/noticeSaveOrUpdate"; // 添加编辑url
+        var mainIndex; // 添加编辑成功或者失败都应该关闭的弹窗标识
+        // 监听行删除事件
+        table.on('tool(noticeTable)', function (obj) {
+            var layEvent = obj.event, data = obj.data;
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+
+            if (layEvent === "noticeDetail") {
+                // 查看
+                selectSee(data);
+            } else if (layEvent === "noticeEdit") {
+                // 编辑
+                commonOpenWindowsAddAndUpdate(data);
+            } else if (layEvent === 'noticeDel') {
+                // 删除
+                var checkId = data.id + ",";
+                deleteBatch(checkId);
+            }
+        });
+
+        // 数据表格右部单条查看公告内容
+        function selectSee(data) {
+            mainIndex = layer.open({
+                type: 1
+                , title: '查看公告详情'
+                , content: $('#showNoticeDiv')
+                , area: ['800px', '600px']
+                , shade: 0.8
+                , success: function (layero) {
+                    $("#show_title").html(data.title);
+                    $("#show_opername").html(data.opername);
+                    $("#show_createtime").html(data.createtime);
+                    $("#show_content").html(data.content);
+                }
+            })
+        }
+
+        // 添加编辑公共弹窗
+        function commonOpenWindowsAddAndUpdate(data) {
+            mainIndex = layer.open({
+                type: 1
+                , title: data == null ? '发布公告' : '编辑公告'
+                , content: $('#openFormDiv')
+                , area: ['800px', '600px']
+                , shade: 0.8
+                , success: function (layero) {
+                    //创建一个编辑器
+                    editIndex = layedit.build('LAY_editor');
+                    // 重置表单内容
+                    $("#dataFrm")[0].reset();
+                    if (data == null) {
+                        layedit.setContent(editIndex, "");
+                    } else {
+                        //装载新的数据
+                        form.val("dataFrm", data);
+                        layedit.setContent(editIndex, data.content);
+                    }
+                }
+                , btn2: function () {
+                    layero.closeAll();
+                }
+            })
+        }
+
+        // 监听头批量删除事件
+        table.on('toolbar(noticeTable)', function (obj) {
+            // 批量删除删除
+            var checkStatus = table.checkStatus(obj.config.id);
+            var layEvent = obj.event, data = obj.data;
+            if (layEvent === 'noticeDelBatch') {
+                var checkId = "";
+                var chechData = checkStatus.data;
+                if (chechData.length > 0) {
+                    for (var i = 0; i < chechData.length; i++) {
+                        checkId += chechData[i].id + ","
+                    }
+                    deleteBatch(checkId);
+                }
+            } else if (layEvent === "noticeSave") {
+                // 添加
+                commonOpenWindowsAddAndUpdate(data);
+            }
+        })
+
+        // 添加/编辑 保存
+        $("#doSubmit").click(function () {
+            // 同步编辑器的内容到textarea中
+            layedit.sync(editIndex);
+            var data = $("#dataFrm").serialize();
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: data,
+                success: function (result) {
+                    if (result.code != 0) {
+                        resultLayerMsg(result)
+                        return false;
+                    } else {
+                        layer.msg('添加成功', {icon: 1});
+                        //不刷新页面 留在当前
+                        tableIns.reload();
+                    }
+                    layer.close(mainIndex);
+                }
+            });
+        })
+
+        // 删除/批量删除方法
+        function deleteBatch(idString) {
+            if (idString.length == 0) {
+                layer.msg('请选择要删除的数据！', {icon: 2});
+                return false;
+            }
+            layer.confirm('是否确认删除？', {
+                icon: 3, title: '提示信息', btn: ['确认', '取消'], btn1: function () {
+                    // var data = JSON.stringify(idArray);
+                    $.ajax({
+                        type: 'post',
+                        url: '/notice/deleteBatch',
+                        data: {"params": idString},
+                        success: function (result) {
+                            if (result.code != 0) {
+                                resultLayerMsg(result)
+                                return false;
+                            } else {
+                                layer.msg('已删除！', {icon: 1});
+                                //不刷新页面 留在当前
+                                tableIns.reload();
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+</script>
+
+</body>
+</html>

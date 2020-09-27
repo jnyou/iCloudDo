@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆日志信息管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/css/public.css" media="all"/>
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+    <!-- 查询条件开始 -->
+    <blockquote class="layui-elem-quote quoteBox">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <!--                <div class="layui-input-inline">-->
+                <!--                    <div class="layui-input-block" style="width: 150px;margin-left:0px; min-height: 0px;">-->
+                <!--                        <select name="fstoreType" class="" id="monCostFstoreType">-->
+                <!--                            <option value="1">Alienware专卖店</option>-->
+                <!--                            <option value="2">体验中心-成就店</option>-->
+                <!--                            <option value="3">体验中心-家用店</option>-->
+                <!--                        </select>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <div class="layui-inline">
+                    <label class="layui-form-label">登陆名称：</label>
+                    <input type="text" class="layui-input" id="loginname" name="loginname" style="width:140px"
+                           placeholder="登陆名称"/>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">登陆IP：</label>
+                    <input type="text" class="layui-input" id="loginip" name="loginip" style="width:140px"
+                           placeholder="登陆IP"/>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间：</label>
+                    <input type="text" class="layui-input" id="startTime" name="startTime" style="width:150px"
+                           placeholder="开始时间" readonly="readonly"/>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间：</label>
+                    <input type="text" class="layui-input" id="endTime" name="endTime" style="width:150px"
+                           placeholder="结束时间" readonly="readonly"/>
+                </div>
+
+                <button type="button" class="layui-btn" lay-submit lay-filter="doSearch" style="margin-left: 5px;">
+                    <span class="layui-icon layui-icon-search"></span>搜索
+                </button>
+                <button type="reset" class="layui-btn layui-btn-warm">
+                    <span class="layui-icon layui-icon-refresh-1">重置</span>
+                </button>
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="logInfoExport">
+                    <span class="layui-icon layui-icon-export">导出日志信息（按搜索结果）</span>
+                </button>
+            </div>
+        </form>
+    </blockquote>
+    <!-- 查询条件结束 -->
+
+
+    <!-- 数据表格开始 -->
+    <div>
+        <!-- 数据表格内容主体开始 -->
+        <table class="layui-hide" id="loginfoTable" lay-filter="loginfoTable"></table>
+        <!-- 数据表格内容主体结束 -->
+
+        <!--数据表格上部操作开始-->
+        <div id="loginfoToolBar" style="display: none;">
+            <button class="layui-btn  layui-btn-danger" lay-event="logInfoDelBatch"><span
+                    class="layui-icon layui-icon-delete">批量删除</span></button>
+        </div>
+        <!--数据表格上部操作结束-->
+
+        <!--数据表格右部操作-->
+        <div id="logInfoRightBar" style="display: none;">
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="logInfoDel"><span
+                    class="layui-icon layui-icon-delete"></span>删除</a>
+        </div>
+
+    </div>
+    <!-- 数据表格结束 -->
+
+</form>
+
+<!-- JS部分 -->
+<script type="text/javascript" src="/layui/layui.js"></script>
+<!--先加载jquery-->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!--再加载插件-->
+<script src="/layui_exts/excel.js"></script>
+<script>
+    // layui.config({//配置并导入excel插件
+    //     base: '/layui_exts/'
+    // }).extend({
+    //     excel: 'excel',
+    // });
+    layui.use(['jquery', 'table', 'laydate', 'layer', 'form','excel'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var excel = layui.excel;
+        var index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+        var exportData = " ";			//定义全局变量
+        // 初始化日期组件
+        laydate.render({
+            elem: "#startTime",
+            type: "datetime"
+        })
+        laydate.render({
+            elem: "#endTime",
+            type: "datetime"
+        })
+
+
+        // 初始化数据表格
+        var tableIns = table.render({
+            elem: '#loginfoTable'
+            , height: "full-120"
+            , toolbar: '#loginfoToolBar' //开启头部工具栏，并为其绑定左侧模板
+            , url: '/log/list' //数据接口
+            , title: '登陆信息表'
+            , page: true //开启分页
+            , limit: 20
+            , done: function (res, currPage, count) {//数据渲染完的回调
+                exportData = res.data;
+                layui.layer.close(index);
+                // console.log(res);
+
+                //得到当前页码
+                // console.log(currPage);
+
+                //得到数据总量
+                // console.log(count);
+                if (res.data.length == 0 && currPage != 0) {
+                    // 执行重载函数
+                    // 页码
+                    // curr - 1
+                    tableIns.reload({
+                        page: {
+                            curr: (currPage - 1)
+                        }
+                    })
+                }
+            }
+            , cols: [ [ //表头
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', sort: true, align: 'center',}
+                , {field: 'loginname', title: '登陆名称', align: 'center'}
+                , {field: 'loginip', title: '登陆IP', align: 'center'}
+                , {field: 'logintime', title: '登陆时间', sort: true, align: 'center'}
+                , {fixed: 'right', title: '操作', align: 'center', toolbar: '#logInfoRightBar'} //右部工具栏，并为其绑定右侧模板
+            ] ]
+        })
+        // 导出
+        form.on("submit(logInfoExport)", function (data) {
+            index = layui.layer.msg('导出中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+
+            $.ajax({
+                url: '/log/list'
+                , dataType: 'json'
+                , data: data.field
+                , success(res) {
+                    var data = res.data;
+                    console.log(res);
+                    // 重点！！！如果后端给的数据顺序和映射关系不对，请执行梳理函数后导出
+                    data = excel.filterExportData(data, [
+                        'id'
+                        , 'loginname'
+                        , 'loginip'
+                        , 'logintime'
+                    ]);
+                    // // 意思是：默认80，B列宽150
+                    var colConf = excel.makeRowConfig({
+                        'B': 150,
+                        'C': 1500,
+                        'd': 2000
+                    },80);
+                    // 调用设置单元格样式的函数，传入设置的范围，支持回调 S ：代表单元格样式设置
+                    excel.setExportCellStyle(data, 'A1:D'+data.length+'', {
+                        s: {
+                            fill: {bgColor: {indexed: 64}, fgColor: {rgb: "FF0000"}},
+                            font: {sz: 14, bold: true, color: {rgb: "FFFFFF"}},
+                            alignment: {
+                                horizontal: 'center',
+                                vertical: 'center'
+                            }
+                        }
+                    }, function(cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                        // 回调参数，cell:原有数据，newCell:根据批量设置规则自动生成的样式，row:所在行数据，config:传入的配置,currentRow:当前行索引,currentCol:当前列索引，fieldKey:当前字段索引
+                        return ((currentRow + currentCol) % 2 === 0) ? newCell : cell;// 隔行隔列上色
+                    } );
+                    // 重点2！！！一般都需要加一个表头，表头的键名顺序需要与最终导出的数据一致
+                    data.unshift({id: "登陆ID", loginname: "登陆名称", loginip: '登陆IP', logintime: "登陆时间"});
+
+                    var timestart = Date.now();
+                    LAY_EXCEL.exportExcel({
+                        sheet1: data
+                    }, '登陆信息记录'+ new Date().toLocaleString() +'.xlsx', 'xlsx',{
+                        extend: {
+                            '!cols': colConf
+                        }
+                    });
+                    //	var timeend = Date.now();
+
+                    //	var spent = (timeend - timestart) / 1000;
+                    //	layer.alert('单纯导出耗时 '+spent+' s');
+                }
+                , error() {
+                    layer.alert('获取数据失败，请检查是否部署在本地服务器环境下');
+                }
+            });
+            layer.close(index);
+            return false;
+        });
+        // 模糊查询条件
+        form.on("submit(doSearch)", function (data) {
+            index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+            tableIns.reload({
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+        // 监听行删除事件
+        table.on('tool(loginfoTable)', function (obj) {
+            var layEvent = obj.event, data = obj.data;
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+            if (layEvent === 'logInfoDel') {
+                var arr = [];
+                var object = {"id": data.id};
+                arr.push(object);
+                deleteBatch(arr);
+            }
+        });
+        // 监听头批量删除事件
+        table.on('toolbar(loginfoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var layEvent = obj.event, data = obj.data;
+            if (layEvent === 'logInfoDelBatch') {
+                var checkId = [];
+                var chechData = checkStatus.data;
+                if (chechData.length > 0) {
+                    for (var i = 0; i < chechData.length; i++) {
+                        var idObj = {"id": chechData[i].id};
+                        checkId.push(idObj);
+                    }
+                }
+                deleteBatch(checkId);
+            }
+        })
+
+        // 删除/批量删除方法
+        function deleteBatch(idArray) {
+            if (idArray.length == 0) {
+                layer.msg('请选择要删除的数据！', {icon: 2});
+                return false;
+            }
+            //encodeURIComponent()
+            layer.confirm('是否确认删除？', {
+                icon: 3, title: '提示信息', btn: ['确认', '取消'], btn1: function () {
+                    var data = JSON.stringify(idArray);
+                    $.ajax({
+                        type: 'post',
+                        url: '/log/deleteBatch',
+                        contentType: "application/json",
+                        data: data,
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.code != 0) {
+                                resultLayerMsg(result)
+                                return false;
+                            } else {
+                                layer.msg('已删除！', {icon: 1});
+                                //不刷新页面 留在当前
+                                tableIns.reload();
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+</script>
+
+</body>
+</html>

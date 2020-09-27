@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>权限管理--main列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/css/public.css" media="all"/>
+    <link rel="stylesheet" href="/layui_ext/dtree/dtree.css" media="all"/>
+    <link rel="stylesheet" href="/layui_ext/dtree/font/dtreefont.css" media="all"/>
+</head>
+<body class="childrenBody">
+<script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+<!-- 查询条件开始 -->
+<form class="layui-form">
+<blockquote class="layui-elem-quote quoteBox">
+    <form id="searchFrm" lay-filter="searchFrm" class="layui-form layui-form-pane">
+        <div class="layui-inline">
+            <div class="layui-inline">
+                <label class="layui-form-label">权限名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="title" autocomplete="off" class="layui-input" style="width:140px"
+                           placeholder="权限名称">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">权限编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="percode" autocomplete="off" class="layui-input" style="width:140px"
+                           placeholder="权限编码">
+                </div>
+            </div>
+            <button type="button" class="layui-btn" lay-submit lay-filter="doSearch" style="margin-left: 5px;">
+                <span class="layui-icon layui-icon-search"></span>搜索
+            </button>
+            <button type="reset" class="layui-btn layui-btn-warm">
+                <span class="layui-icon layui-icon-refresh-1">重置</span>
+            </button>
+            <button class="layui-btn layui-btn-normal" id="logInfoExport">
+                <span class="layui-icon layui-icon-export">导出日志信息（按搜索结果）</span>
+            </button>
+        </div>
+    </form>
+</blockquote>
+</form>
+<!-- 查询条件结束-->
+
+
+<!-- 数据表格开始 -->
+<div>
+	<!-- 数据表格内容主体开始 -->
+    <table class="layui-hide" id="permissionTable" lay-filter="permissionTable"></table>
+	<!-- 数据表格内容主体结束 -->
+
+	<!--数据表格上部操作开始-->
+    <div id="permissionToolBar" style="display: none;">
+        <button type="button" lay-event="permissionSave" class="layui-btn layui-btn-normal"><span
+                class="layui-icon layui-icon-add-circle"></span>添加
+        </button>
+    </div>
+	<!--数据表格上部操作结束-->
+
+	<!--数据表格右部操作开始-->
+    <div id="permissionRowBar" style="display: none;">
+        <button type="button" lay-event="permissionEdit" class="layui-btn layui-btn-xs"><span
+                class="layui-icon layui-icon-edit"></span>编辑
+        </button>
+        <button type="button" lay-event="permissionDel" class="layui-btn layui-btn-xs layui-btn-danger"><span
+                class="layui-icon layui-icon-delete"></span>删除
+        </button>
+    </div>
+	<!--数据表格右部操作结束-->
+</div>
+
+<!-- 数据表格结束 -->
+
+
+<!-- 添加和修改的弹出层开始 -->
+<div style="display: none;padding: 5px" id="addOrUpdateDiv">
+    <form class="layui-form layui-form-pane" id="dataFrm" lay-filter="dataFrm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属菜单</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="pid" id="pid" />
+                <ul id="permissionTree" class="dtree" data-id="0"></ul>
+            </div>
+      </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" autocomplete="off" placeholder="请输入权限名称"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="percode" autocomplete="off" placeholder="请输入权限地址"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">是否可用</label>
+                <div class="layui-input-inline">
+                    <input type="radio" name="available" value="1" title="可用" checked="">
+                    <input type="radio" name="available" value="0" title="不可用">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="ordernum" id="ordernum" lay-verify="required|number" autocomplete="off"
+                       placeholder="请输入排序码[>0]" class="layui-input">
+            </div>
+        </div>
+    </form>
+</div>
+<!-- 添加和修改的弹出层结束 -->
+
+
+<!-- JS部分 -->
+<script type="text/javascript" src="/layui/layui.js"></script>
+
+<script type="text/javascript">
+    var tableIns;
+    layui.extend({
+        dtree: '/layui_ext/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['jquery', 'form', 'table', 'layer', 'dtree'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var dtree = layui.dtree;
+        var index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+        //加载 数据
+        tableIns = table.render({
+            elem: '#permissionTable'
+            , url: '/permission/list'
+            , toolbar: '#permissionToolBar' //开启头部工具栏，并为其绑定左侧模板
+            , title: '权限数据表'
+            , height: 'full-180'
+            , page: true
+			, limit: 20
+            , done: function (res, currPage, count) {//数据渲染完的回调
+                layui.layer.close(index);
+                //得到当前页码
+                // console.log(currPage);
+                //得到数据总量
+                // console.log(count);
+                if (res.data.length == 0 && currPage != 0) {
+                    // 执行重载函数
+                    // 页码  curr - 1
+                    tableIns.reload({
+                        page: {
+                            curr: (currPage - 1)
+                        }
+                    })
+                }
+            }
+            , cols: [ [
+                {field: 'id', title: 'ID', align: 'center'}
+                , {field: 'pid', title: '菜单ID', align: 'center'}
+                , {field: 'title', title: '权限名称', align: 'center'}
+                , {field: 'percode', title: '权限编码', align: 'center'}
+                , {
+                    field: 'available', title: '是否可用', align: 'center', templet: function (d) {
+                        return d.available == 1 ? '<font color=blue>可用</font>' : '<font color=red>不可用</font>';
+                    }
+                }
+                , {field: 'ordernum', title: '排序码', align: 'center'}
+                , {fixed: 'right', title: '操作', toolbar: '#permissionRowBar', align: 'center'}
+            ] ]
+        });
+
+        //模糊查询
+        form.on("submit(doSearch)", function (data) {
+            tableIns.reload({
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+
+        //监听工具条的事件
+        table.on("toolbar(permissionTable)", function (obj) {
+			var layEvent = obj.event, data = obj.data;
+			// 新增
+            if (layEvent === 'permissionSave') {
+				commonOpenWindowsAddAndUpdate(data);
+            }
+        });
+
+        //监听行工具条的事件
+        table.on("tool(permissionTable)", function (obj) {
+            var data = obj.data; //获得当前行数据
+            switch (obj.event) {
+                case 'permissionEdit':
+					commonOpenWindowsAddAndUpdate(data);
+                    break;
+                case 'permissionDel':
+                    deletePermission(data);
+                    break;
+            }
+            ;
+        });
+
+        var mainIndex;
+        var url = "/permission/permissionSaveOrUpdate";;
+
+
+		// 添加编辑公共弹窗
+		function commonOpenWindowsAddAndUpdate(data) {
+			mainIndex = layer.open({
+				type: 1
+				, title: data == null ? '添加权限' : '编辑权限'
+				, content: $('#addOrUpdateDiv')
+                , btn: ['保存', '取消']
+				, area: ['670px', '460px']
+                , btnAlign: 'c'
+				, shade: 0.8
+				, success: function (layero) {
+                    // 点击打开时候下拉树是关闭状态
+                    $("div[dtree-id][dtree-select]").removeClass("layui-form-selected");
+                    $("div[dtree-id][dtree-card]").removeClass("dtree-select-show layui-anim layui-anim-upbit");
+					// 重置表单内容
+                    document.getElementById("dataFrm").reset();
+					$("#pid").val("");
+					if (data == null) {
+                        //刷新下拉树
+                        selectTree.reload();
+						//初始化排序码
+						$.get("/permission/loadPermissionMaxOrderNum", function (res) {
+						    if(res.error){
+                                $("#ordernum").val(res.value);
+                            }else{
+						        layer.msg("查询顺序码失败，请联系管理员！");
+						        return false;
+                            }
+						})
+					} else {
+						//装载新的数据
+						form.val("dataFrm", data);
+                        if(data.pid == 0){
+                            //刷新下拉树
+                            selectTree.reload();
+                        }else{
+                            //选中之前父级的权限  nodeId=data.pid;
+                            dtree.dataInit("permissionTree", data.pid);
+                            // 指定下拉树的默认显示值 （v2.5.5新增）
+                            dtree.selectVal("permissionTree");
+                        }
+					}
+				}, yes: function (index, layero) { // 点击保存按钮触发
+                    var requestData = $("#dataFrm").serializeObject();
+                    if(data != null){
+                        requestData.id = data.id;
+                    }
+                    // alert(requestData.pid);
+                    if(requestData.pid == null || requestData.pid == ""){
+                        layer.msg("父级权限不能为空", {icon: 2});
+                        return false;
+                    }
+                    if(requestData.title == null || requestData.title == ""){
+                        layer.msg("权限名称不能为空", {icon: 2});
+                        return false;
+                    }
+                    $.post(url, requestData, function (result) {
+                        if (result.code != 0) {
+                            layer.msg("服务器请求失败！");
+                            return false;
+                        } else {
+                            layer.msg('保存成功', {icon: 1});
+                            //不刷新页面 留在当前
+                            tableIns.reload();
+                        }
+                        layer.close(mainIndex);
+                    })
+                }
+                , btn2: function (index, layero) {
+                    document.getElementById("dataFrm").reset();
+                    layer.close(index);
+                }, cancel: function (index, layero) {
+                    document.getElementById("dataFrm").reset();
+                    layer.close(index);
+                }
+			})
+		}
+
+        //删除
+        function deletePermission(data) {
+			layer.confirm('是否确认要删除【' + data.title + '】这条权限吗？', {
+				icon: 3, title: '提示信息', btn: ['确认', '取消'], btn1: function () {
+					$.ajax({
+						type: 'post',
+						url: '/permission/delete',
+						contentType: "application/json",
+						data: JSON.stringify(data.id),
+						dataType: "json",
+						success: function (result) {
+							if (result.code != 0) {
+                                layer.msg("服务器请求失败！");
+								return false;
+							}  else {
+								layer.msg('已删除！', {icon: 1});
+								//不刷新页面 留在当前
+								tableIns.reload();
+							}
+						}
+					});
+				}
+            })
+        }
+
+        //初始化下拉树
+        var selectTree = dtree.renderSelect({
+            elem: "#permissionTree",
+            width: "100%", // 可以在这里指定树的宽度来填满div
+            dataStyle: "layuiStyle",  //使用layui风格的数据格式
+            dataFormat: "list",  //配置data的风格为list
+            response: {message: "msg", statusCode: 0},  //修改response中返回数据的定义
+            url: "/permission/loadPermissionLeftDtreeJson" // 使用url加载（可与data加载同时存在）
+        });
+        // 监听点击的方法
+        dtree.on("node(permissionTree)", function (obj) {
+        	// 点击树的节点获取PID值赋给标签pid
+            $("#pid").val(obj.param.nodeId);
+            console.log(obj.param.nodeId); // 点击当前节点传递的参数
+        });
+    });
+
+    //接受left传过来的参数，刷新当前页面数据表格的方法
+    function reloadTable(id) {
+        tableIns.reload({
+            where: {
+                id: id
+            },
+            page: {
+                curr: 1
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

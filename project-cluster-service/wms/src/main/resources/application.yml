@@ -1,0 +1,164 @@
+# 开发环境配置
+server:
+  servlet:
+    session:
+      timeout: 720m  # session超时时间为12小时，单位分钟
+  tomcat:
+    uri-encoding: utf-8  # tomcat的URI编码
+    max-threads: 800     # 最大线程数
+  port: 8080
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 项目中后台返回给前台的时间格式化格式，如果想换成yyyy-MM-dd,可在时间类型的属性或者get()方法上添加注解jackson的@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GTM+8")
+    time-zone: Asia/Chongqing        # 时区设置
+    # 启动热部署
+    devtools:
+      restart:
+        enabled: false
+  datasource: # 数据源
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 在spring boot 配置文件中datasource url 增加serverTimezone=UTC 参数，其中UTC是统一标准世界时间
+    url: jdbc:mysql://192.168.56.10:3306/cms_erp?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: root
+    druid:
+      initial-size: 20 # 初始化连接大小
+      min-idle: 20     # 最小空闲连接数
+      max-active: 100  # 最大连接数
+      max-wait: 60000  # 最大等待时间
+      filters: stat,config
+      transaction-query-timeout: 60000 #事务查询超时时间
+      remove-abandoned-timeout: 1600
+      test-while-idle: true # 建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      min-evictable-idle-time-millis: 360000 # 配置一个连接在池中最小生存的时间，单位是毫秒
+      query-timeout: 60000 # 查询超时时间
+      validation-query: select * from dual # 连接检查
+      stat-view-servlet:
+        enabled: true # 开启druid监控
+        login-username: admin
+        login-password: admin
+        allow:  # 白名单
+        deny:   # 黑名单
+        url-pattern: "/druid/*"
+    hikari:
+      read-only:
+  #    type: com.alibaba.druid.pool.DruidDataSource # 类型
+
+
+
+  # thymeleaf模板配置
+  # 在构建URL时可以预览查看名称的前缀。就是路径在哪
+  thymeleaf:
+    prefix: classpath:/templates/ #默认
+    suffix: .html  #默认
+    encoding: UTF-8           # 模板的字符集
+    servlet:
+      content-type: text/html # 模板中内容的类型
+    enabled: true             # 启动MVC对Thymeleaf视图的解析
+    cache: false              # 关闭thymeleaf缓存
+    check-template: true      # 声明thymeleaf使用非严格的html
+    check-template-location: true # 检查模板位置
+    mode: HTML         # 使用的是什么类型模板
+
+  # redis配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 20000 #缓存超时时间ms
+      cache-null-values: false #是否缓存空值
+  redis:
+    port: 6379
+    host: 192.168.56.10  # 127.0.0.1
+    password: # Redis 服务器连接密码（默认为空）
+    lettuce:
+      pool:
+        max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1  # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8   # 连接池中的最大空闲连接
+        min-idle: 0   # 连接池中的最小空闲连接
+    timeout: 10000  #redis 连接超时时间ms
+    database: 0 # 数据库索引，默认是0
+
+
+    # 文件上传配置
+    # 默认支持文件上传
+  servlet:
+    multipart:
+      enabled: true
+    # 支持文件写入磁盘
+      file-size-threshold: 0
+    # 上传文件的临时目录    usr/local/nmdc/upload
+      location: C:/img_upload_test/
+    # 最大支持文件大小
+      max-file-size: 200MB
+    # 最大支持请求大小
+      max-request-size: 200MB
+  # 修改默认的静态寻址资源目录 多个使用逗号分隔  当资源文件有相同的文件名和类型时，顺序在前的优先级更高
+  resources:
+    static-locations: classpath:/static/,classpath:/templates/,classpath:/public/,file:${spring.servlet.multipart.location}
+  mvc:
+    date-format: yyyy-MM-dd  # 项目中前台传到后台时间类型格式化格式 在项目中只要使用了Date类型的都会转换成 yyyy-MM-dd格式，若想传递的是其他的类型，可在获取时间类型的参数前加上jackson的@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*/*.xml
+  ##主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+  #mybatis-plus.global-config.id-type=3
+  ##字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+  #mybatis-plus.global-config.field-strategy=2
+  #驼峰下划线转换
+  global-config:
+    db-column-underline: true
+    #mp2.3+ 全局表前缀 mp_
+    #mybatis-plus.global.table-prefix: mp_
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    capital-mode: true
+    # Sequence序列接口实现类配置
+    #mybatis-plus.global-config.key-generator=com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+  #mybatis-plus.global-config.sql-injector=com.baomidou.springboot.MyMetaObjectHandler
+  #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #控制台是否显示sql
+  #mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
+
+###########################################华丽的分割线（自定义yml配置）##########################################################
+
+# redis
+redis:
+  glob-expire: 1800  # 全局的过期时间
+  host-port: 192.168.56.10:6379
+
+# shiro的配置
+shiro:
+  conf:
+    hash-algorithm-name: md5 # 加密方式
+    hash-iterations: 2       # 散列次数
+    anon-urls: #放行页面
+      - /css/**
+      - /images/**
+      - /fonts/**
+      - /js/**
+      - /layui/**
+      - /plugins/**
+      - /druid/**
+      - /page/**
+      - /json/**
+#      - /login*
+      - /login/login*
+      - /test*
+      - /login/getCode*
+      - /login/kickout*
+    login-url: /login           # 登陆页
+    log-out-url: /login/logout  # 登出页
+    success-url: /index         # 登陆成功页
+    unauthorized-url: /403      # 未授权界面
+    authc-urls:
+      - /login*

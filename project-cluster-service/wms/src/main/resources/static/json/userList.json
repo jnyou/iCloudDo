@@ -1,0 +1,36 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 3,
+  "data": [
+    {
+      "usersId": "1",
+      "userName": "Blithe",
+      "userEmail": "Blithe@qq.com",
+      "userSex": "男",
+      "userStatus": "0",
+      "userGrade": "4",
+      "userEndTime": "2020-01-31 10:00",
+      "userDesc" : "layuiCMS作者"
+    },{
+      "usersId": "2",
+      "userName": "蔡文姬",
+      "userEmail": "wenji@layui.com",
+      "userSex": "保密",
+      "userStatus": "0",
+      "userGrade": "3",
+      "userEndTime": "2020-01-14 15:35",
+      "userDesc" : "layui框架作者，性别至今是个谜。。。"
+    },
+    {
+      "usersId": "3",
+      "userName": "纸飞机",
+      "userEmail": "fly@layui.com",
+      "userSex": "男",
+      "userStatus": "1",
+      "userGrade": "2",
+      "userEndTime": "2020-01-25 16:25",
+      "userDesc" : "fly社区管理员，据传与layui作者有奸情，故帐号被封。"
+    }
+  ]
+}

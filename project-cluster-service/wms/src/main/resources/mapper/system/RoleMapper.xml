@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blithe.cms.mapper.system.RoleMapper">
+
+    <!-- 根据角色ID删除sys_role_permission -->
+    <delete id="deleteRolePermissionByRid">
+        delete from sys_role_permission
+        where rid = #{id}
+    </delete>
+
+
+    <!-- 根据角色ID删除sys_role_user -->
+    <delete id="deleteRoleUserByRid">
+        delete from sys_role_user
+        where rid = #{id}
+    </delete>
+
+    <select id="queryRolePermissionIdsByRid" resultType="java.lang.Integer">
+        select pid from sys_role_permission where rid = #{roleId}
+    </select>
+
+    <insert id="insertBatchRolePermission" >
+        insert into sys_role_permission ( rid,pid )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.rid},#{item.pid})
+        </foreach>
+    </insert>
+
+
+</mapper>

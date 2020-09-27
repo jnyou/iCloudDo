@@ -1,0 +1,63 @@
+package com.blithe.cms.common.exception;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @Author: nankexiansheng
+ * @Description: 返回数据信息
+ * @Date: 2020/3/10
+ * @Param:
+ * @Return:
+ **/
+public class R extends HashMap<String, Object> {
+	
+	private static final long serialVersionUID = 1L;
+	
+	public R() {
+		put("code", 0);
+		put("msg", "Success");
+	}
+	
+	public static R error() {
+		return error(500, "未知异常，请联系管理员");
+	}
+	
+	public static R error(String msg) {
+		return error(500, msg);
+	}
+	
+	public static R error(int code, String msg) {
+		R r = new R();
+		// easyui datagrid 
+		r.put("count", 0);
+		r.put("data", new ArrayList<>());
+		// 异常信息描述
+		r.put("code", code);
+		r.put("msg", msg);
+		return r;
+	}
+
+	public static R ok() {
+		return new R();
+	}
+	
+	public static R ok(String msg) {
+		R r = new R();
+		r.put("msg", msg);
+		return r;
+	}
+	
+	public static R ok(Map<String, Object> map) {
+		R r = new R();
+		r.putAll(map);
+		return r;
+	}
+
+	@Override
+	public R put(String key, Object value) {
+		super.put(key, value);
+		return this;
+	}
+}

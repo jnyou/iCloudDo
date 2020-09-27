@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>角色管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/css/public.css" media="all"/>
+    <link rel="stylesheet" href="/layui_ext/dtree/dtree.css" media="all"/>
+    <link rel="stylesheet" href="/layui_ext/dtree/font/dtreefont.css" media="all"/>
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+    <!-- 查询条件开始 -->
+    <blockquote class="layui-elem-quote quoteBox">
+        <form class="layui-form">
+            <div class="layui-inline">
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色名称：</label>
+                    <input type="text" class="layui-input" id="name" name="name" style="width:140px"
+                           placeholder="登陆名称"/>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间：</label>
+                    <input type="text" class="layui-input" id="startTime" name="startTime" style="width:150px"
+                           placeholder="开始时间" readonly="readonly"/>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间：</label>
+                    <input type="text" class="layui-input" id="endTime" name="endTime" style="width:150px"
+                           placeholder="结束时间" readonly="readonly"/>
+                </div>
+
+                <button type="button" class="layui-btn" lay-submit lay-filter="doSearch" style="margin-left: 5px;">
+                    <span class="layui-icon layui-icon-search"></span>搜索
+                </button>
+                <button type="reset" class="layui-btn layui-btn-warm">
+                    <span class="layui-icon layui-icon-refresh-1">重置</span>
+                </button>
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="roleExport">
+                    <span class="layui-icon layui-icon-export">导出日志信息（按搜索结果）</span>
+                </button>
+            </div>
+        </form>
+    </blockquote>
+    <!-- 查询条件结束 -->
+
+
+    <!-- 数据表格开始 -->
+    <div>
+        <!-- 数据表格内容主体开始 -->
+        <table class="layui-hide" id="roleTable" lay-filter="roleTable"></table>
+        <!-- 数据表格内容主体结束 -->
+
+        <!--数据表格上部操作开始-->
+        <div id="roleToolBar" style="display: none;">
+
+            <button class="layui-btn layui-btn-normal" lay-event="roleSave"><span
+                    class="layui-icon layui-icon-add-circle">添加</span></button>
+        </div>
+        <!--数据表格上部操作结束-->
+
+        <!--数据表格右部操作-->
+        <div id="roleRightBar" style="display: none;">
+            <button type="button" lay-event="roleEdit" class="layui-btn layui-btn-xs"><span
+                    class="layui-icon layui-icon-edit"></span>编辑
+            </button>
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="roleDel"><span
+                    class="layui-icon layui-icon-delete"></span>删除</a>
+
+            <button type="button" lay-event="permissionAssignment" class="layui-btn layui-btn-xs"><span
+                    class="layui-icon layui-icon-auz"></span>权限分配
+            </button>
+        </div>
+
+    </div>
+    <!-- 数据表格结束 -->
+
+
+    <!-- 添加和修改的弹出层开始 -->
+    <div style="display: none;padding: 5px" id="addOrUpdateDiv">
+        <form class="layui-form layui-form-pane" id="dataFrm" lay-filter="dataFrm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名称</label>
+                <div class="layui-input-block">
+                    <input type="hidden" name="id">
+                    <input type="text" name="name" id="openname" lay-verify="required" autocomplete="off"
+                           placeholder="请输入角色名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色备注</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" name="remark" id="remark"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">是否可用</label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="available" value="1" title="可用" checked="">
+                        <input type="radio" name="available" value="0" title="不可用">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="text-align: center;">
+                <button type="button" class="layui-btn" lay-submit="" lay-filter="doSubmit" id="doSubmit"><span
+                        class="layui-icon layui-icon-add-1"></span>提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-warm"><span
+                        class="layui-icon layui-icon-refresh-1"></span>重置
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- 添加和修改的弹出层结束 -->
+
+    <!-- 权限分配弹出框开始 -->
+    <div style="display: none" id="loadChackArrDtreeDiv">
+        <ul id="permissionTree" class="dtree" data-id="0"></ul>
+    </div>
+    <!-- 权限分配弹出框结束 -->
+</form>
+
+<!-- JS部分 -->
+<script type="text/javascript" src="/layui/layui.js"></script>
+<script type="text-javascript" src="layui_exts/excel.js"></script>
+<!--先加载jquery-->
+<script>
+    layui.extend({
+        dtree: '/layui_ext/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['jquery', 'table', 'laydate', 'layer', 'form','excel','dtree'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var table = layui.table;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var excel = layui.excel;
+        var dtree = layui.dtree;
+        var index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+        var exportData = " ";			//定义全局变量
+        // 初始化日期组件
+        laydate.render({
+            elem: "#startTime",
+            type: "datetime"
+        })
+        laydate.render({
+            elem: "#endTime",
+            type: "datetime"
+        })
+
+        var mainIndex;
+        var url = "/role/roleSaveOrUpdate";
+
+        // 初始化数据表格
+        var tableIns = table.render({
+            elem: '#roleTable'
+            , height: "full-120"
+            , toolbar: '#roleToolBar' //开启头部工具栏，并为其绑定左侧模板
+            , url: '/role/list' //数据接口
+            , title: '角色信息表'
+            , page: true //开启分页
+            , limit: 20
+            , done: function (res, currPage, count) {//数据渲染完的回调
+                exportData = res.data;
+                layui.layer.close(index);
+
+                if (res.data.length == 0 && currPage != 0) {
+                    // 执行重载函数
+                    // 页码
+                    // curr - 1
+                    tableIns.reload({
+                        page: {
+                            curr: (currPage - 1)
+                        }
+                    })
+                }
+            }
+            , cols: [ [
+                {field: 'id', title: 'ID',sort: true, align: 'center'}
+                , {field: 'name', title: '角色名称', align: 'center'}
+                , {field: 'remark', title: '角色备注', align: 'center'}
+                , {
+                    field: 'available', title: '是否可用', align: 'center', templet: function (d) {
+                        return d.available == 1 ? '<font color=blue>可用</font>' : '<font color=red>不可用</font>';
+                    }
+                }
+                , {field: 'createtime', title: '创建时间', sort: true, align: 'center'}
+                , {fixed: 'right', title: '操作', align: 'center', toolbar: '#roleRightBar'} //右部工具栏，并为其绑定右侧模板
+            ] ]
+        })
+        // 导出
+        form.on("submit(roleExport)", function (data) {
+            index = layui.layer.msg('导出中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+
+            $.ajax({
+                url: '/role/list'
+                , dataType: 'json'
+                , data: data.field
+                , success(res) {
+                    var data = res.data;
+                    console.log(res);
+                    // 重点！！！如果后端给的数据顺序和映射关系不对，请执行梳理函数后导出
+                    data = excel.filterExportData(data,{
+                        id:'id',
+                        name: 'name',
+                        remark:'remark',
+                        available: function(value, line, data) {
+                            if(value == 1){
+                                return {
+                                    v: '可用',// v 代表单元格的值
+                                    s:{ // s 代表样式
+                                        font: { sz: 14, color: { rgb: "FFFFFF" } },
+                                        fill: { bgColor: { indexed: 64 }, fgColor: { rgb: "#0000FF" }}
+                                    },
+                                    alignment: {
+                                        horizontal: 'center',
+                                        vertical: 'center'
+                                    }
+                                };
+                            }else{
+                                return {
+                                    v: '不可用',// v 代表单元格的值
+                                    s:{ // s 代表样式
+                                        font: { sz: 14, color: { rgb: "FFFFFF" } },
+                                        fill: { bgColor: { indexed: 64 }, fgColor: { rgb: "FF0000" }}
+                                    },
+                                    alignment: {
+                                        horizontal: 'center',
+                                        vertical: 'center'
+                                    }
+                                };
+                            }
+                        },
+                        createtime :'createtime'
+                    }, [
+                        'id'
+                        , 'name'
+                        , 'remark'
+                        , 'available'
+                        , 'createtime'
+                    ]);
+                    // // 意思是：默认80，B列宽150
+                    var colConf = excel.makeRowConfig({
+                        'B': 150,
+                        'C': 150,
+                        'd': 200,
+                        'e': 200
+                    },80);
+                    // 调用设置单元格样式的函数，传入设置的范围，支持回调 S ：代表单元格样式设置
+                    excel.setExportCellStyle(data, {
+                        s: {
+                            fill: {bgColor: {indexed: 64}, fgColor: {rgb: "FF0000"}},
+                            font: {sz: 14, bold: true, color: {rgb: "FFFFFF"}},
+                            alignment: {
+                                horizontal: 'center',
+                                vertical: 'center'
+                            }
+                        }
+                    }, function(cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+                        // 回调参数，cell:原有数据，newCell:根据批量设置规则自动生成的样式，row:所在行数据，config:传入的配置,currentRow:当前行索引,currentCol:当前列索引，fieldKey:当前字段索引
+                        return ((currentRow + currentCol) % 2 === 0) ? newCell : cell;// 隔行隔列上色
+                    } );
+                    // 重点2！！！一般都需要加一个表头，表头的键名顺序需要与最终导出的数据一致
+                    data.unshift({id: "角色ID", name: "角色名称", remark: '角色描述', available: "是否可用", createtime: "创建时间"});
+
+                    var timestart = Date.now();
+                    LAY_EXCEL.exportExcel({
+                        sheet1: data
+                    }, '登陆信息记录'+ new Date().toLocaleString() +'.xlsx', 'xlsx',{
+                        extend: {
+                            '!cols': colConf
+                        }
+                    });
+                    //	var timeend = Date.now();
+
+                    //	var spent = (timeend - timestart) / 1000;
+                    //	layer.alert('单纯导出耗时 '+spent+' s');
+                }
+                , error() {
+                    layer.alert('获取数据失败，请检查是否部署在本地服务器环境下');
+                }
+            });
+            layer.close(index);
+            return false;
+        });
+        // 模糊查询条件
+        form.on("submit(doSearch)", function (data) {
+            index = layui.layer.msg('查询中，请稍候...', {icon: 16, time: false, shade: 0.6, shadeClose: false});
+            tableIns.reload({
+                where: data.field,
+                page: {
+                    curr: 1
+                }
+            });
+            return false;
+        });
+        // 监听行删除事件
+        table.on('tool(roleTable)', function (obj) {
+            var layEvent = obj.event, data = obj.data;
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+            switch (layEvent) {
+                case 'roleEdit':
+                    commonOpenWindowsAddAndUpdate(data);
+                    break;
+                case 'roleDel':
+                    deleteRole(data);
+                    break;
+                case 'permissionAssignment':
+                    permissionAssignment(data);
+                    break;
+            };
+        });
+
+        // 监听头添加
+        table.on('toolbar(roleTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var layEvent = obj.event, data = obj.data;
+            if (layEvent === 'roleSave') {
+                commonOpenWindowsAddAndUpdate(data);
+            }
+        })
+
+        /**
+         * 显示所有权限和勾选自己的权限
+         */
+        function permissionAssignment(data) {
+            var permissionAssignment = layer.open({
+                type: 1
+                , title: '权限分配【'+data.name+'】'
+                , content: $('#loadChackArrDtreeDiv')
+                , area: ['400px', '500px']
+                , btn: ['<span class="layui-icon layui-icon-ok">确认分配</span>', '<span class="layui-icon layui-icon-close">关闭窗口</span>']
+                , btnAlign: 'c'
+                , shade: 0.8
+                , success: function (layero) {
+                    dtree.render({
+                        elem: "#permissionTree",
+                        url: "/role/permissionAssignment?roleId=" + data.id,
+                        checkbar: true,
+                        dataStyle: "layuiStyle",  //使用layui风格的数据格式
+                        dataFormat: "list",  //配置data的风格为list
+                        response: {message: "msg", statusCode: 0},  //修改response中返回数据的定义
+                        checkbarType: "all" // 默认就是all，其他的值为： no-all  p-casc   self  only
+                    });
+                }, yes: function (index, layero) { // 点击保存按钮触发
+                    var checkbarNodes = dtree.getCheckbarNodesParam("permissionTree");
+                    var requestData = [];
+                    $.each(checkbarNodes,function (index,item) {
+                        var jsonData = {
+                            "rid" : data.id,
+                            "pid" : item.nodeId
+                        }
+                        requestData.push(jsonData);
+                    })
+                    // alert(JSON.stringify(requestData));
+                    // layer.msg(JSON.stringify(checkbarNodes));
+                    $.ajax({
+                        type: 'post',
+                        url: '/role/insertBatchRolePermission',
+                        contentType: "application/json",
+                        data: JSON.stringify(requestData),
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.code != 0) {
+                                layer.msg("服务器请求失败！");
+                                return false;
+                            } else {
+                                layer.msg('分配权限成功', {icon: 1});
+                                //不刷新页面 留在当前
+                                tableIns.reload();
+                            }
+                            layer.close(permissionAssignment);
+                        }
+                    });
+                }
+            })
+        }
+
+        // 添加编辑公共弹窗
+        function commonOpenWindowsAddAndUpdate(data) {
+            mainIndex = layer.open({
+                type: 1
+                , title: data == null ? '添加权限' : '编辑权限'
+                , content: $('#addOrUpdateDiv')
+                , area: ['670px', '400px']
+                , shade: 0.8
+                , success: function (layero) {
+                    // 重置表单内容
+                    $("#dataFrm")[0].reset();
+                    if (data != null) {
+                        //装载新的数据
+                        form.val("dataFrm", data);
+                    }
+                }
+            })
+        }
+
+
+        $("#doSubmit").click(function () {
+            var data = $("#dataFrm").serialize();
+            $.post(url, data, function (result) {
+                if (result.code != 0) {
+                    layer.msg("服务器请求失败！");
+                    return false;
+                } else {
+                    layer.msg('保存成功', {icon: 1});
+                    //不刷新页面 留在当前
+                    tableIns.reload();
+                }
+                layer.close(mainIndex);
+            })
+        })
+
+
+        // 删除
+        function deleteRole(data) {
+            layer.confirm('是否确认删除？', {
+                icon: 3, title: '提示信息', btn: ['确认', '取消'], btn1: function () {
+                    $.ajax({
+                        type: 'post',
+                        url: '/role/delete',
+                        contentType: "application/json",
+                        data: JSON.stringify(data.id),
+                        dataType: "json",
+                        success: function (result) {
+                            if (result.code != 0) {
+                                layer.msg("服务器请求失败！");
+                                return false;
+                            } else {
+                                layer.msg('已删除！', {icon: 1});
+                                //不刷新页面 留在当前
+                                tableIns.reload();
+                            }
+                        }
+                    });
+                }
+            })
+        }
+    })
+</script>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!--再加载插件-->
+<script src="/layui_exts/excel.js"></script>
+
+</body>
+</html>

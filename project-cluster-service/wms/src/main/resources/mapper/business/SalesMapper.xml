@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blithe.cms.mapper.business.SalesMapper">
+  <resultMap id="BaseResultMap" type="com.blithe.cms.pojo.business.Sales">
+    <!--@mbg.generated-->
+    <!--@Table bus_sales-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="customerid" jdbcType="INTEGER" property="customerid" />
+    <result column="paytype" jdbcType="VARCHAR" property="paytype" />
+    <result column="salestime" jdbcType="TIMESTAMP" property="salestime" />
+    <result column="operateperson" jdbcType="VARCHAR" property="operateperson" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="saleprice" jdbcType="DECIMAL" property="saleprice" />
+    <result column="goodsid" jdbcType="INTEGER" property="goodsid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, customerid, paytype, salestime, operateperson, `number`, remark, saleprice, goodsid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from bus_sales
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from bus_sales
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.blithe.cms.pojo.business.Sales" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into bus_sales (customerid, paytype, salestime, 
+      operateperson, `number`, remark, 
+      saleprice, goodsid)
+    values (#{customerid,jdbcType=INTEGER}, #{paytype,jdbcType=VARCHAR}, #{salestime,jdbcType=TIMESTAMP}, 
+      #{operateperson,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{saleprice,jdbcType=DECIMAL}, #{goodsid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.blithe.cms.pojo.business.Sales" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into bus_sales
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="customerid != null">
+        customerid,
+      </if>
+      <if test="paytype != null">
+        paytype,
+      </if>
+      <if test="salestime != null">
+        salestime,
+      </if>
+      <if test="operateperson != null">
+        operateperson,
+      </if>
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="saleprice != null">
+        saleprice,
+      </if>
+      <if test="goodsid != null">
+        goodsid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="customerid != null">
+        #{customerid,jdbcType=INTEGER},
+      </if>
+      <if test="paytype != null">
+        #{paytype,jdbcType=VARCHAR},
+      </if>
+      <if test="salestime != null">
+        #{salestime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateperson != null">
+        #{operateperson,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="saleprice != null">
+        #{saleprice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsid != null">
+        #{goodsid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.blithe.cms.pojo.business.Sales">
+    <!--@mbg.generated-->
+    update bus_sales
+    <set>
+      <if test="customerid != null">
+        customerid = #{customerid,jdbcType=INTEGER},
+      </if>
+      <if test="paytype != null">
+        paytype = #{paytype,jdbcType=VARCHAR},
+      </if>
+      <if test="salestime != null">
+        salestime = #{salestime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateperson != null">
+        operateperson = #{operateperson,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        `number` = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="saleprice != null">
+        saleprice = #{saleprice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsid != null">
+        goodsid = #{goodsid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.blithe.cms.pojo.business.Sales">
+    <!--@mbg.generated-->
+    update bus_sales
+    set customerid = #{customerid,jdbcType=INTEGER},
+      paytype = #{paytype,jdbcType=VARCHAR},
+      salestime = #{salestime,jdbcType=TIMESTAMP},
+      operateperson = #{operateperson,jdbcType=VARCHAR},
+      `number` = #{number,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      saleprice = #{saleprice,jdbcType=DECIMAL},
+      goodsid = #{goodsid,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
