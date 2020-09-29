@@ -1,11 +1,11 @@
 server:
-  port: 6001
+  port: 6002
 
 spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://192.168.56.10:3306/gmall_pms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    url: jdbc:mysql://192.168.56.10:3306/gmall_sms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # MapperScan
@@ -15,3 +15,4 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+

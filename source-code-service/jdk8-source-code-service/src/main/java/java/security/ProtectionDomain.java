@@ -88,8 +88,8 @@ public class ProtectionDomain {
         }
 
         private static AccessControlContext getCombinedACC(AccessControlContext context, AccessControlContext stack) {
-            AccessControlContext acc = new AccessControlContext(context, stack.getCombiner(), true);
-
+//            AccessControlContext acc = new AccessControlContext(context, stack.getCombiner(), true);
+            AccessControlContext acc = null;
             return new AccessControlContext(stack.getContext(), acc).optimize();
         }
     }
