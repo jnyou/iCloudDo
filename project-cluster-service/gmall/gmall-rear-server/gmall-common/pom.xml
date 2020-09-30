@@ -64,6 +64,11 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!-- 这的依赖管理相当于以后再dependencies里引spring cloud alibaba就不用写版本号， 全用dependencyManagement进行管理 -->
