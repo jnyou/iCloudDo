@@ -4,11 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.jnyou.gmall.couponservice.entity.CouponEntity;
 import org.jnyou.gmall.couponservice.service.CouponService;
@@ -28,6 +24,20 @@ import org.jnyou.common.utils.R;
 public class CouponController {
     @Autowired
     private CouponService couponService;
+
+    /**
+     * 测试openFeign声明式远程调用
+     * @return
+     * @Author jnyou
+     */
+    @GetMapping("/member/list")
+    public R membercoupons(){    //全系统的所有返回都返回R
+        // 应该去数据库查用户对于的优惠券，但这个我们简化了，不去数据库查了，构造了一个优惠券给他返回
+        CouponEntity couponEntity = new CouponEntity();
+        //优惠券的名字
+        couponEntity.setCouponName("满100-10");
+        return R.ok().put("coupons",Arrays.asList(couponEntity));
+    }
 
     /**
      * 列表
