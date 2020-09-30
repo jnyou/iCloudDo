@@ -7,6 +7,12 @@ spring:
     password: root
     url: jdbc:mysql://192.168.56.10:3306/gmall_sms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: coupon-service
 
 # MapperScan
 # sql映射文件位置
