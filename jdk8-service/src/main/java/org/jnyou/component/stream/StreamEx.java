@@ -1,9 +1,6 @@
 package org.jnyou.component.stream;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +39,13 @@ public class StreamEx {
          */
     }
 
+    public static Long getCounts() {
+        List<String> lists = staticMethod();
+        long count = 0;
+        count = lists.stream().filter(x -> x.length() > 2).count();
+        return count;
+    }
+
 
     /**
      * loadData
@@ -56,5 +60,12 @@ public class StreamEx {
         list.add("张强");
         list.add("张三丰");
         return list;
+    }
+
+    public static Map.Entry<String,Object> getMaps() {
+//        Map.Entry<String,Object> map = ;
+//        map.put(1,"开始");
+
+        return null;
     }
 }

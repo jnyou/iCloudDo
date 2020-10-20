@@ -149,10 +149,19 @@ public class CollectorsTest {
 
     // 排序  可通过Sort对单字段多字段排序
     public static void sorted() {
-        //单字段排序，根据id排序
+        //单字段排序，根据id排序  默认升序
         loadData().sort(Comparator.comparing(Student::getId));
-        //多字段排序，根据id，年龄排序
+        //多字段排序，根据id，年龄排序 默认升序
         loadData().sort(Comparator.comparing(Student::getId).thenComparing(Student::getScore));
+
+        // 使用stream和sort--降序排列-----------
+        loadData().stream().sorted(Comparator.comparing(Student::getId).reversed()).collect(Collectors.toList());
+
+        // 使用集合的sort排序，集合自身排序发生变化
+        loadData().sort((a,b)->a.getId().compareTo(b.getId()));
+        loadData().stream().forEach(student -> System.out.println(student.getId()));
+        System.out.println();
+
     }
 
 
