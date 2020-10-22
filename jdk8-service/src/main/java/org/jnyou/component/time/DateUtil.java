@@ -6,6 +6,31 @@ import java.util.*;
 
 public class DateUtil {
 
+    public static void main(String[] args) throws ParseException {
+
+        System.out.println(getYears("2020","2021"));
+
+        System.out.println(getDayOfMonth("2020-12"));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date dBegin = sdf.parse("2020-01-01");
+        Date dEnd = sdf.parse("2020-05-02");
+        System.out.println(DateUtil.findDates(dBegin,dEnd));
+
+        String nowTime = "2020";
+        String pattern = "yyyy";
+        String timeBefore = getTwoBefore(nowTime, pattern, Calendar.YEAR);
+        System.out.println("您当前传入时间：" + nowTime + "的两个月之前的时间为：" + timeBefore);
+
+        System.out.println(getFirstDayOfMonth("2020-10"));
+        System.out.println(getLastDate(new Date()));
+
+        System.out.println(getLastYear("2020-10-21")); // 2019-10-21
+
+        System.out.println(getMonthOfYear());
+
+    }
+
     /***
      * 获取当前月的上个月年月
      * @Author jnyou
@@ -407,22 +432,4 @@ public class DateUtil {
         return dateFormat.format(date);
     }
 
-    public static void main(String[] args) throws ParseException {
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date dBegin = sdf.parse("2020-01-01");
-        Date dEnd = sdf.parse("2020-05-02");
-        System.out.println(DateUtil.findDates(dBegin,dEnd));
-
-        String nowTime = "2020";
-        String pattern = "yyyy";
-        String timeBefore = getTwoBefore(nowTime, pattern, Calendar.YEAR);
-        System.out.println("您当前传入时间：" + nowTime + "的两个月之前的时间为：" + timeBefore);
-
-        System.out.println(getFirstDayOfMonth("2020-10"));
-        System.out.println(getLastDate(new Date()));
-
-        System.out.println(getLastYear("2020-10-21")); // 2019-10-21
-
-    }
 }
