@@ -28,6 +28,6 @@ public class CmsWebApplication {
 //                "  '  |____| .__|_| |_|_| |_\\__, | / / / /\n" +
 //                " =========|_|==============|___/=/_/_/_/");
         SpringApplication.run(CmsWebApplication.class);
-        System.out.println("http://localhost:8080/login");
+        System.out.println("http://localhost:52350/login");
     }
 }

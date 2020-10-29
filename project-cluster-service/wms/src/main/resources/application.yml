@@ -6,7 +6,7 @@ server:
   tomcat:
     uri-encoding: utf-8  # tomcat的URI编码
     max-threads: 800     # 最大线程数
-  port: 8080
+  port: 52350
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss # 项目中后台返回给前台的时间格式化格式，如果想换成yyyy-MM-dd,可在时间类型的属性或者get()方法上添加注解jackson的@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GTM+8")
