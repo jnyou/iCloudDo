@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.sound.midi.Soundbank;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,5 +31,17 @@ public class Goods implements Serializable {
     private Date expire;
 
     public String ine;
+
+    private void privateMet(Integer id){
+        System.out.println("私有方法");
+    }
+
+    public Goods(Integer id){
+        this.id = id;
+    }
+
+    private Goods(String goodName){
+        this.goodName = goodName;
+    }
 
 }
