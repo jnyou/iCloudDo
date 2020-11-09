@@ -17,17 +17,6 @@ import java.net.*;
  **/
 public class Client {
 
-    private static SocketAddress socketAddress = null;
-    private final static int port = 9999;
-
-    static {
-        try {
-            socketAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
     // 发送：output  接受：input
     // 获取代表服务端接口的动态代理对象。比如需要调用A接口（拿A接口的代理对象），B接口（拿B接口的代理对象）。。。
     // 至少需要传入请求的接口名称，ip/端口号
@@ -43,7 +32,7 @@ public class Client {
                 try {
                     Socket socket = new Socket();
                     // socketAddress
-                    socket.connect(socketAddress);
+                    socket.connect(inetSocketAddress);
 
                     output = new ObjectOutputStream(socket.getOutputStream());// 客户端发送
                     // 接口名，方法名，：writeUTF
