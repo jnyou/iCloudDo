@@ -3,14 +3,11 @@ package org.jnyou.remote.procedure.call;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,15 +20,17 @@ import java.util.concurrent.Executors;
  **/
 public class ServerImpl implements Server {
 
-    // map；服务端的所有可供客户端的接口，都注册到该map中；
-    // key：接口的名字，value：真正的接口实现
-    private static HashMap<String, Class> serviceMap = new HashMap<>();
-    private int port;
+    /**
+     * map；服务端的所有可供客户端的接口，都注册到该map中；
+     * key：接口的名字，value：真正的接口实现
+     */
+    private static final HashMap<String, Class> SERVICE_MAP = new HashMap<>();
+    private final int port;
     /**
      * 连接池：连接池中存在多个连接对象，每个连接对象都可以处理一个客户端请求
      * 根据CPU处理个数创建一个线程池（获取处理器）
      */
-    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     // 服务启动和关闭标识
     private static boolean isRunning = false;
 
@@ -65,7 +64,7 @@ public class ServerImpl implements Server {
                 e.printStackTrace();
             }
             // 启动线程：从线程池中取线程执行，每执行一个execute()方法，执行一个线程
-            executor.execute(new ServiceTask(socket));
+            EXECUTOR.execute(new ServiceTask(socket));
 
         }
 
@@ -74,12 +73,12 @@ public class ServerImpl implements Server {
     @Override
     public void stop() { // 关闭服务
         isRunning = false;
-        executor.shutdown();
+        EXECUTOR.shutdown();
     }
 
     @Override
     public void register(Class clazz, Class serviceImpl) {
-        serviceMap.put(clazz.getName(), serviceImpl);
+        SERVICE_MAP.put(clazz.getName(), serviceImpl);
     }
 
     /**
@@ -110,7 +109,7 @@ public class ServerImpl implements Server {
                 Class[] parameterTypes = (Class[]) input.readObject(); // 方法参数的类型
                 Object[] args = (Object[]) input.readObject(); // 方法参数
                 // 根据客户端请求，到服务注册中心找到对应的接口
-                Class aClass = serviceMap.get(serviceName);
+                Class aClass = SERVICE_MAP.get(serviceName);
 
                 // 调用该方法
                 Method method = aClass.getMethod(methodName, parameterTypes);
