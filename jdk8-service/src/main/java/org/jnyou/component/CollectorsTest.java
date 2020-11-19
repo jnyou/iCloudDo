@@ -114,7 +114,7 @@ public class CollectorsTest {
     // 求和： 分基本类型和大数类型求和，基本类型先mapToInt，然后调用sum方法，大数类型使用reduce调用BigDecimal::add方法
     public static void sumData() {
         // 基本数据类型求和
-        int sumAge = loadData().stream().mapToInt(Student::getScore).sum();
+        int sumAge = loadData().stream().mapToInt(Student::getSocre).sum();
 
         // BigDecimal求和
         BigDecimal totalQuantity = loadData().stream().map(Student::getFamilyMemberQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -152,7 +152,7 @@ public class CollectorsTest {
         //单字段排序，根据id排序  默认升序
         loadData().sort(Comparator.comparing(Student::getId));
         //多字段排序，根据id，年龄排序 默认升序
-        loadData().sort(Comparator.comparing(Student::getId).thenComparing(Student::getScore));
+        loadData().sort(Comparator.comparing(Student::getId).thenComparing(Student::getSocre));
 
         // 使用stream和sort--降序排列-----------
         loadData().stream().sorted(Comparator.comparing(Student::getId).reversed()).collect(Collectors.toList());

@@ -2,6 +2,11 @@ package org.jnyou.component.stream;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -15,6 +20,29 @@ import java.util.stream.Stream;
 public class StreamDict {
 
     public static void main(String[] args) {
+
+        String[] strs = {"aa", "bb", "cc"};
+        Optional optional = Optional.ofNullable(strs);
+        optional.map(str -> {
+            Stream<String> stream7 = Stream.of(strs);
+            stream7.forEach(item -> System.out.println(item));
+            return str;
+        });
+
+        Map<String, String> map = new HashMap<>(124);
+        map.put("1","1");
+        map.put("2","2");map.put("2","2");
+        Stream<String> stream3 = map.keySet().stream();
+        Stream<String> stream4 = map.values().stream();
+        Stream<Map.Entry<String, String>> stream5 = map.entrySet().stream();
+        stream5.forEach(item -> System.out.println(item));
+
+        long count = Arrays.stream(strs).filter((s) -> {
+            System.out.println(s);
+            return true;
+        }).count();
+        System.out.println(count);
+
 
         // forEach
         Stream<String> stream = Stream.of("张无忌", "张三丰", "周芷若");

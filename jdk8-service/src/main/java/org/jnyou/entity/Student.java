@@ -14,17 +14,26 @@ import java.util.Date;
  * @Author: jnyou
  **/
 @Data
-@AllArgsConstructor
 public class Student {
 
     private Long id;
     private String name;
     private String className;
     private String grade;
-    private Integer score;
+    private int age;
+    private Integer socre;
     //家庭成员数量
     private BigDecimal familyMemberQuantity;
 
     //入职日期
     private Date entryDate;
+
+    public Student(String name,int age,Integer score){
+        this.name = name;
+        this.age = age;
+        this.socre = score;
+    }
+
+    public Student(long l, String 张三, String s, String 一年级, int i, BigDecimal one, Date date) {
+    }
 }
