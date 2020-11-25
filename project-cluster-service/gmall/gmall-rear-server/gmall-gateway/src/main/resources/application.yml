@@ -13,7 +13,7 @@ spring:
             - Query=url,qq
 
         - id: product_route
-          uri: lb://gmall-product
+          uri: lb://product-service
           predicates:
             - Path=/api/product/**
           filters:
@@ -27,7 +27,7 @@ spring:
             - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
 
         - id: member_route
-          uri: lb://gmall-member
+          uri: lb://member-service
           predicates:
             - Path=/api/member/**
           filters:
@@ -39,13 +39,13 @@ spring:
             - Path=/api/ware/**
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
-
+##lb：代表负载均衡
         - id: admin_route
-          uri: lb://renren-fast
+          uri: lb://admin-vue
           predicates:
             - Path=/api/**
           filters:
-            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+            - RewritePath=/api/(?<segment>.*),/admin-vue/$\{segment}
 
 
 

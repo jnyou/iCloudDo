@@ -37,7 +37,7 @@ public class CategoryController {
     //@RequiresPermissions("productservice:category:list")
     public R list(){
         List<CategoryEntity> listTree = categoryService.listWithTree();
-        return R.ok().put("listTree", listTree);
+        return R.ok().put("data", listTree);
     }
 
 
