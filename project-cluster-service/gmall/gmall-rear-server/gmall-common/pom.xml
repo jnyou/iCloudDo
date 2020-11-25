@@ -69,6 +69,12 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>aliyun-oss-spring-boot-starter</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <!-- 这的依赖管理相当于以后再dependencies里引spring cloud alibaba就不用写版本号， 全用dependencyManagement进行管理 -->

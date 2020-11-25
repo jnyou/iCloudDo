@@ -25,3 +25,10 @@ mybatis-plus:
 logging:
   level:
     org.jnyou.gmall: debug
+#阿里oss对象存储服务
+alibaba:
+  cloud:
+    access-key: LTAI4G4kd2LUwd58wQyh3Th7
+    secret-key: gFfw1p6Eo3u7YDhPv1dFR6cNPgkjq7
+    oss:
+      endpoint: oss-cn-beijing.aliyuncs.com
