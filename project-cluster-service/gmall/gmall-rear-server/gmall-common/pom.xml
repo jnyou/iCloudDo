@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gmall-common</artifactId>
-    <description>公共依赖和公共工具类</description>
+    <description>各个微服务系统依赖的公共服务包，包括bean、utils等工具类</description>
 
     <properties>
         <mybatisplus.version>3.3.1</mybatisplus.version>
@@ -68,11 +68,10 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-
+        <!--引入阿里云封装好的cloud oss-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
-            <artifactId>aliyun-oss-spring-boot-starter</artifactId>
-            <version>1.0.0</version>
+            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
         </dependency>
 
     </dependencies>
@@ -83,7 +82,7 @@
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2.2.3.RELEASE</version>
+                <version>2.2.0.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

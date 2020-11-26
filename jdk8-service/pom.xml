@@ -8,12 +8,20 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <fastjson-version>1.2.30</fastjson-version>
+    </properties>
 
     <artifactId>jdk8-service</artifactId>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson-version}</version>
         </dependency>
     </dependencies>
 

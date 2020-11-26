@@ -38,11 +38,6 @@
         <shiro-version>1.4.0</shiro-version>
         <poi-version>4.0.1</poi-version>
         <poi-ooxml>4.0.1</poi-ooxml>
-        <aliyun-java-sdk-core-version>3.3.1</aliyun-java-sdk-core-version>
-        <aliyun-java-sdk-dysmsapi-version>1.0.0</aliyun-java-sdk-dysmsapi-version>
-        <httpclient-version>4.5.2</httpclient-version>
-        <httpcore-version>4.4.4</httpcore-version>
-        <httpmime-version>4.4.1</httpmime-version>
         <guava-version>19.0</guava-version>
         <pinyin4j-version>2.5.0</pinyin4j-version>
         <bouncycastle-version>1.60</bouncycastle-version>
@@ -71,17 +66,17 @@
 <!--            <artifactId>spring-boot-starter-log4j2</artifactId>-->
 <!--        </dependency>-->
         <!--热部署工具-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-            <scope>runtime</scope> <!--只在运行时起作用打包时不打进去-->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-devtools</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--            <scope>runtime</scope> &lt;!&ndash;只在运行时起作用打包时不打进去&ndash;&gt;-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-configuration-processor</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
         <!--             spring session-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.session</groupId>-->
@@ -114,17 +109,17 @@
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.3.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.baomidou</groupId>-->
+<!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
+<!--            <version>3.3.1</version>-->
+<!--        </dependency>-->
         <!--mysql-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>mysql</groupId>-->
+<!--            <artifactId>mysql-connector-java</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>com.alibaba</groupId>-->
 <!--            <artifactId>druid-spring-boot-starter</artifactId>-->
