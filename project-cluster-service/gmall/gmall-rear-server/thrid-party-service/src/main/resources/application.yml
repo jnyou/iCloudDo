@@ -1,0 +1,16 @@
+server:
+  port: 30000
+
+spring:
+  application:
+    name: third-party-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        #5.配置阿里巴巴-cloud-oss,这里对应common.pom的spring-cloud-alibaba-dependencies（2.1.0.RELEASE），不兼容
+    alicloud:
+      access-key: LTAI4G4kd2LUwd58wQyh3Th7
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+        bucket: smallsword-mall
