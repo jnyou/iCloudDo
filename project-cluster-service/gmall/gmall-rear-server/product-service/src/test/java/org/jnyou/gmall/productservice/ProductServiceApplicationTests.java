@@ -2,17 +2,25 @@ package org.jnyou.gmall.productservice;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.extern.slf4j.Slf4j;
 import org.jnyou.gmall.productservice.entity.BrandEntity;
 import org.jnyou.gmall.productservice.service.BrandService;
+import org.jnyou.gmall.productservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
+
 @SpringBootTest
+@Slf4j
 class ProductServiceApplicationTests {
 
     @Autowired
     private BrandService brandService;
+
+    @Autowired
+    CategoryService categoryService;
 
     @Test
     void contextLoads() {
@@ -22,6 +30,12 @@ class ProductServiceApplicationTests {
         LambdaQueryWrapper<BrandEntity> select = Wrappers.<BrandEntity>lambdaQuery().select(BrandEntity::getName, BrandEntity::getLogo);
         System.out.println(select.getSqlSelect());
 
+    }
+
+    @Test
+    void findParentsPath(){
+        Long[] catIdPath = categoryService.findCatIdPath(225L);
+        log.info("完整回显路径：{}" + Arrays.asList(catIdPath));
     }
 
 }

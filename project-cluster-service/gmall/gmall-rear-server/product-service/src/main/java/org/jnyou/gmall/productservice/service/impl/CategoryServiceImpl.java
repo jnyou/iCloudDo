@@ -1,7 +1,10 @@
 package org.jnyou.gmall.productservice.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,6 +57,27 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // TODO 检查当前删除的菜单，是否被别的地方引用
 
         baseMapper.deleteBatchIds(asList);
+    }
+
+    @Override
+    public Long[] findCatIdPath(Long catelogId) {
+        List<Long> paths = new ArrayList<>();
+        List<Long> resultPath = findParentsPath(catelogId, paths);
+        // 将结果的数组倒叙
+        Collections.reverse(resultPath);
+        return resultPath.toArray(new Long[resultPath.size()]);
+    }
+
+    // 递归向上查询当前catelogId的父ID
+    private List<Long> findParentsPath(Long catelogId, List<Long> paths) {
+        CategoryEntity categoryEntity = this.baseMapper.selectById(catelogId);
+        // 先加入当前ID
+        paths.add(catelogId);
+        if (categoryEntity.getParentCid() != 0) {
+            // 还有父ID，将父ID传入方法继续查询
+            findParentsPath(categoryEntity.getParentCid(),paths);
+        }
+        return paths;
     }
 
     // 递归查询分类树

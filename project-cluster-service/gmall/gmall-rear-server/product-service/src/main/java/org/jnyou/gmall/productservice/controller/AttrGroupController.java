@@ -3,12 +3,9 @@ package org.jnyou.gmall.productservice.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.jnyou.gmall.productservice.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.jnyou.gmall.productservice.entity.AttrGroupEntity;
 import org.jnyou.gmall.productservice.service.AttrGroupService;
@@ -29,13 +26,16 @@ public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @GetMapping("/list/{catId}")
     //@RequiresPermissions("productservice:attrgroup:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params,@PathVariable Long catId){
+        PageUtils page = attrGroupService.queryPage(params,catId);
 
         return R.ok().put("page", page);
     }
@@ -48,7 +48,8 @@ public class AttrGroupController {
     //@RequiresPermissions("productservice:attrgroup:info")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
-
+        Long [] catelogPath = categoryService.findCatIdPath(attrGroup.getCatelogId());
+        attrGroup.setCatelogPath(catelogPath);
         return R.ok().put("attrGroup", attrGroup);
     }
 
