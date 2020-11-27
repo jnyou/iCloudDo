@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jnyou.common.valid.AddGroup;
+import org.jnyou.common.valid.UpdateGroup;
+import org.jnyou.common.valid.UpdateStatusGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -62,7 +65,7 @@ public class BrandController {
     @RequestMapping("/save")
     //@RequiresPermissions("productservice:brand:save")
     // BindingResult：校验结果
-    public R save(@Valid @RequestBody BrandEntity brand/*, BindingResult result*/){
+    public R save(@Validated(value = {AddGroup.class}) @RequestBody BrandEntity brand/*, BindingResult result*/){
         // 全局异常进行捕获
 //        if(result.hasErrors()){
 //            Map<String,String> map = new HashMap<>(124);
@@ -87,9 +90,18 @@ public class BrandController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("productservice:brand:update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated(value = UpdateGroup.class) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
 
+        return R.ok();
+    }
+
+    /**
+     * 修改状态
+     */
+    @RequestMapping("/update/status")
+    public R updateStatus(@Validated(value = UpdateStatusGroup.class) @RequestBody BrandEntity brand){
+        brandService.updateById(brand);
         return R.ok();
     }
 
