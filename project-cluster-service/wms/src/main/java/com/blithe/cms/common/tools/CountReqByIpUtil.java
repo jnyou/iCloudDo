@@ -1,12 +1,10 @@
 package com.blithe.cms.common.tools;
 
-import com.guoyin.amtp.tools.redis.JedisUtil;
+import com.blithe.cms.common.tools.redis.JedisUtil;
 import org.apache.log4j.Logger;
 
 /**
  * Description  根据IP限制给定时间内允许访问的次数
- * Created by crazy
- * Created on 2018/11/20.
  */
 public class CountReqByIpUtil {
     private static Logger logger = Logger.getLogger(CountReqByIpUtil.class);

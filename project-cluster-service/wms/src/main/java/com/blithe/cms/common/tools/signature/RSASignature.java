@@ -10,6 +10,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * RSA签名验签类
+ * @author jnyou
  */
 public class RSASignature {
 

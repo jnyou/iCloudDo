@@ -7,8 +7,7 @@ import java.util.List;
 
 /**
  * Description 测试Redis队列
- * Created by crazy
- * Created on 2018/11/8.
+ * @author jnyou
  */
 public class TestRedisQueue {
     public static byte[] redisKey = "key".getBytes();

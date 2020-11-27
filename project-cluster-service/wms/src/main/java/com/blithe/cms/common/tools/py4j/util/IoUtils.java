@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 /**
  *
- * @author Ricky Fung
+ * @author jnyou
  */
 public class IoUtils {
 

@@ -1,8 +1,7 @@
 package com.blithe.cms.common.tools.py4j.exception;
 
 /**
- *
- * @author Ricky Fung
+ * @author jnyou
  */
 public class IllegalPinyinException extends Exception {
 

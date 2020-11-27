@@ -4,8 +4,7 @@ import java.security.MessageDigest;
 
 /**
  * Description MD5加密
- * Created by crazy
- * Created on 2018/11/9.
+ * @author jnyou
  */
 public class MD5 {
 

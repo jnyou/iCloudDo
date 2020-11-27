@@ -5,8 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * Description
- * Created by crazy
- * Created on 2018/11/5.
+ * @author jnyou
  */
 public class JsonResultUtil {
     public static int SUCCESS_NUM = 0;

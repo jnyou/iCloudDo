@@ -19,12 +19,11 @@ import java.security.spec.InvalidParameterSpecException;
  */
 
 /**
+ * @author jnyou
  * @description:
  * AES-128-CBC 加密方式
  * AES-128-CBC可以自己定义“密钥”和“偏移量“。
  * AES-128是jdk自动生成的“密钥”。
- * @outhor wanghao
- * @create 2019-04-08 下午4:20
  */
 public class AesCbcUtil {
     private static Logger logger = LogManager.getLogger(AesCbcUtil.class);

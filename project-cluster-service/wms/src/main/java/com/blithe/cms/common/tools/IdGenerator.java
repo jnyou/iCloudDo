@@ -12,9 +12,8 @@ import java.util.Set;
  * 
  * 首先我们需要一个long类型的变量来保存这个生成的id，第一位固定为0，因为id都是正数嘛，还剩63位，用x位表示毫秒时间戳，用y位表示进程id，用z位表示同一个时间戳下的序列号，x+y+z=63。
  * 
- * @author lujinjun
- * @date 2018-5-2
  *
+ * @author jnyou
  */
 public class IdGenerator {
 	

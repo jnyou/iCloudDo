@@ -1,11 +1,13 @@
 package com.blithe.cms.common.tools;
 
-import com.guoyin.amtp.exception.AmtpException;
 
 import java.util.Date;
 import java.util.regex.Pattern;
 
 
+/**
+ * @author jnyou
+ */
 public class Validates {
 	private Validates(){}
 	public static Boolean isMobile(String phone){
@@ -146,7 +148,7 @@ public class Validates {
 		if(nonCheckCodeCardId == null || nonCheckCodeCardId.trim().length() == 0
 				|| !nonCheckCodeCardId.matches("\\d+")) {
 //			throw new IllegalArgumentException("银行卡号必须为数字!");
-			throw new AmtpException("银行卡号必须为数字!");
+			throw new RuntimeException("银行卡号必须为数字!");
 		}
 		char[] chs = nonCheckCodeCardId.trim().toCharArray();
 		int luhmSum = 0;
@@ -166,7 +168,7 @@ public class Validates {
 	 * @param type 提示信息
 	 * @return
 	 */
-	public static String notNull(String str, String type) throws AmtpException{
+	public static String notNull(String str, String type) throws RuntimeException{
 		return notNull(str, type , 50);//默认长度限制50
 	}
 	/**
@@ -176,11 +178,11 @@ public class Validates {
 	 * @param length 长度限制
 	 * @return
 	 */
-	public static String notNull(String str, String type, Integer length) throws AmtpException{
+	public static String notNull(String str, String type, Integer length) throws RuntimeException{
 		if(str == null|| "".equals(str)){
-			throw new AmtpException(type +"不能为空 !");
+			throw new RuntimeException(type +"不能为空 !");
 		}else if(str.length()>length){
-			throw new AmtpException(type +"字符长度超出限制!");
+			throw new RuntimeException(type +"字符长度超出限制!");
 		}
 		return str;
 	}
@@ -190,9 +192,9 @@ public class Validates {
 	 * @param type 提示信息
 	 * @return
 	 */
-	public static Object notEmpty(Object str, String type) throws AmtpException{
+	public static Object notEmpty(Object str, String type) throws RuntimeException{
 		if(str == null){
-			throw new AmtpException(type +"不能为空 !");
+			throw new RuntimeException(type +"不能为空 !");
 		}
 		return str;
 	}
@@ -202,9 +204,9 @@ public class Validates {
 	 * @param type 提示信息
 	 * @return
 	 */
-	public static Double getDouble(Double str, String type) throws AmtpException{
+	public static Double getDouble(Double str, String type) throws RuntimeException{
 		if(str == null){
-			throw new AmtpException(type +"不能为空 !");
+			throw new RuntimeException(type +"不能为空 !");
 		}
 		return str;
 	}
@@ -214,9 +216,9 @@ public class Validates {
 	 * @param type 提示信息
 	 * @return
 	 */
-	public static Integer getInteger(Integer str, String type) throws AmtpException{
+	public static Integer getInteger(Integer str, String type) throws RuntimeException{
 		if(str == null){
-			throw new AmtpException(type +"不能为空 !");
+			throw new RuntimeException(type +"不能为空 !");
 		}
 		return str;
 	}
@@ -225,9 +227,9 @@ public class Validates {
 	 * @param str 校验字符
 	 * @return
 	 */
-	public static Double getAmount(String str, String type) throws AmtpException{
+	public static Double getAmount(String str, String type) throws RuntimeException{
 		if(!isAmount(str)){
-			throw new AmtpException(type + "金额格式不合法 !");
+			throw new RuntimeException(type + "金额格式不合法 !");
 		}
 		return Double.parseDouble(str);
 	}
@@ -236,9 +238,9 @@ public class Validates {
 	 * @param str 校验字符
 	 * @return
 	 */
-	public static Date getDate(Date str, String type) throws AmtpException{
+	public static Date getDate(Date str, String type) throws RuntimeException{
 		if(str == null ){
-			throw new AmtpException(type + "不为空 !");
+			throw new RuntimeException(type + "不为空 !");
 		}
 		return str;
 	}

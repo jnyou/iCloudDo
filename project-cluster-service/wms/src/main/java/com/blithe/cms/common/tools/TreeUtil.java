@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @author jnyou
  * @Description: 树工具方法
  * @Detail: 一次性构建多叉树结构
- * @Author: zxz
- * @Date: 2018-02-07
  */
 public class TreeUtil {
 

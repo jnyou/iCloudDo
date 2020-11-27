@@ -18,8 +18,6 @@ import java.util.*;
 
 /**
  * Description
- * Created by crazy
- * Created on 2018/11/2.
  */
 public class AliSmsUtil {
     private static Logger log = LogManager.getLogger(AliSmsUtil.class);

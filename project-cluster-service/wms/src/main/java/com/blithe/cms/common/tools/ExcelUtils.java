@@ -1,6 +1,5 @@
 package com.blithe.cms.common.tools;
 
-import com.guoyin.amtp.exception.AmtpException;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,9 +17,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * @author jnyou
  * @description: EXCEL导出
- * @outhor wanghao
- * @create 2018-12-19 上午10:39
  */
 public class ExcelUtils {
 
@@ -418,7 +416,7 @@ public class ExcelUtils {
         //创建Excel工作薄
         Workbook work = this.getWorkbook(in, fileName);
         if (null == work) {
-            throw new AmtpException("创建Excel工作薄为空！");
+            throw new RuntimeException("创建Excel工作薄为空！");
         }
         Sheet sheet = null;  //页数
         Row row = null;      //行数

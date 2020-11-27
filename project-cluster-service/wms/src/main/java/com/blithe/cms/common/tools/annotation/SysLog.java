@@ -4,9 +4,8 @@ import java.lang.annotation.*;
 
 /**
  * 系统日志注解
- * @author lujinjun
- * @date 2017-6-13
  *
+ * @author jnyou
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

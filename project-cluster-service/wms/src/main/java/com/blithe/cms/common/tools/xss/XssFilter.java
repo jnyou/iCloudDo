@@ -6,9 +6,8 @@ import java.io.IOException;
 
 /**
  * XSS过滤
- * @author lujinjun
- * @date 2017-6-17
  *
+ * @author jnyou
  */
 public class XssFilter implements Filter {
 
@@ -16,6 +15,7 @@ public class XssFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 	}
 
+	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 		XssHttpServletRequestWrapper xssRequest = new XssHttpServletRequestWrapper(

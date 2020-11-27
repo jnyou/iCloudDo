@@ -25,9 +25,6 @@ import java.util.regex.Pattern;
 /**
  * 功能：字符串工具类
  * 
- * @author lujinjun
- * @date 2017-6-13
- * 
  */
 public class StringUtil {
 

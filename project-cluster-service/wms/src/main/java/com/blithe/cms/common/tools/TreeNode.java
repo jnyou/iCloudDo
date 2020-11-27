@@ -5,9 +5,6 @@ import java.util.List;
 
 /**
  * @Description: 树结点
- * @Detail:
- * @Author: zxz
- * @Date: 2018-02-07
  */
 public class TreeNode<T> {
         // 父节点

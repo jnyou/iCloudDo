@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.blithe.cms.common.exception.R;
 import com.blithe.cms.common.exception.RbacException;
-import com.blithe.cms.common.utils.HttpContextUtils;
+import com.blithe.cms.common.tools.HttpContextUtils;
 import com.blithe.cms.pojo.business.Goods;
 import com.blithe.cms.pojo.business.Inport;
 import com.blithe.cms.pojo.business.Provider;

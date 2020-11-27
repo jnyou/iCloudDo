@@ -1,20 +1,20 @@
 package com.blithe.cms.common.tools.py4j;
 
+import com.blithe.cms.common.tools.py4j.exception.IllegalPinyinException;
+import com.blithe.cms.common.tools.py4j.util.ArrayUtils;
+import com.blithe.cms.common.tools.py4j.voc.Py4jDictionary;
 import com.google.common.collect.ArrayListMultimap;
-import com.guoyin.amtp.tools.py4j.exception.IllegalPinyinException;
-import com.guoyin.amtp.tools.py4j.util.ArrayUtils;
-import com.guoyin.amtp.tools.py4j.util.StringUtils;
-import com.guoyin.amtp.tools.py4j.voc.Py4jDictionary;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
- * @author Ricky Fung
+ * @author jnyou
  */
 public class PinyinConverter {
 

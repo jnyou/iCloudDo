@@ -11,9 +11,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
+ * @author jnyou
  * @description: 请求微信工具类
- * @outhor wanghao
- * @create 2019-04-08 下午4:15
  */
 public class HttpRequest {
     private static Logger logger = LogManager.getLogger(HttpRequest.class);

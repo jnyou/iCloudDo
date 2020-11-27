@@ -2,10 +2,8 @@ package com.blithe.cms.common.tools;
 
 /**
  * 常量
- * 
- * @author lujinjun
- * @email 
- * @date 2016年11月15日 下午1:23:52
+ *
+ * @author jnyou
  */
 public class Constant {
 	

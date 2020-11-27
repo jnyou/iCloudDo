@@ -3,7 +3,7 @@ package com.blithe.cms.common.tools.py4j.util;
 /**
  * ${DESCRIPTION}
  *
- * @author Ricky Fung
+ * @author jnyou
  */
 public class StringUtils {
 

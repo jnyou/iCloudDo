@@ -16,10 +16,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 /**
- * 
- * 
- * @author lujinjun
- * @date 2018-11-22
+ *
+ * @author jnyou
  */
 public class HttpClientUtil {
 

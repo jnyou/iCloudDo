@@ -7,6 +7,7 @@ import java.util.UUID;
 /**
  * 产生随机字符串，长度由参数指定。
  * 
+ * @author jnyou
  * @param length
  *            产生的字符串的长度
  * @return 已产生的字符串

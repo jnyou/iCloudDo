@@ -11,9 +11,8 @@ import java.security.interfaces.RSAPublicKey;
 
 /**
  * RSA密钥对生成及测试类
- * @author lujinjun
- * @date 2017-6-25
  *
+ * @author cizing
  */
 public class RSATest {
 

@@ -6,7 +6,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.blithe.cms.common.exception.R;
 import com.blithe.cms.common.exception.RbacException;
-import com.blithe.cms.common.utils.StringUtil;
+import com.blithe.cms.common.tools.StringUtil;
 import com.blithe.cms.config.aliyun.AlipayConfig;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

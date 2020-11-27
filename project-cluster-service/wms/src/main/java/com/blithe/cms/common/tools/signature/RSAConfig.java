@@ -11,9 +11,8 @@ import java.io.InputStreamReader;
 /**
  * RSA配置读取
  * 
- * @author lujinjun
- * @date 2017-6-25
  *
+ * @author jnyou
  */
 public class RSAConfig {
 

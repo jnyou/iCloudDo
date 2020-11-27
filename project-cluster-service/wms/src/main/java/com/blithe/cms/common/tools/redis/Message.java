@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 /**
  * Description 消息类(实现Serializable接口)
- * Created by crazy
- * Created on 2018/11/8.
+ * @author jnyou
  */
 public class Message implements Serializable {
     private static final long serialVersionUID = 559867242872277374L;

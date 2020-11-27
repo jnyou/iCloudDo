@@ -1,7 +1,7 @@
 package com.blithe.cms.common.tools.xss;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -16,9 +16,8 @@ import java.util.Map;
 
 /**
  * XSS过滤处理
- * @author lujinjun
- * @date 2017-6-17
  *
+ * @author jnyou
  */
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     

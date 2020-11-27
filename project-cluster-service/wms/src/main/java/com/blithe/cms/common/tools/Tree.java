@@ -1,16 +1,9 @@
 package com.blithe.cms.common.tools;
 
 /**
- * @Description: 树形数据存储结构
- * @Detail:
- * @Author: zxz
- * @Date: 2018-02-07
- */
-
-/**
  * 树型数据存储结构
  *
- * @author zkpursuit
+ * @author jnyou
  * @param <T>
  */
 public class Tree<T> {

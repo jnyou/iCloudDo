@@ -8,10 +8,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * zip压缩工具类
- * 
- * @author lujinjun
- * @date 2018-1-12
- * 
+ * @author jnyou
  */
 public class ZipCompress {
 

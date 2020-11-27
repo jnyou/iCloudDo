@@ -3,7 +3,7 @@ package com.blithe.cms.controller.system;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.blithe.cms.common.exception.R;
-import com.blithe.cms.common.utils.HttpContextUtils;
+import com.blithe.cms.common.tools.HttpContextUtils;
 import com.blithe.cms.pojo.system.Notice;
 import com.blithe.cms.pojo.system.SysUser;
 import com.blithe.cms.service.system.NoticeService;

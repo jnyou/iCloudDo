@@ -4,9 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * @author jnyou
  * @description: List分页
- * @outhor wanghao
- * @create 2018-12-05 下午2:05
  */
 public class ListPageUtil<T> {
     /**

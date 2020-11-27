@@ -12,9 +12,8 @@ import java.util.Properties;
 /**
  * 公共配置信息
  * 
- * @author lujinjun
- * @date 2017-8-30
  *
+ * @author jnyou
  */
 public class CommonConfigUtil {
 	

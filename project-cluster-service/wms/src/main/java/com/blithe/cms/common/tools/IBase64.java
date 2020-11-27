@@ -1,6 +1,9 @@
 package com.blithe.cms.common.tools;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * @author jnyou
+ */
 public class IBase64 {
 	
 	/**

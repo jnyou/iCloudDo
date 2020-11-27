@@ -11,8 +11,7 @@ import java.util.Set;
 /**
  * java序列化的工具类,主要是将对象转化为byte数组,和根据byte数组反序列化成java对象
  * 注意:每个需要序列化的对象都要实现Serializable接口
- * Created by crazy
- * Created on 2018/11/8.
+ * @author jnyou
  */
 public class ObjectUtil {
     /**对象转byte[]

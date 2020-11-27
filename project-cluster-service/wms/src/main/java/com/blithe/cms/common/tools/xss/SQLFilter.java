@@ -1,11 +1,9 @@
 package com.blithe.cms.common.tools.xss;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * SQL过滤
- * @author lujinjun
- * @date 2017-6-17
  *
  */
 public class SQLFilter {

@@ -1,6 +1,5 @@
 package com.blithe.cms.common.tools;
 
-import com.guoyin.amtp.exception.AmtpException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -19,8 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * Description 漫道科技发送短信
- * Created by crazy
- * Created on 2019/4/30.
+ * @author jnyou
  */
 public class MdSmsUtil {
 
@@ -79,7 +77,7 @@ public class MdSmsUtil {
             } catch (UnsupportedEncodingException e) {
                 log.warn("手机号：" + mobile + ", 内容：" + content + " 发送失败！errMsg：" + e.getMessage());
                 e.printStackTrace();
-                throw new AmtpException("参数错误，请联系管理员");
+                throw new RuntimeException("参数错误，请联系管理员");
             }
             String[] clientExtArr = clientExtStr.split(":");
             content = "【"+clientExtArr[1]+"】"+content;
@@ -88,7 +86,7 @@ public class MdSmsUtil {
             String clientName = clientMap.get(ext);//扩展码对应的签名
             if (StringUtil.isEmpty(clientName)){
                 log.warn("发送给：" + mobile + "的短信，内容为：" + content + "【短信签名扩展码无对应客户端名称】");
-                throw new AmtpException("参数错误，请联系管理员");
+                throw new RuntimeException("参数错误，请联系管理员");
             }
             content = "【"+clientName+"】"+content;
         }

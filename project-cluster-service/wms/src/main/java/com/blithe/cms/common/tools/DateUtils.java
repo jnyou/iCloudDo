@@ -1,6 +1,5 @@
 package com.blithe.cms.common.tools;
 
-import com.guoyin.amtp.exception.AmtpException;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -10,9 +9,6 @@ import java.util.*;
 
 /**
  * 日期处理工具
- *
- * @author lujinjun
- * @date 2017-6-13
  */
 public class DateUtils {
 
@@ -431,12 +427,12 @@ public class DateUtils {
      */
     public static Integer stringToTimestamp(String time, String format, String type) throws ParseException {
         if (time == null || "".equals(time)) {
-            throw new AmtpException(type + "时间不合法");
+            throw new RuntimeException(type + "时间不合法");
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         Date date = simpleDateFormat.parse(time);
         if (date.getTime() > System.currentTimeMillis()) {
-            throw new AmtpException(type + "时间不合法");
+            throw new RuntimeException(type + "时间不合法");
         }
         return Integer.valueOf((date.getTime() + "").substring(0, 10));
     }
@@ -1112,11 +1108,11 @@ public class DateUtils {
     public static Integer getRemainSecondsOneDay(Date currentDate) {
         Calendar midnight=Calendar.getInstance();
         midnight.setTime(currentDate);
-        midnight.add(midnight.DAY_OF_MONTH,1);
-        midnight.set(midnight.HOUR_OF_DAY,0);
-        midnight.set(midnight.MINUTE,0);
-        midnight.set(midnight.SECOND,0);
-        midnight.set(midnight.MILLISECOND,0);
+        midnight.add(Calendar.DAY_OF_MONTH,1);
+        midnight.set(Calendar.HOUR_OF_DAY,0);
+        midnight.set(Calendar.MINUTE,0);
+        midnight.set(Calendar.SECOND,0);
+        midnight.set(Calendar.MILLISECOND,0);
         Integer seconds=(int)((midnight.getTime().getTime()-currentDate.getTime())/1000);
         return seconds;
     }

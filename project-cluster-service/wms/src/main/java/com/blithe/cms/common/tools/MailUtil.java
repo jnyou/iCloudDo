@@ -7,9 +7,8 @@ import java.util.List;
 
 /**
  * Email Util
- * @author lujinjun
- * @date 2017-8-30
  *
+ * @author jnyou
  */
 public class MailUtil {
 

@@ -1,11 +1,11 @@
 package com.blithe.cms.common.tools;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 提供对字符串的全角->半角，半角->全角转换
  * 
- * @author wei
+ * @author jnyou
  *
  */
 public class BCConvert {

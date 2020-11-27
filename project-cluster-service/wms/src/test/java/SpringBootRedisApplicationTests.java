@@ -1,5 +1,5 @@
-import com.blithe.cms.common.utils.HttpContextUtils;
-import com.blithe.cms.common.utils.IpUtil;
+import com.blithe.cms.common.tools.HttpContextUtils;
+import com.blithe.cms.common.tools.IPUtils;
 import com.blithe.cms.pojo.system.Loginfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public class SpringBootRedisApplicationTests {
         Loginfo loginfo = new Loginfo();
         loginfo.setLoginname("小剑");
         loginfo.setLogintime(new Date());
-        loginfo.setLoginip(IpUtil.getIpAddr(HttpContextUtils.getHttpServletRequest()));
+        loginfo.setLoginip(IPUtils.getIpAddr(HttpContextUtils.getHttpServletRequest()));
         redisTemplate.opsForValue().set("loginInfo_",loginfo);
 
 

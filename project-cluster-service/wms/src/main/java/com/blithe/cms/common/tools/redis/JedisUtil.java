@@ -10,8 +10,6 @@ import java.util.*;
 
 /**
  * Description 构建redis连接池，以及一些队列的相关方法
- * Created by crazy
- * Created on 2018/11/8.
  */
 public class JedisUtil {
     private static String JEDIS_IP;
@@ -57,7 +55,7 @@ public class JedisUtil {
     //返还到连接池
     public static void close(Jedis jedis) {
         try{
-            jedisPool.returnResource(jedis);
+            jedisPool.close();
         }catch (Exception e){
             if(jedis.isConnected()){
                 jedis.quit();
@@ -92,7 +90,7 @@ public class JedisUtil {
             return lpush;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
             return null;
         } finally {
@@ -114,7 +112,7 @@ public class JedisUtil {
             return rpush;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
             return null;
         } finally {
@@ -135,7 +133,7 @@ public class JedisUtil {
             jedis.rpoplpush(key, destination);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -156,7 +154,7 @@ public class JedisUtil {
             list = jedis.lrange(key, 0, -1);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -181,7 +179,7 @@ public class JedisUtil {
             list = jedis.lrange(key, start, end);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -206,7 +204,7 @@ public class JedisUtil {
             list = jedis.lrange(key, 0, len-1);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -228,7 +226,7 @@ public class JedisUtil {
             return jedis.lrange(key, 0, -1).size();
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -250,7 +248,7 @@ public class JedisUtil {
             bytes = jedis.rpop(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -273,7 +271,7 @@ public class JedisUtil {
             bytes = jedis.lpop(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -297,7 +295,7 @@ public class JedisUtil {
             value = jedis.brpoplpush(srckey,dstkey,timout);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             close(jedis);
@@ -320,7 +318,7 @@ public class JedisUtil {
             jedis.llen(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -341,7 +339,7 @@ public class JedisUtil {
             jedis.del(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         } finally {
             //返还到连接池
@@ -362,7 +360,7 @@ public class JedisUtil {
             result = jedis.hgetAll(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -384,7 +382,7 @@ public class JedisUtil {
             jedis.hmset(key.toString(), hash);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -409,7 +407,7 @@ public class JedisUtil {
             jedis.expire(key.toString(), time);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -431,7 +429,7 @@ public class JedisUtil {
             jedis.hmset(key,hash);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -455,7 +453,7 @@ public class JedisUtil {
             jedis.expire(new String(key), time);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -481,7 +479,7 @@ public class JedisUtil {
 
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -506,7 +504,7 @@ public class JedisUtil {
 
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
 
         } finally {
@@ -537,7 +535,7 @@ public class JedisUtil {
             return lrem;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
             return null;
         } finally {
@@ -554,7 +552,7 @@ public class JedisUtil {
             return incr;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
             return null;
         } finally {
@@ -581,7 +579,7 @@ public class JedisUtil {
             result = true;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -605,7 +603,7 @@ public class JedisUtil {
             result = true;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -630,7 +628,7 @@ public class JedisUtil {
             ttl = jedis.ttl(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -652,7 +650,7 @@ public class JedisUtil {
             result = jedis.exists(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -678,7 +676,7 @@ public class JedisUtil {
             result = true;
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -701,7 +699,7 @@ public class JedisUtil {
             result = jedis.get(key);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -723,7 +721,7 @@ public class JedisUtil {
             result = jedis.keys(pattern);
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池
@@ -744,7 +742,7 @@ public class JedisUtil {
             return unserialize(jedis.get(key.getBytes()));
         } catch (Exception e) {
             //释放redis对象
-            jedisPool.returnBrokenResource(jedis);
+            jedisPool.close();
             e.printStackTrace();
         }finally {
             //返还到连接池

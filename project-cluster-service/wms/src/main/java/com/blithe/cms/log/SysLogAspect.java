@@ -1,8 +1,8 @@
 package com.blithe.cms.log;
 
 import com.alibaba.fastjson.JSON;
-import com.blithe.cms.common.utils.HttpContextUtils;
-import com.blithe.cms.common.utils.IpUtil;
+import com.blithe.cms.common.tools.HttpContextUtils;
+import com.blithe.cms.common.tools.IPUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -56,7 +56,7 @@ public class SysLogAspect {
         String argNameString = JSON.toJSONString(args);
 
         // 获取ip
-        String ip = IpUtil.getIpAddr(HttpContextUtils.getHttpServletRequest());
+        String ip = IPUtils.getIpAddr(HttpContextUtils.getHttpServletRequest());
 
         // 获取类名
         String className = joinPoint.getTarget().getClass().getName();

@@ -8,10 +8,6 @@ import java.util.List;
 
 /**
  * 
- * 
- * @author lujinjun
- * @date 2018-7-24
- *
  */
 public class ShowApi {
 

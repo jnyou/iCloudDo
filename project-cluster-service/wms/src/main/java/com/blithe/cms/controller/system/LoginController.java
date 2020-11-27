@@ -1,8 +1,8 @@
 package com.blithe.cms.controller.system;
 
 import com.blithe.cms.common.exception.R;
-import com.blithe.cms.common.utils.HttpContextUtils;
-import com.blithe.cms.common.utils.IpUtil;
+import com.blithe.cms.common.tools.HttpContextUtils;
+import com.blithe.cms.common.tools.IPUtils;
 import com.blithe.cms.log.SysLog;
 import com.blithe.cms.pojo.system.Loginfo;
 import com.blithe.cms.pojo.system.SysUser;
@@ -109,7 +109,7 @@ public class LoginController {
             // 登陆成功后将登陆信息记录到登陆日志中
             Loginfo loginfo = new Loginfo();
             loginfo.setLoginname(sysUser.getName()+"-"+sysUser.getLoginname());
-            loginfo.setLoginip(IpUtil.getIpAddr(HttpContextUtils.getHttpServletRequest()));
+            loginfo.setLoginip(IPUtils.getIpAddr(HttpContextUtils.getHttpServletRequest()));
             loginfo.setLogintime(new Date());
             loginfoService.insert(loginfo);
         }

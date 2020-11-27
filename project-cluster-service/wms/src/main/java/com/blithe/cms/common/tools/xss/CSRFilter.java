@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+/**
+ * @author jnyou
+ */
 public class CSRFilter implements Filter {
 
 	private boolean verify = true;//验证Referer头
