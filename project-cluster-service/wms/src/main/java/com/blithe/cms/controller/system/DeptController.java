@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.blithe.cms.common.exception.R;
-import com.blithe.cms.common.tools.DataGridView;
+import com.blithe.cms.common.utils.DataGridView;
 import com.blithe.cms.pojo.system.Dept;
 import com.blithe.cms.service.system.DeptService;
 import org.apache.commons.collections.CollectionUtils;

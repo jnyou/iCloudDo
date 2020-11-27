@@ -2,7 +2,7 @@ package com.blithe.cms.controller.upload;
 
 import cn.hutool.core.date.DateUtil;
 import com.blithe.cms.common.exception.R;
-import com.blithe.cms.common.tools.FileUpdloadUtil;
+import com.blithe.cms.common.utils.FileUpdloadUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

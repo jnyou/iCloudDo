@@ -1,4 +1,4 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 /**
  * 常量接口

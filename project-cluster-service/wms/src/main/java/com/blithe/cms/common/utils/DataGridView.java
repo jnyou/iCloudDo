@@ -1,4 +1,4 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

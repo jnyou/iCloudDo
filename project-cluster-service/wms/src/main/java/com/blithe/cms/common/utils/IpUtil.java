@@ -1,8 +1,7 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.NoArgsConstructor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;

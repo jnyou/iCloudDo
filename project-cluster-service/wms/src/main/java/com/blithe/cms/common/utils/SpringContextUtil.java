@@ -1,4 +1,4 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

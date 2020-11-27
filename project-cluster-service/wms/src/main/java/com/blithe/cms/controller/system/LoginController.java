@@ -1,8 +1,8 @@
 package com.blithe.cms.controller.system;
 
 import com.blithe.cms.common.exception.R;
-import com.blithe.cms.common.tools.HttpContextUtils;
-import com.blithe.cms.common.tools.IpUtil;
+import com.blithe.cms.common.utils.HttpContextUtils;
+import com.blithe.cms.common.utils.IpUtil;
 import com.blithe.cms.log.SysLog;
 import com.blithe.cms.pojo.system.Loginfo;
 import com.blithe.cms.pojo.system.SysUser;
@@ -14,7 +14,6 @@ import org.apache.juli.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

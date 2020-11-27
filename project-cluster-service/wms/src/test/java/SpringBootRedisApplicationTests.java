@@ -1,5 +1,5 @@
-import com.blithe.cms.common.tools.HttpContextUtils;
-import com.blithe.cms.common.tools.IpUtil;
+import com.blithe.cms.common.utils.HttpContextUtils;
+import com.blithe.cms.common.utils.IpUtil;
 import com.blithe.cms.pojo.system.Loginfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.Resource;
 import java.util.Date;
 
 /**

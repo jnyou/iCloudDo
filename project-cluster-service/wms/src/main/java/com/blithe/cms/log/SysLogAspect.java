@@ -1,20 +1,17 @@
 package com.blithe.cms.log;
 
 import com.alibaba.fastjson.JSON;
-import com.blithe.cms.common.tools.HttpContextUtils;
-import com.blithe.cms.common.tools.IpUtil;
+import com.blithe.cms.common.utils.HttpContextUtils;
+import com.blithe.cms.common.utils.IpUtil;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Date;
 

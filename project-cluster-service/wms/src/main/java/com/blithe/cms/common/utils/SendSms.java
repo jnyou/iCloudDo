@@ -1,4 +1,4 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
@@ -10,8 +10,6 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 /**

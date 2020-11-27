@@ -1,4 +1,4 @@
-package com.blithe.cms.common.tools;
+package com.blithe.cms.common.utils;
 
 /**
  * @description: 自定义redis序列化对象

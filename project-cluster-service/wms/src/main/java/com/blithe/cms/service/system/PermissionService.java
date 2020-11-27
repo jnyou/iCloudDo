@@ -2,7 +2,7 @@ package com.blithe.cms.service.system;
 
 
 import com.baomidou.mybatisplus.service.IService;
-import com.blithe.cms.common.tools.DataGridView;
+import com.blithe.cms.common.utils.DataGridView;
 import com.blithe.cms.pojo.system.Permission;
 
 /**

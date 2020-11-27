@@ -42,6 +42,7 @@
         <alipay-java-sdk-version>4.9.79.ALL</alipay-java-sdk-version>
         <pinyin4j.version>2.5.1</pinyin4j.version>
         <hutool.version>5.2.3</hutool.version>
+        <log4j-version>1.2.17</log4j-version>
     </properties>
 
     <dependencies>
@@ -54,6 +55,12 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j-version}</version>
         </dependency>
 
         <dependency>

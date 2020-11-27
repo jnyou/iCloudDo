@@ -1,7 +1,7 @@
 package com.blithe.cms.service.business.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.blithe.cms.common.tools.HttpContextUtils;
+import com.blithe.cms.common.utils.HttpContextUtils;
 import com.blithe.cms.mapper.business.GoodsMapper;
 import com.blithe.cms.mapper.business.InportMapper;
 import com.blithe.cms.mapper.business.OutportMapper;

@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
 /**
  * 功能：字符串工具类
  * 
+ * @author lujinjun
+ * @date 2017-6-13
+ * 
  */
 public class StringUtil {
 
@@ -817,4 +820,18 @@ public class StringUtil {
 		}
 		return false;
 	}
+	
+
+	/**
+	 * 是否是数字或小数
+	 * @param str
+	 * @return
+	 */
+	public static boolean isFloat(String str){
+        if(isEmpty(str)){
+            return false;
+        }
+        String reg = "\\d+(\\.\\d+)?";
+        return str.matches(reg);
+    }
 }
