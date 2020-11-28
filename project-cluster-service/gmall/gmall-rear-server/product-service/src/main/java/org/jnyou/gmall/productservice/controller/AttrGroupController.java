@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.jnyou.gmall.productservice.annotation.EagleEye;
 import org.jnyou.gmall.productservice.entity.AttrEntity;
 import org.jnyou.gmall.productservice.service.AttrAttrgroupRelationService;
 import org.jnyou.gmall.productservice.service.AttrService;
@@ -44,6 +45,7 @@ public class AttrGroupController {
      * 列表
      */
     @GetMapping("/list/{catId}")
+    @EagleEye(desc = "属性分组查询")
     //@RequiresPermissions("productservice:attrgroup:list")
     public R list(@RequestParam Map<String, Object> params,@PathVariable Long catId){
         PageUtils page = attrGroupService.queryPage(params,catId);
