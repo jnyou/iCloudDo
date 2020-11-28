@@ -3,6 +3,7 @@ package org.jnyou.gmall.productservice.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.jnyou.gmall.productservice.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,12 +31,12 @@ public class AttrController {
     private AttrService attrService;
 
     /**
-     * 列表
+     * 列表 /product/attr/${type}/list/${this.catId}
      */
-    @RequestMapping("/list")
+    @RequestMapping("/base/list/{catId}")
     //@RequiresPermissions("productservice:attr:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params,@PathVariable("catId") Long catId){
+        PageUtils page = attrService.queryPage(params,catId);
 
         return R.ok().put("page", page);
     }
@@ -57,8 +58,8 @@ public class AttrController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("productservice:attr:save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
+    public R save(@RequestBody AttrVo attr){
+		attrService.saveAttr(attr);
 
         return R.ok();
     }

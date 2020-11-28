@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 属性&属性分组关联
@@ -15,6 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("pms_attr_attrgroup_relation")
+@Accessors(chain = true)
 public class AttrAttrgroupRelationEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
