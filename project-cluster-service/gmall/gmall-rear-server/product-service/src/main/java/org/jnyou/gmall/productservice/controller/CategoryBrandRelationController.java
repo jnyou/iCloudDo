@@ -1,19 +1,16 @@
 package org.jnyou.gmall.productservice.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.jnyou.gmall.productservice.entity.CategoryBrandRelationEntity;
-import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.R;
+import org.jnyou.gmall.productservice.entity.CategoryBrandRelationEntity;
+import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -40,6 +37,16 @@ public class CategoryBrandRelationController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 关联分类查询
+     */
+    @GetMapping("/catelog/list")
+    //@RequiresPermissions("productservice:attrattrgrouprelation:list")
+    public R CatelogList(@RequestParam("brandId") Long brandId){
+        List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
+        return R.ok().put("data", data);
+    }
+
 
     /**
      * 信息
@@ -58,7 +65,7 @@ public class CategoryBrandRelationController {
     @RequestMapping("/save")
     //@RequiresPermissions("productservice:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
+		categoryBrandRelationService.saveDetail(categoryBrandRelation);
 
         return R.ok();
     }

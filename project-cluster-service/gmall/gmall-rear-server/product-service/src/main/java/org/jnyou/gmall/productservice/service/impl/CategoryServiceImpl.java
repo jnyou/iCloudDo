@@ -1,6 +1,8 @@
 package org.jnyou.gmall.productservice.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import org.jnyou.common.utils.Query;
 import org.jnyou.gmall.productservice.dao.CategoryDao;
 import org.jnyou.gmall.productservice.entity.CategoryEntity;
 import org.jnyou.gmall.productservice.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -25,6 +29,9 @@ import org.jnyou.gmall.productservice.service.CategoryService;
  */
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -66,6 +73,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 将结果的数组倒叙
         Collections.reverse(resultPath);
         return resultPath.toArray(new Long[resultPath.size()]);
+    }
+
+    /**
+     * 级联更新所有关联的数据
+     * @param category
+     * @return
+     * @Author jnyou
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+        if(!StringUtils.isEmpty(category.getName())){
+            // 维护关联冗余数据一致性
+            categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+        }
     }
 
     // 递归向上查询当前catelogId的父ID
