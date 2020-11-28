@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jnyou.gmall.productservice.entity.AttrEntity;
+import org.jnyou.gmall.productservice.service.AttrAttrgroupRelationService;
 import org.jnyou.gmall.productservice.service.AttrService;
 import org.jnyou.gmall.productservice.service.CategoryService;
 import org.jnyou.gmall.productservice.vo.AttrGroupRelationVo;
@@ -35,6 +36,9 @@ public class AttrGroupController {
 
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private AttrAttrgroupRelationService attrAttrgroupRelationService;
 
     /**
      * 列表
@@ -70,6 +74,16 @@ public class AttrGroupController {
 
         return R.ok();
     }
+
+    /**
+     * 保存新建关联的属性  [{attrId: 1, attrGroupId: 6}]
+     */
+    @PostMapping("/attr/relation")
+    public R saveRelations(@RequestBody List<AttrGroupRelationVo> relationVos){
+        attrAttrgroupRelationService.saveRelations(relationVos);
+        return R.ok();
+    }
+
 
     /**
      * 修改
