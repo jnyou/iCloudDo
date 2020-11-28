@@ -1,9 +1,13 @@
 package org.jnyou.gmall.productservice.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import org.jnyou.gmall.productservice.entity.AttrEntity;
+import org.jnyou.gmall.productservice.service.AttrService;
 import org.jnyou.gmall.productservice.service.CategoryService;
+import org.jnyou.gmall.productservice.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +32,9 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AttrService attrService;
 
     /**
      * 列表
@@ -76,6 +83,16 @@ public class AttrGroupController {
     }
 
     /**
+     * 根据分组ID查询关联的所有基本属性（规格参数）
+     */
+    @GetMapping("/{attrGroupId}/attr/relation")
+    public R attrGroupRelation(@PathVariable("attrGroupId") Long attrGroupId){
+        List<AttrEntity> data = attrService.getRelationAttr(attrGroupId);
+
+        return R.ok().put("data",data);
+    }
+
+    /**
      * 删除
      */
     @RequestMapping("/delete")
@@ -85,5 +102,16 @@ public class AttrGroupController {
 
         return R.ok();
     }
+
+    /**
+     * 移除该分组下关联的属性
+     */
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] attrGroupIds){
+        attrService.deleteRelation(attrGroupIds);
+        return R.ok();
+    }
+
+
 
 }
