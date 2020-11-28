@@ -29,7 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -166,7 +169,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             return attr.getAttrId();
         }).collect(Collectors.toList());
         List<AttrEntity> attrEntities = null;
-        if(!CollectionUtils.isEmpty(attrIds)){
+        if (!CollectionUtils.isEmpty(attrIds)) {
             attrEntities = this.listByIds(attrIds);
         }
         return attrEntities;
@@ -182,6 +185,46 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }).collect(Collectors.toList());
         attrAttrgroupRelationDao.deleteBatchRelations(entities);
 
+    }
+
+    /**
+     * 查询当前分组没有被关联的属性
+     *
+     * @param params
+     * @param attrGroupId
+     * @Author jnyou
+     */
+    @Override
+    public PageUtils getRelationNoAttr(Map<String, Object> params, Long attrGroupId) {
+        // 当前分组只能关联自己分类下的所有属性
+        AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrGroupId);
+        Long catelogId = attrGroupEntity.getCatelogId();
+        // 1、查询除了当前分组，其他分组关联的所有属性
+        List<AttrGroupEntity> groupEntities = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
+        List<Long> attrGroupIds = groupEntities.stream().map(item -> {
+            return item.getAttrGroupId();
+        }).collect(Collectors.toList());
+
+        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in(!CollectionUtils.isEmpty(attrGroupIds),"attr_group_id", attrGroupIds));
+        List<Long> attrIds = attrAttrgroupRelationEntities.stream().map(item -> {
+            return item.getAttrId();
+        }).collect(Collectors.toList());
+        // 当前分组只能关联别的分组没有引用属性
+
+        LambdaQueryWrapper<AttrEntity> wrapper = Wrappers.<AttrEntity>lambdaQuery()
+                .eq(AttrEntity::getCatelogId, catelogId)
+                .notIn(!CollectionUtils.isEmpty(attrIds), AttrEntity::getAttrId, attrIds)
+                .eq(AttrEntity::getAttrType, ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode())
+                .and(!StringUtils.isEmpty(params.get("key")), (obj) -> {
+                    obj.eq(AttrEntity::getAttrId, params.get("key")).or().like(AttrEntity::getAttrName, params.get("key"));
+                });
+
+        IPage<AttrEntity> page = this.page(
+                new Query<AttrEntity>().getPage(params),
+                wrapper
+        );
+
+        return new PageUtils(page);
     }
 
 

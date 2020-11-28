@@ -93,6 +93,15 @@ public class AttrGroupController {
     }
 
     /**
+     * 获取当前分组没有关联的属性
+     */
+    @GetMapping("/{attrGroupId}/noattr/relation")
+    public R attrGroupNoRelation(@RequestParam Map<String, Object> params,@PathVariable("attrGroupId") Long attrGroupId){
+        PageUtils page = attrService.getRelationNoAttr(params,attrGroupId);
+        return R.ok().put("page",page);
+    }
+
+    /**
      * 删除
      */
     @RequestMapping("/delete")
