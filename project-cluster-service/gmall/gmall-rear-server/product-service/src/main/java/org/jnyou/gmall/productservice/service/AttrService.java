@@ -3,6 +3,7 @@ package org.jnyou.gmall.productservice.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.productservice.entity.AttrEntity;
+import org.jnyou.gmall.productservice.vo.AttrRespVo;
 import org.jnyou.gmall.productservice.vo.AttrVo;
 
 import java.util.Map;
@@ -15,8 +16,12 @@ import java.util.Map;
  */
 public interface AttrService extends IService<AttrEntity> {
 
-    PageUtils queryPage(Map<String, Object> params,Long catId);
+    PageUtils queryPage(Map<String, Object> params,Long catId,String type);
 
     void saveAttr(AttrVo attr);
+
+    AttrRespVo getAttrInfo(Long attrId);
+
+    void updateAttr(AttrVo attr);
 }
 
