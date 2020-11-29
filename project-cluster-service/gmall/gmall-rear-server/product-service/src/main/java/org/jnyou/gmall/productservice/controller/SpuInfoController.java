@@ -3,12 +3,10 @@ package org.jnyou.gmall.productservice.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.jnyou.gmall.productservice.annotation.EagleEye;
+import org.jnyou.gmall.productservice.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.jnyou.gmall.productservice.entity.SpuInfoEntity;
 import org.jnyou.gmall.productservice.service.SpuInfoService;
@@ -55,11 +53,10 @@ public class SpuInfoController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
-    //@RequiresPermissions("productservice:spuinfo:save")
-    public R save(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.save(spuInfo);
-
+    @PostMapping("/save")
+    @EagleEye(desc = "商品信息存储")
+    public R save(@RequestBody SpuSaveVo spuSaveVo){
+        spuInfoService.saveSpuInfo(spuSaveVo);
         return R.ok();
     }
 
