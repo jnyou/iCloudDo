@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("memberservice/memberlevel")
+@RequestMapping("member/memberlevel")
 public class MemberLevelController {
     @Autowired
     private MemberLevelService memberLevelService;

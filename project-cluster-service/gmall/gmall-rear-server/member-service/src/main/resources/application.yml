@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     username: root
-    password: root
-    url: jdbc:mysql://192.168.56.10:3306/gmall_ums?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    password: admin
+    url: jdbc:mysql://localhost:3306/gmall_ums?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: member-service

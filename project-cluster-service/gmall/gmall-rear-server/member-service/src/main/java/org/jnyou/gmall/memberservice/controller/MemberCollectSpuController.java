@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("memberservice/membercollectspu")
+@RequestMapping("member/membercollectspu")
 public class MemberCollectSpuController {
     @Autowired
     private MemberCollectSpuService memberCollectSpuService;
