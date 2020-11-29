@@ -10,6 +10,7 @@ import org.jnyou.gmall.productservice.service.AttrAttrgroupRelationService;
 import org.jnyou.gmall.productservice.service.AttrService;
 import org.jnyou.gmall.productservice.service.CategoryService;
 import org.jnyou.gmall.productservice.vo.AttrGroupRelationVo;
+import org.jnyou.gmall.productservice.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,17 @@ public class AttrGroupController {
         PageUtils page = attrGroupService.queryPage(params,catId);
 
         return R.ok().put("page", page);
+    }
+
+
+    /**
+     * 获取分类下所有分组&关联属性  /product/attrgroup/{catelogId}/withattr
+     */
+    @GetMapping("/{catelogId}/withattr")
+    @EagleEye(desc = "获取分类下所有分组&关联属性")
+    public R getAttrGroupWithAttrs(@PathVariable Long catelogId){
+        List<AttrGroupWithAttrsVo> attrGroupWithAttrsVos = attrGroupService.getAttrGroupWithAttrsByCatId(catelogId);
+        return R.ok().put("data", attrGroupWithAttrsVos);
     }
 
 

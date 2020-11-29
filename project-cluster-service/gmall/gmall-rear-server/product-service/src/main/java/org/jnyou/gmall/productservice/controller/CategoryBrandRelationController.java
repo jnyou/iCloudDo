@@ -3,15 +3,17 @@ package org.jnyou.gmall.productservice.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.R;
+import org.jnyou.gmall.productservice.entity.BrandEntity;
 import org.jnyou.gmall.productservice.entity.CategoryBrandRelationEntity;
 import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
+import org.jnyou.gmall.productservice.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,11 +44,23 @@ public class CategoryBrandRelationController {
      */
     @GetMapping("/catelog/list")
     //@RequiresPermissions("productservice:attrattrgrouprelation:list")
-    public R CatelogList(@RequestParam("brandId") Long brandId){
+    public R catelogList(@RequestParam("brandId") Long brandId){
         List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
         return R.ok().put("data", data);
     }
 
+    /**
+     * 分类关联的品牌查询。  /product/categorybrandrelation/brands/list
+     */
+    @GetMapping("/brands/list")
+    public R categorybrandrelation(@RequestParam(value = "catId",required = true) Long catId){
+        List<BrandEntity> brandEntities =  categoryBrandRelationService.getBrandsByCatId(catId);
+        List<BrandVo> brandVos = brandEntities.stream().map(item -> {
+            BrandVo brandVo = new BrandVo().setBrandId(item.getBrandId()).setBrandName(item.getName());
+            return brandVo;
+        }).collect(Collectors.toList());
+        return R.ok().put("data", brandVos);
+    }
 
     /**
      * 信息
