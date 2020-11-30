@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 1、整合MyBatis-Plus
@@ -59,6 +60,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @MapperScan("org.jnyou.gmall.productservice.dao")
 @EnableDiscoveryClient
 @EnableFeignClients
+@EnableTransactionManagement
 public class ProductWebServiceApplication {
 
     public static void main(String[] args) {

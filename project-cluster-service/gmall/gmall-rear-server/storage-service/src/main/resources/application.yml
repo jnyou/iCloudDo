@@ -8,7 +8,7 @@ spring:
     url: jdbc:mysql://localhost:3306/gmall_wms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   application:
-    name: storage-service
+    name: ware-service
   cloud:
     nacos:
       discovery:
