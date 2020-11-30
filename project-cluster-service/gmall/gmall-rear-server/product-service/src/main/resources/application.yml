@@ -19,6 +19,8 @@ spring:
       secret-key: gFfw1p6Eo3u7YDhPv1dFR6cNPgkjq7
       oss:
         endpoint: oss-cn-beijing.aliyuncs.com
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 # MapperScan
 # sql映射文件位置
 mybatis-plus:

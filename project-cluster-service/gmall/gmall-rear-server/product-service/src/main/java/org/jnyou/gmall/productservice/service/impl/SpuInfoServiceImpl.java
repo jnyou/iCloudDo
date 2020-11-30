@@ -1,9 +1,10 @@
 package org.jnyou.gmall.productservice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.jnyou.common.to.SkuReductionTo;
 import org.jnyou.common.to.SpuBoundTo;
 import org.jnyou.common.utils.PageUtils;
@@ -18,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -64,6 +66,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     /**
      * TODO 分布式功能完善
+     *
      * @param vo
      * @return
      * @Author jnyou
@@ -177,5 +180,23 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity infoEntity) {
         this.baseMapper.insert(infoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+
+        LambdaQueryWrapper<SpuInfoEntity> lambdaQueryWrapper = Wrappers.<SpuInfoEntity>lambdaQuery().and(!StringUtils.isEmpty(params.get("key")), (k) -> {
+            k.eq(SpuInfoEntity::getId, params.get("key")).or().like(SpuInfoEntity::getSpuName, params.get("key"));
+        })
+                .eq(!StringUtils.isEmpty(params.get("status")), SpuInfoEntity::getPublishStatus, params.get("status"))
+                .eq(!StringUtils.isEmpty(params.get("brandId")), SpuInfoEntity::getBrandId, params.get("brandId"))
+                .eq(!StringUtils.isEmpty(params.get("catelogId")), SpuInfoEntity::getCatalogId, params.get("catelogId"));
+
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                lambdaQueryWrapper
+        );
+
+        return new PageUtils(page);
     }
 }

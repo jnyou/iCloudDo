@@ -33,7 +33,7 @@ public class SpuInfoController {
     @RequestMapping("/list")
     //@RequiresPermissions("productservice:spuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = spuInfoService.queryPage(params);
+        PageUtils page = spuInfoService.queryPageByCondition(params);
 
         return R.ok().put("page", page);
     }
