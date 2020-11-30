@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("couponservice/skuladder")
+@RequestMapping("coupon/skuladder")
 public class SkuLadderController {
     @Autowired
     private SkuLadderService skuLadderService;

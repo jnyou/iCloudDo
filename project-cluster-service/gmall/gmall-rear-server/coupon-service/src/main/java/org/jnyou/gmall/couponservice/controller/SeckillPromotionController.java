@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("couponservice/seckillpromotion")
+@RequestMapping("coupon/seckillpromotion")
 public class SeckillPromotionController {
     @Autowired
     private SeckillPromotionService seckillPromotionService;

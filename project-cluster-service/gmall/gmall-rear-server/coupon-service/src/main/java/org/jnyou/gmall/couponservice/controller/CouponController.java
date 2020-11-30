@@ -20,7 +20,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("couponservice/coupon")
+@RequestMapping("coupon/coupon")
 public class CouponController {
     @Autowired
     private CouponService couponService;

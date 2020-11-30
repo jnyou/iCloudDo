@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("couponservice/homeadv")
+@RequestMapping("coupon/homeadv")
 public class HomeAdvController {
     @Autowired
     private HomeAdvService homeAdvService;
