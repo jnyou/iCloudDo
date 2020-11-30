@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("storageservice/purchase")
+@RequestMapping("storage/purchase")
 public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;

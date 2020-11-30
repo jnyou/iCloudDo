@@ -40,10 +40,10 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
-        - id: ware_route
-          uri: lb://gmall-ware
+        - id: storage_route
+          uri: lb://storage-service
           predicates:
-            - Path=/api/ware/**
+            - Path=/api/storage/**
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 ##lb：代表负载均衡

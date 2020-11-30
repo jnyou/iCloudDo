@@ -7,6 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * @author jnyou
+ * 库存服务
  */
 @SpringBootApplication
 @MapperScan("org.jnyou.gmall.storageservice.dao")

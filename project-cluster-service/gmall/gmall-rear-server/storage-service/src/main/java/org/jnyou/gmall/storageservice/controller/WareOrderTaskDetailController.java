@@ -24,7 +24,7 @@ import org.jnyou.common.utils.R;
  * @email xiaojian19970910@gmail.com
  */
 @RestController
-@RequestMapping("storageservice/wareordertaskdetail")
+@RequestMapping("storage/wareordertaskdetail")
 public class WareOrderTaskDetailController {
     @Autowired
     private WareOrderTaskDetailService wareOrderTaskDetailService;
