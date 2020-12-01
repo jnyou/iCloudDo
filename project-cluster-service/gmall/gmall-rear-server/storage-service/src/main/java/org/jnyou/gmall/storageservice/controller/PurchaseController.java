@@ -2,6 +2,7 @@ package org.jnyou.gmall.storageservice.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.jnyou.gmall.storageservice.vo.MergeVo;
@@ -39,6 +40,7 @@ public class PurchaseController {
     }
 
 
+
     /**
      * 获取所有未领取的采购单
      */
@@ -49,7 +51,15 @@ public class PurchaseController {
         return R.ok().put("page", page);
     }
 
-
+    /**
+     * 领取采购单
+     */
+    @PostMapping("/received")
+    //@RequiresPermissions("storageservice:purchase:list")
+    public R received(@RequestBody List<Long> purchaseId){
+        purchaseService.received(purchaseId);
+        return R.ok();
+    }
 
     /**
      * 信息

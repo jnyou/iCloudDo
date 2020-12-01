@@ -1,6 +1,8 @@
 package org.jnyou.gmall.storageservice.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -52,6 +54,11 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void updatePurchaseDetails(List<PurchaseDetailEntity> purchaseDetailEntities) {
+        this.updateBatchById(purchaseDetailEntities);
     }
 
 }
