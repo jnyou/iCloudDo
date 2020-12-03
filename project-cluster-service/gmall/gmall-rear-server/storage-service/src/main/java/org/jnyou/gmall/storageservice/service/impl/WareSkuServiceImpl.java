@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
+import org.jnyou.common.utils.R;
 import org.jnyou.gmall.storageservice.dao.WareSkuDao;
 import org.jnyou.gmall.storageservice.entity.WareSkuEntity;
+import org.jnyou.gmall.storageservice.feign.ProductFeignClient;
 import org.jnyou.gmall.storageservice.service.WareSkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Autowired
     WareSkuDao wareSkuDao;
+
+    @Autowired
+    ProductFeignClient productFeignClient;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -45,7 +50,19 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         List<WareSkuEntity> wareSkuEntities = wareSkuDao.selectList(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId).eq("ware_id", wareId));
         if (CollectionUtils.isEmpty(wareSkuEntities)) {
             // 为空则添加库存
-            wareSkuDao.insert(new WareSkuEntity().setWareId(wareId).setStock(skuNum).setSkuId(skuId));
+            WareSkuEntity wareSkuEntity = new WareSkuEntity().setWareId(wareId).setStock(skuNum).setSkuId(skuId).setStockLocked(0);
+            // 远程获取商品名称
+            try {
+                R info = productFeignClient.info(skuId);
+                if (info.getCode() == 0) {
+                    Map<String, Object> skuInfo = (Map<String, Object>) info.get("skuInfo");
+                    wareSkuEntity.setSkuName((String) skuInfo.get("skuName"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            wareSkuDao.insert(wareSkuEntity);
         } else {
             // 更新库存数信息
             wareSkuDao.addStock(skuId, wareId, skuNum);
