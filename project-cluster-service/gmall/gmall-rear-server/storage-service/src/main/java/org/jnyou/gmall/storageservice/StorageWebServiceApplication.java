@@ -10,9 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author jnyou
  * 库存服务
  */
-@EnableTransactionManagement
 @SpringBootApplication
-@MapperScan("org.jnyou.gmall.storageservice.dao")
 @EnableDiscoveryClient
 public class StorageWebServiceApplication {
 
@@ -21,3 +19,4 @@ public class StorageWebServiceApplication {
     }
 
 }
+

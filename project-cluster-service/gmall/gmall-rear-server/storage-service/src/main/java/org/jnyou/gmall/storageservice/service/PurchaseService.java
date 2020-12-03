@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.storageservice.entity.PurchaseEntity;
 import org.jnyou.gmall.storageservice.vo.MergeVo;
+import org.jnyou.gmall.storageservice.vo.PurchaseDoneVo;
 
 import java.util.List;
 import java.util.Map;
@@ -23,5 +24,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     void mergePurchase(MergeVo mergeVo);
 
     void received(List<Long> purchaseId);
+
+    void done(PurchaseDoneVo purchaseDoneVo);
 }
 

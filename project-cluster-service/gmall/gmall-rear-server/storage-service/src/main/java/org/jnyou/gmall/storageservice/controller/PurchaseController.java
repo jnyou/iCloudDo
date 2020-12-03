@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jnyou.gmall.storageservice.vo.MergeVo;
+import org.jnyou.gmall.storageservice.vo.PurchaseDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,15 @@ public class PurchaseController {
     //@RequiresPermissions("storageservice:purchase:list")
     public R received(@RequestBody List<Long> purchaseId){
         purchaseService.received(purchaseId);
+        return R.ok();
+    }
+
+    /**
+     * 完成采购
+     */
+    @PostMapping("/done")
+    public R done(@RequestBody PurchaseDoneVo purchaseDoneVo){
+        purchaseService.done(purchaseDoneVo);
         return R.ok();
     }
 

@@ -11,5 +11,5 @@ public class PurchaseDoneVo {
     @NotNull
     private Long id;//采购单id
 
-    private List<PurchaseItemDoneVo> items;
+    private List<PurchaseItemDoneVo> items; // 采购需求项集合
 }
