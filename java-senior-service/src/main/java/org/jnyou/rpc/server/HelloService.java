@@ -1,4 +1,4 @@
-package org.jnyou.remote.procedure.call.server;
+package org.jnyou.rpc.server;
 
 /**
  * 分类名称

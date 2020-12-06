@@ -17,17 +17,17 @@ import java.util.*;
 /**
  * 分类名称
  *
- * @ClassName Sample1
+ * @ClassName Sample
  * @Description: json操作
  * @Author: jnyou
  **/
-public class Sample1 {
+public class Sample {
 
     public static void main(String[] args) throws IOException {
         data1();
         data2();
         data3();
-        new Sample1().data4();
+        new Sample().data4();
 
         genJsonFile();
 

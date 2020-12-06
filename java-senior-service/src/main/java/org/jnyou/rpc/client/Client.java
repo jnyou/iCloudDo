@@ -1,4 +1,4 @@
-package org.jnyou.remote.procedure.call.client;
+package org.jnyou.rpc.client;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;

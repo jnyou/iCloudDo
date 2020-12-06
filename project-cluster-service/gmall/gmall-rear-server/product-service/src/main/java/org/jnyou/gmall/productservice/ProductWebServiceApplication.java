@@ -55,12 +55,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *  2）、使用@ExceptionHandler标注方法可以处理的异常。
  *
  *  @author jnyou
+ *  商品服务
  */
 @SpringBootApplication
-@MapperScan("org.jnyou.gmall.productservice.dao")
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableTransactionManagement
 public class ProductWebServiceApplication {
 
     public static void main(String[] args) {

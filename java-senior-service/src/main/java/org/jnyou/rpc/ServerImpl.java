@@ -1,4 +1,4 @@
-package org.jnyou.remote.procedure.call;
+package org.jnyou.rpc;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

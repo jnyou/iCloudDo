@@ -1,8 +1,8 @@
-package org.jnyou.remote.procedure.call.test;
+package org.jnyou.rpc.test;
 
-import org.jnyou.remote.procedure.call.ServerImpl;
-import org.jnyou.remote.procedure.call.server.HelloService;
-import org.jnyou.remote.procedure.call.server.HelloServiceImpl;
+import org.jnyou.rpc.ServerImpl;
+import org.jnyou.rpc.server.HelloService;
+import org.jnyou.rpc.server.HelloServiceImpl;
 
 /**
  * 分类名称
