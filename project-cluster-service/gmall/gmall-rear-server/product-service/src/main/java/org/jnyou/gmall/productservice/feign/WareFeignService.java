@@ -19,9 +19,17 @@ import java.util.List;
 public interface WareFeignService {
 
     /**
+     * 1、R 在设计的时候加上泛型
+     * 2、直接返回我们想要的结果
+     * 3、自己封装解析结果
+     */
+
+    /**
      * 查询sku是否有库存
+     * @param skuIds
+     * @return R<List<SkuHasStockVo>>
      */
     @PostMapping("/ware/waresku/hasStock")
-    public R<List<SkuHasStockVo>> getSkuHasStock(@RequestBody List<Long> skuIds);
+    public R getSkuHasStock(@RequestBody List<Long> skuIds);
 
 }

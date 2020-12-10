@@ -2,6 +2,7 @@ package org.jnyou.common.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import org.apache.commons.math3.stat.descriptive.summary.Product;
 import org.apache.http.HttpStatus;
 import org.apache.poi.ss.formula.functions.T;
 
@@ -13,10 +14,17 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R<T> extends HashMap<String, Object> {
+public class R extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
-//	private T data;  返回T泛型，直接让远程调用的返回值为需要查询的集合或者对象，比如直接返回List<Product> ； 解决远程调用后获取值的各项操作
+//	因为R是hashmap，所以写的所有私有属性都没用了，只能存key value了
+//	private T data;  // 返回T泛型，直接让远程调用的返回值为需要查询的集合或者对象，比如直接返回List<Product> ； 解决远程调用后获取值的各项操作
+//	public T getData(){
+//		return data;
+//	}
+//	public void setData(T data){
+//		this.data = data;
+//	}
 
 	public R() {
 		put("code", 0);

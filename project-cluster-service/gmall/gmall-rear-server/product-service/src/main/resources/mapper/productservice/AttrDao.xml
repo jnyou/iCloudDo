@@ -17,7 +17,7 @@
     </resultMap>
 
     <select id="selectSearchAttrs" resultType="java.lang.Long">
-        select attr_id where attr_id in
+        select attr_id from pms_attr where attr_id in
         <foreach collection="attrIds" item="id" separator="," open="(" close=")">
             #{id}
         </foreach>

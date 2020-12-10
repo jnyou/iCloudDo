@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jnyou.common.constant.ProductConstant;
 import org.jnyou.common.to.SkuHasStockVo;
 import org.jnyou.common.to.SkuReductionTo;
 import org.jnyou.common.to.SpuBoundTo;
@@ -16,6 +17,7 @@ import org.jnyou.common.utils.R;
 import org.jnyou.gmall.productservice.dao.SpuInfoDao;
 import org.jnyou.gmall.productservice.entity.*;
 import org.jnyou.gmall.productservice.feign.CouponFeignService;
+import org.jnyou.gmall.productservice.feign.SearchFeignService;
 import org.jnyou.gmall.productservice.feign.WareFeignService;
 import org.jnyou.gmall.productservice.service.*;
 import org.jnyou.gmall.productservice.vo.*;
@@ -65,6 +67,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     WareFeignService wareFeignService;
+
+    @Autowired
+    SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -235,32 +240,40 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return idSet.contains(item.getAttrId());
         }).map(item -> {
             SkuEsModel.Attrs esAttr = new SkuEsModel.Attrs();
-            BeanUtils.copyProperties(item,esAttr);
+            BeanUtils.copyProperties(item, esAttr);
             return esAttr;
         }).collect(Collectors.toList());
 
         // 发送远程调用库存服务，查询当前是否有库存
-        Map<Long,Boolean> stockMap = null;
-        try{
+        Map<Long, Boolean> stockMap = null;
+        try {
             R r = wareFeignService.getSkuHasStock(skuIds);
             TypeReference<List<SkuHasStockVo>> typeReference = new TypeReference<List<SkuHasStockVo>>() {
             };
-//            stockMap = r.getData(typeReference).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId,
-//                    SkuHasStockVo::getStock));
+            // 这个相当于传入一个复杂类型进行制定需要转换成的类型格式 List<SkuHasStockVo>
+            stockMap = r.getData(typeReference).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId,
+                    SkuHasStockVo::getHasStock));
         } catch (Exception e) {
             log.error("调用库存服务查询异常，原因为{}" + e);
         }
 
         // 处理数据
-        skuInfoEntities.stream().map(sku -> {
+        Map<Long, Boolean> finalStockMap = stockMap;
+        List<SkuEsModel> productList = skuInfoEntities.stream().map(sku -> {
             // 组装数据
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, skuEsModel);
             skuEsModel.setSkuPrice(sku.getPrice());
             skuEsModel.setSkuImg(sku.getSkuDefaultImg());
 
-//            skuEsModel.setHasStock();
-            //TODO 2、热度评分。0
+            // 库存
+            if (null == finalStockMap) {
+                skuEsModel.setHasStock(true);
+            } else {
+                skuEsModel.setHasStock(finalStockMap.get(sku.getSkuId()));
+            }
+
+            //热度评分。给个默认值0
             skuEsModel.setHotScore(0L);
 
             // 查询品牌名称和分类名称信息
@@ -273,9 +286,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // 保存规格属性集
             skuEsModel.setAttrs(attrList);
 
-            // 将数据发送给es检索服务存储
-
             return skuEsModel;
         }).collect(Collectors.toList());
+
+        // 将数据发送给es检索服务存储
+        R r = searchFeignService.productStatusUp(productList);
+        if (r.getCode() == 0) {
+            // 商品上架成功，修改spu的状态为上架状态
+            this.baseMapper.updateSpuStastus(spuId, ProductConstant.ProductStatusEnum.SPU_UP.getCode());
+        } else {
+            // 商品上架失败
+            // TODO Question：重复调用？（也就是接口幂等性问题：重试机制等。。。）
+        }
     }
 }
