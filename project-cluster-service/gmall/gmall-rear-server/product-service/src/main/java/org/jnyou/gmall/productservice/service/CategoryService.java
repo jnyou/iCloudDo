@@ -3,6 +3,7 @@ package org.jnyou.gmall.productservice.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.productservice.entity.CategoryEntity;
+import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -26,5 +27,7 @@ public interface CategoryService extends IService<CategoryEntity> {
     void updateCascade(CategoryEntity category);
 
     List<CategoryEntity> getLevel1Category();
+
+    Map<String, List<Catelog2Vo>> getCatelogJson();
 }
 
