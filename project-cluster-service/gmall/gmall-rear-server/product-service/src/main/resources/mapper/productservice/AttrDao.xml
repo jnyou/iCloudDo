@@ -16,5 +16,11 @@
         <result property="showDesc" column="show_desc"/>
     </resultMap>
 
-
+    <select id="selectSearchAttrs" resultType="java.lang.Long">
+        select attr_id where attr_id in
+        <foreach collection="attrIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        and search_type = 1
+    </select>
 </mapper>

@@ -1,9 +1,11 @@
 package org.jnyou.gmall.storageservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jnyou.common.to.SkuHasStockVo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.storageservice.entity.WareSkuEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,5 +19,7 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     void addStock(Long skuId, Long wareId, Integer skuNum);
+
+    List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds);
 }
 

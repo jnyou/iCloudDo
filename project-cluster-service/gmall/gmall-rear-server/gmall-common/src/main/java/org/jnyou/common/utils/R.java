@@ -1,6 +1,9 @@
 package org.jnyou.common.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.apache.http.HttpStatus;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +13,10 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R extends HashMap<String, Object> {
+public class R<T> extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
+
+//	private T data;  返回T泛型，直接让远程调用的返回值为需要查询的集合或者对象，比如直接返回List<Product> ； 解决远程调用后获取值的各项操作
 
 	public R() {
 		put("code", 0);
@@ -56,5 +61,20 @@ public class R extends HashMap<String, Object> {
 	public  Integer getCode() {
 		return (Integer) this.get("code");
 	}
+
+	public R setData(Object data){
+		put("data",data);
+		return this;
+	}
+
+	//利用fastjson进行逆转，
+	public <T> T getData(TypeReference<T> typeReference){
+		//默认是map
+		Object data = get("data");
+		String s = JSON.toJSONString(data);
+		T t = JSON.parseObject(s, typeReference);
+		return t;
+	}
+
 
 }
