@@ -21,6 +21,8 @@ spring:
         endpoint: oss-cn-beijing.aliyuncs.com
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
 # MapperScan
 # sql映射文件位置
 mybatis-plus:
