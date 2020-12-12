@@ -1,0 +1,37 @@
+server:
+  port: 6001
+
+spring:
+  datasource:
+    username: root
+    password: admin
+    url: jdbc:mysql://localhost:3306/gmall_pms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    name: product-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        #5.配置阿里巴巴-cloud-oss,这里对应common.pom的spring-cloud-alibaba-dependencies（2.1.0.RELEASE），不兼容
+    alicloud:
+      access-key: LTAI4G4kd2LUwd58wQyh3Th7
+      secret-key: gFfw1p6Eo3u7YDhPv1dFR6cNPgkjq7
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: true #生产环境开启缓存
+# MapperScan
+# sql映射文件位置
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+logging:
+  level:
+    org.jnyou.gmall: error #生产环境只打印错误日志
