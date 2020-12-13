@@ -1,5 +1,7 @@
 package org.jnyou.gmall.productservice.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,6 +14,7 @@ import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
 import org.jnyou.gmall.productservice.service.CategoryService;
 import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +36,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -99,6 +106,29 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
+
+        /**
+         * 解决缓存相关问题：
+         * 1、缓存空对象：解决缓存穿透
+         * 2、设置过期时间（加随机值）：解决缓存雪崩
+         * 3、加锁：解决缓存击穿
+         */
+
+        // 加入Redis缓存逻辑
+        String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+        if(StringUtils.isEmpty(catelogJson)){
+            // 缓存中没有查询数据库
+            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDb();
+            // 将查询的数据放入缓存，所有存在缓存中的数据都转成json字符串形式，因为JSON跨语言。
+            redisTemplate.opsForValue().set("catelogJson", JSON.toJSONString(catelogJsonFromDb),1, TimeUnit.DAYS);
+            return catelogJsonFromDb;
+        }
+
+        // 给缓存中放json,拿出的json字符串，还要逆转为需要的对象类型【也就是序列化与反序列化】,返回一个复杂类型使用TypeReference来引用
+        return JSON.parseObject(catelogJson,new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+    }
+
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDb() {
 
         List<CategoryEntity> selectList = this.baseMapper.selectList(null);
 

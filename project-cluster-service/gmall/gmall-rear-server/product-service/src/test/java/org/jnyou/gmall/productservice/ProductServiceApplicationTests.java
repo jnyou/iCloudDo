@@ -9,8 +9,10 @@ import org.jnyou.gmall.productservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 @SpringBootTest
 @Slf4j
@@ -21,6 +23,9 @@ class ProductServiceApplicationTests {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Test
     void contextLoads() {
@@ -36,6 +41,13 @@ class ProductServiceApplicationTests {
     void findParentsPath(){
         Long[] catIdPath = categoryService.findCatIdPath(225L);
         log.info("完整回显路径：{}" + Arrays.asList(catIdPath));
+    }
+
+
+    @Test
+    void testStringRedisTemplate(){
+        stringRedisTemplate.opsForValue().set("hello","world" + UUID.randomUUID().toString());
+        stringRedisTemplate.opsForValue().get("hello");
     }
 
 }
