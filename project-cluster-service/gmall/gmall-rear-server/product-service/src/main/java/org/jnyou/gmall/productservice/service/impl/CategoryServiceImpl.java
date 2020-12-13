@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -116,55 +115,69 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         // 加入Redis缓存逻辑
         String catelogJson = redisTemplate.opsForValue().get("catelogJson");
-        if(StringUtils.isEmpty(catelogJson)){
-            // 缓存中没有查询数据库
+        if (StringUtils.isEmpty(catelogJson)) {
+            System.out.println("缓存不命中，准备查询数据库。。。");
+            // 缓存中没有,查询数据库
             Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDb();
-            // 将查询的数据放入缓存，所有存在缓存中的数据都转成json字符串形式，因为JSON跨语言。
-            redisTemplate.opsForValue().set("catelogJson", JSON.toJSONString(catelogJsonFromDb),1, TimeUnit.DAYS);
             return catelogJsonFromDb;
         }
-
+        System.out.println("缓存命中。。。");
         // 给缓存中放json,拿出的json字符串，还要逆转为需要的对象类型【也就是序列化与反序列化】,返回一个复杂类型使用TypeReference来引用
-        return JSON.parseObject(catelogJson,new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+        return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
     }
 
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDb() {
 
-        List<CategoryEntity> selectList = this.baseMapper.selectList(null);
-
-        // 查出所有一级分类
-        List<CategoryEntity> level1Categorys = getParent_cid(selectList,0L);
-
-        // key : 每个一级分类的ID，value : List<Catelog2Vo>
-        Map<String, List<Catelog2Vo>> listMap = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-            // 根据一级分类查询二级分类集合
-            List<Catelog2Vo> catelog2Vos = new ArrayList<>();
-            List<CategoryEntity> category2EntityList = getParent_cid(selectList,v.getCatId());
-
-            List<Catelog2Vo> catelog2VoList = null;
-            if (CollectionUtils.isNotEmpty(category2EntityList)) {
-                // 封装好需要返回的数据 List<Catelog2Vo>
-                catelog2VoList = category2EntityList.stream().map(c2 -> {
-                    // 查找当前二级分类下的三级分类
-                    List<CategoryEntity> category3Entities = getParent_cid(selectList,c2.getCatId());
-                    List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
-                    if (CollectionUtils.isNotEmpty(category3Entities)) {
-                        // 封装三级分类VO
-                        catelog3Vos = category3Entities.stream().map(c3 -> {
-                            Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
-                            return catelog3Vo;
-                        }).collect(Collectors.toList());
-                    }
-                    Catelog2Vo catelog2Vo = new Catelog2Vo().setCatalog1Id(v.getCatId().toString()).setId(c2.getCatId().toString()).setName(c2.getName()).setCatalog3List(catelog3Vos);
-                    return catelog2Vo;
-                }).collect(Collectors.toList());
+        // 本地锁：synchronized、JUC（lock），在分布式情况下，想要锁住所有，必须使用分布式锁
+        synchronized (this) {
+            // 获得锁之后再去查询一次，没有则继续查询数据库
+            String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+            if (!StringUtils.isEmpty(catelogJson)) {
+                return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+                });
             }
-            return catelog2VoList;
-        }));
-        return listMap;
+            System.out.println("查询数据库。。。");
+
+            // 将数据库的查询多次变为一次
+            List<CategoryEntity> selectList = this.baseMapper.selectList(null);
+
+            // 查出所有一级分类
+            List<CategoryEntity> level1Categorys = getParent_cid(selectList, 0L);
+
+            // key : 每个一级分类的ID，value : List<Catelog2Vo>
+            Map<String, List<Catelog2Vo>> listMap = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+                // 根据一级分类查询二级分类集合
+                List<Catelog2Vo> catelog2Vos = new ArrayList<>();
+                List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
+
+                List<Catelog2Vo> catelog2VoList = null;
+                if (CollectionUtils.isNotEmpty(category2EntityList)) {
+                    // 封装好需要返回的数据 List<Catelog2Vo>
+                    catelog2VoList = category2EntityList.stream().map(c2 -> {
+                        // 查找当前二级分类下的三级分类
+                        List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
+                        List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
+                        if (CollectionUtils.isNotEmpty(category3Entities)) {
+                            // 封装三级分类VO
+                            catelog3Vos = category3Entities.stream().map(c3 -> {
+                                Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
+                                return catelog3Vo;
+                            }).collect(Collectors.toList());
+                        }
+                        Catelog2Vo catelog2Vo = new Catelog2Vo().setCatalog1Id(v.getCatId().toString()).setId(c2.getCatId().toString()).setName(c2.getName()).setCatalog3List(catelog3Vos);
+                        return catelog2Vo;
+                    }).collect(Collectors.toList());
+                }
+                return catelog2VoList;
+            }));
+            // 将查询的数据放入缓存，所有存在缓存中的数据都转成json字符串形式，因为JSON跨语言。
+            redisTemplate.opsForValue().set("catelogJson", JSON.toJSONString(listMap), 1, TimeUnit.DAYS);
+            return listMap;
+        }
     }
 
-    private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList,Long parentId) {
+    private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList, Long parentId) {
         List<CategoryEntity> collect = selectList.stream().filter(item -> item.getParentCid().equals(parentId)).collect(Collectors.toList());
         return collect;
     }
