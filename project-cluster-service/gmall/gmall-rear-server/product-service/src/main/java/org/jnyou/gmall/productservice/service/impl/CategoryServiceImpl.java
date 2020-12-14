@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -118,7 +115,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         if (StringUtils.isEmpty(catelogJson)) {
             System.out.println("缓存不命中，准备查询数据库。。。");
             // 缓存中没有,查询数据库
-            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDb();
+            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDbWithRedisLock();
             return catelogJsonFromDb;
         }
         System.out.println("缓存命中。。。");
@@ -127,53 +124,89 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         });
     }
 
-    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDb() {
+    /**
+     * Redis分布式锁测试
+     * @Author JnYou
+     */
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisLock() {
+
+        // 抢占分布式锁，去Redis中占坑
+        // setIfAbsent：相当于Redis中的SETNX EX
+        String uuid = UUID.randomUUID().toString();
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,30,TimeUnit.SECONDS);
+        if(lock) {
+            // 占锁成功，执行数据库操作
+            // 1、设置30s过期时间，防止在还没有执行删除锁代码机器出现异常情况导致死锁的情况,且需要与设置锁的的时候为原子操作，即写在上方
+//            redisTemplate.expire("lock",30,TimeUnit.SECONDS);
+            Map<String, List<Catelog2Vo>> dataFromDb = getDataFromDb();
+            // 删除锁，给其他进程占用锁,但是只能删除自己的锁：
+            String lockValue = redisTemplate.opsForValue().get("lock");
+            if(lockValue.equals(uuid)){
+                // 删除自己的锁
+                redisTemplate.delete("lock");
+            }
+            return dataFromDb;
+        } else {
+            // 占锁失败，采用自旋的方式重试（自旋锁），相当于synchronized()继续占锁
+            // 休眠100ms重试
+            return getCatelogJsonFromDbWithRedisLock();
+        }
+    }
+
+    private Map<String, List<Catelog2Vo>> getDataFromDb() {
+        // 获得锁之后再去查询一次，没有则继续查询数据库
+        String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+        if (!StringUtils.isEmpty(catelogJson)) {
+            return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+            });
+        }
+
+        // 将数据库的查询多次变为一次
+        List<CategoryEntity> selectList = this.baseMapper.selectList(null);
+
+        // 查出所有一级分类
+        List<CategoryEntity> level1Categorys = getParent_cid(selectList, 0L);
+
+        // key : 每个一级分类的ID，value : List<Catelog2Vo>
+        Map<String, List<Catelog2Vo>> listMap = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            // 根据一级分类查询二级分类集合
+            List<Catelog2Vo> catelog2Vos = new ArrayList<>();
+            List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
+
+            List<Catelog2Vo> catelog2VoList = null;
+            if (CollectionUtils.isNotEmpty(category2EntityList)) {
+                // 封装好需要返回的数据 List<Catelog2Vo>
+                catelog2VoList = category2EntityList.stream().map(c2 -> {
+                    // 查找当前二级分类下的三级分类
+                    List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
+                    List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
+                    if (CollectionUtils.isNotEmpty(category3Entities)) {
+                        // 封装三级分类VO
+                        catelog3Vos = category3Entities.stream().map(c3 -> {
+                            Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
+                            return catelog3Vo;
+                        }).collect(Collectors.toList());
+                    }
+                    Catelog2Vo catelog2Vo = new Catelog2Vo().setCatalog1Id(v.getCatId().toString()).setId(c2.getCatId().toString()).setName(c2.getName()).setCatalog3List(catelog3Vos);
+                    return catelog2Vo;
+                }).collect(Collectors.toList());
+            }
+            return catelog2VoList;
+        }));
+        // 将查询的数据放入缓存，所有存在缓存中的数据都转成json字符串形式，因为JSON跨语言。
+        redisTemplate.opsForValue().set("catelogJson", JSON.toJSONString(listMap), 1, TimeUnit.DAYS);
+        return listMap;
+    }
+
+    /**
+     * 本地锁测试
+     * @Author JnYou
+     */
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithLocalLock() {
 
         // 本地锁：synchronized、JUC（lock），在分布式情况下，想要锁住所有，必须使用分布式锁
         synchronized (this) {
-            // 获得锁之后再去查询一次，没有则继续查询数据库
-            String catelogJson = redisTemplate.opsForValue().get("catelogJson");
-            if (!StringUtils.isEmpty(catelogJson)) {
-                return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
-                });
-            }
-            System.out.println("查询数据库。。。");
-
-            // 将数据库的查询多次变为一次
-            List<CategoryEntity> selectList = this.baseMapper.selectList(null);
-
-            // 查出所有一级分类
-            List<CategoryEntity> level1Categorys = getParent_cid(selectList, 0L);
-
-            // key : 每个一级分类的ID，value : List<Catelog2Vo>
-            Map<String, List<Catelog2Vo>> listMap = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-                // 根据一级分类查询二级分类集合
-                List<Catelog2Vo> catelog2Vos = new ArrayList<>();
-                List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
-
-                List<Catelog2Vo> catelog2VoList = null;
-                if (CollectionUtils.isNotEmpty(category2EntityList)) {
-                    // 封装好需要返回的数据 List<Catelog2Vo>
-                    catelog2VoList = category2EntityList.stream().map(c2 -> {
-                        // 查找当前二级分类下的三级分类
-                        List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
-                        List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
-                        if (CollectionUtils.isNotEmpty(category3Entities)) {
-                            // 封装三级分类VO
-                            catelog3Vos = category3Entities.stream().map(c3 -> {
-                                Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
-                                return catelog3Vo;
-                            }).collect(Collectors.toList());
-                        }
-                        Catelog2Vo catelog2Vo = new Catelog2Vo().setCatalog1Id(v.getCatId().toString()).setId(c2.getCatId().toString()).setName(c2.getName()).setCatalog3List(catelog3Vos);
-                        return catelog2Vo;
-                    }).collect(Collectors.toList());
-                }
-                return catelog2VoList;
-            }));
-            // 将查询的数据放入缓存，所有存在缓存中的数据都转成json字符串形式，因为JSON跨语言。
-            redisTemplate.opsForValue().set("catelogJson", JSON.toJSONString(listMap), 1, TimeUnit.DAYS);
-            return listMap;
+            return getDataFromDb();
         }
     }
 
