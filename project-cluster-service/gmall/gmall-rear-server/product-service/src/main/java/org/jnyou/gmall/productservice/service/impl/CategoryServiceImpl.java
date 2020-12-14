@@ -15,6 +15,7 @@ import org.jnyou.gmall.productservice.service.CategoryService;
 import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -125,7 +126,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
-     * Redis分布式锁测试
+     * Redis分布式锁测试：官方文档：http://www.redis.cn/topics/distlock.html
+     * 总结：分布式锁两个核心原理：1、原子加锁，使用 SET resource_name my_random_value NX PX 30000。
+     *      2、原子解锁，使用Lua脚本原子解锁
      * @Author JnYou
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisLock() {
@@ -133,22 +136,38 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 抢占分布式锁，去Redis中占坑
         // setIfAbsent：相当于Redis中的SETNX EX
         String uuid = UUID.randomUUID().toString();
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,30,TimeUnit.SECONDS);
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,300,TimeUnit.SECONDS);
         if(lock) {
+            System.out.println("获取分布式锁成功。。");
             // 占锁成功，执行数据库操作
             // 1、设置30s过期时间，防止在还没有执行删除锁代码机器出现异常情况导致死锁的情况,且需要与设置锁的的时候为原子操作，即写在上方
 //            redisTemplate.expire("lock",30,TimeUnit.SECONDS);
-            Map<String, List<Catelog2Vo>> dataFromDb = getDataFromDb();
-            // 删除锁，给其他进程占用锁,但是只能删除自己的锁：
-            String lockValue = redisTemplate.opsForValue().get("lock");
-            if(lockValue.equals(uuid)){
-                // 删除自己的锁
-                redisTemplate.delete("lock");
+            Map<String, List<Catelog2Vo>> dataFromDb;
+            try{
+                 dataFromDb = getDataFromDb();
+            }finally {
+                // 删除锁，给其他进程占用锁,但是只能删除自己的锁：且：获取值对比 + 对比成功删除操作 = 原子操作（使用lua脚本解锁：Redis官方文档：http://www.redis.cn/topics/distlock.html）
+                String script = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then\n" +
+                        "    return redis.call(\"del\",KEYS[1])\n" +
+                        "else\n" +
+                        "    return 0\n" +
+                        "end";
+                // 执行lua脚本原子解锁
+                redisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class),Arrays.asList("lock"),uuid);
+//            String lockValue = redisTemplate.opsForValue().get("lock");
+//            if(lockValue.equals(uuid)){
+//                // 删除自己的锁
+//                redisTemplate.delete("lock");
+//            }
             }
             return dataFromDb;
         } else {
             // 占锁失败，采用自旋的方式重试（自旋锁），相当于synchronized()继续占锁
-            // 休眠100ms重试
+            System.out.println("获取分布式锁失败。。。");
+            // 休眠200ms重试
+            try{
+                Thread.sleep(200);
+            } catch (Exception e){}
             return getCatelogJsonFromDbWithRedisLock();
         }
     }
