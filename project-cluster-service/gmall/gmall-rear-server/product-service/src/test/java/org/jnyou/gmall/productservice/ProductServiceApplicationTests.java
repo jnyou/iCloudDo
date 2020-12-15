@@ -7,6 +7,7 @@ import org.jnyou.gmall.productservice.entity.BrandEntity;
 import org.jnyou.gmall.productservice.service.BrandService;
 import org.jnyou.gmall.productservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,6 +28,9 @@ class ProductServiceApplicationTests {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
     @Test
     void contextLoads() {
 
@@ -44,10 +48,23 @@ class ProductServiceApplicationTests {
     }
 
 
+    /**
+     * redis test
+     * @Author JnYou
+     */
     @Test
     void testStringRedisTemplate(){
         stringRedisTemplate.opsForValue().set("hello","world" + UUID.randomUUID().toString());
         stringRedisTemplate.opsForValue().get("hello");
+    }
+
+    /**
+     * redisson test
+     * @Author JnYou
+     */
+    @Test
+    void testRedissonClient(){
+        System.out.println(redissonClient);
     }
 
 }

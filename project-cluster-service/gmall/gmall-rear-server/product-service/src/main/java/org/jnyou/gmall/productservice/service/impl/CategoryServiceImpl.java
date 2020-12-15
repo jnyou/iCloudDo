@@ -179,7 +179,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
             });
         }
-
+        System.out.println("查询了数据库。。。");
         // 将数据库的查询多次变为一次
         List<CategoryEntity> selectList = this.baseMapper.selectList(null);
 
@@ -223,7 +223,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithLocalLock() {
 
-        // 本地锁：synchronized、JUC（lock），在分布式情况下，想要锁住所有，必须使用分布式锁
+        // 本地锁：synchronized、JUC：Java.util.concurrent.（locks），在分布式情况下，想要锁住所有，必须使用分布式锁
         synchronized (this) {
             return getDataFromDb();
         }
