@@ -26,6 +26,16 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
+  cache:
+    type: redis
+    redis: #Redis的ttl，一小时过期
+      time-to-live: 3600000
+      # 如果指定了前缀就用我们指定的前缀，没有指定就使用默认的缓存名字作为前缀（cacheNames）
+      key-prefix: CACHE_
+      # 为false时，则直接会使用指定的key作为键
+      use-key-prefix: true
+      # 是否缓存空值。防止缓存穿透
+      cache-null-values: true
 # MapperScan
 # sql映射文件位置
 mybatis-plus:

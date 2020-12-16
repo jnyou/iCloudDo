@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
@@ -16,6 +17,7 @@ import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
  * @author jnyou
  */
 @Service("categoryService")
+@Slf4j
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
     @Autowired
@@ -101,8 +104,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
+    /**
+     * 缓存的分区（推荐按照业务类型分）
+     * 因为spel动态取值，所有需要额外加''表示字符串
+     * SPEL表达式参考：https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/integration.html#cache-spel-context
+     *
+     * @Author JnYou
+     */
     @Override
+    @Cacheable(cacheNames = {"category"}, key = "#root.methodName")
     public List<CategoryEntity> getLevel1Category() {
+        System.out.println("查询数据库");
         return this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
@@ -115,7 +127,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
          * 2、设置过期时间（加随机值）：解决缓存雪崩
          * 3、加锁：解决缓存击穿
          */
-
         // 加入Redis缓存逻辑
         String catelogJson = redisTemplate.opsForValue().get("catelogJson");
         if (StringUtils.isEmpty(catelogJson)) {
@@ -186,6 +197,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 常用模式：
      * 1、双写模式：更新数据库时，更新缓存。并发条件下会产生脏数据，解决方案：加锁
      * 2、失效模式：更改了就删除缓存中的数据，下次查询在放入最新的数据。
+     * 最终gmall系统采取：失效模式，缓存的数据都有过期啥时间，主动更新。读写数据的时候，加上分布式读写锁。
+     *
      * @Author JnYou
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedissonLock() {
@@ -208,7 +221,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     private Map<String, List<Catelog2Vo>> getDataFromDb() {
         // 获得锁之后再去查询一次，没有则继续查询数据库
-        String catelogJson = redisTemplate.opsForValue().get("catelogJson");
+        String catelogJson = redisTemplate.opsForValue().get("catelogJson-lock");
         if (!StringUtils.isEmpty(catelogJson)) {
             return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
             });

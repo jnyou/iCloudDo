@@ -42,6 +42,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!--     spring-cache 解决缓存一致性问题    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
         <!-- 使用redisson作为分布式锁，分布式对象等功能 -->
         <dependency>
             <groupId>org.redisson</groupId>
