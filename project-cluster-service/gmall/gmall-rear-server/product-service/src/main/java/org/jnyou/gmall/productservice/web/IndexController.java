@@ -185,7 +185,7 @@ public class IndexController {
     public String lockDoor () throws InterruptedException {
 
         RCountDownLatch door = redisson.getCountDownLatch("door");
-        door.trySetCount(5L);
+        door.trySetCount(5);
         // 等待闭锁都完成
         door.await();
         return "放假了";

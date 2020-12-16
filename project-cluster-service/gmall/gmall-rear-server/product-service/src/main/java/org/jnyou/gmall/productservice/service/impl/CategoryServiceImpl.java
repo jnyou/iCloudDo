@@ -13,6 +13,8 @@ import org.jnyou.gmall.productservice.entity.CategoryEntity;
 import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
 import org.jnyou.gmall.productservice.service.CategoryService;
 import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -36,6 +38,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -116,7 +121,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         if (StringUtils.isEmpty(catelogJson)) {
             System.out.println("缓存不命中，准备查询数据库。。。");
             // 缓存中没有,查询数据库
-            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDbWithRedisLock();
+            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDbWithRedissonLock();
             return catelogJsonFromDb;
         }
         System.out.println("缓存命中。。。");
@@ -128,7 +133,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     /**
      * Redis分布式锁测试：官方文档：http://www.redis.cn/topics/distlock.html
      * 总结：分布式锁两个核心原理：1、原子加锁，使用 SET resource_name my_random_value NX PX 30000。
-     *      2、原子解锁，使用Lua脚本原子解锁
+     * 2、原子解锁，使用Lua脚本原子解锁
+     *
      * @Author JnYou
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisLock() {
@@ -136,16 +142,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 抢占分布式锁，去Redis中占坑
         // setIfAbsent：相当于Redis中的SETNX EX
         String uuid = UUID.randomUUID().toString();
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,300,TimeUnit.SECONDS);
-        if(lock) {
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid, 300, TimeUnit.SECONDS);
+        if (lock) {
             System.out.println("获取分布式锁成功。。");
             // 占锁成功，执行数据库操作
             // 1、设置30s过期时间，防止在还没有执行删除锁代码机器出现异常情况导致死锁的情况,且需要与设置锁的的时候为原子操作，即写在上方
 //            redisTemplate.expire("lock",30,TimeUnit.SECONDS);
             Map<String, List<Catelog2Vo>> dataFromDb;
-            try{
-                 dataFromDb = getDataFromDb();
-            }finally {
+            try {
+                dataFromDb = getDataFromDb();
+            } finally {
                 // 删除锁，给其他进程占用锁,但是只能删除自己的锁：且：获取值对比 + 对比成功删除操作 = 原子操作（使用lua脚本解锁：Redis官方文档：http://www.redis.cn/topics/distlock.html）
                 String script = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then\n" +
                         "    return redis.call(\"del\",KEYS[1])\n" +
@@ -153,7 +159,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                         "    return 0\n" +
                         "end";
                 // 执行lua脚本原子解锁
-                redisTemplate.execute(new DefaultRedisScript<Long>(script,Long.class),Arrays.asList("lock"),uuid);
+                redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList("lock"), uuid);
 //            String lockValue = redisTemplate.opsForValue().get("lock");
 //            if(lockValue.equals(uuid)){
 //                // 删除自己的锁
@@ -165,11 +171,39 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             // 占锁失败，采用自旋的方式重试（自旋锁），相当于synchronized()继续占锁
             System.out.println("获取分布式锁失败。。。");
             // 休眠200ms重试
-            try{
+            try {
                 Thread.sleep(200);
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
             return getCatelogJsonFromDbWithRedisLock();
         }
+    }
+
+
+    /**
+     * 使用Redisson分布式改造上面代码
+     * 产生一个问题：如果更改了三级分类数据，缓存里面的数据如何和数据库保持一致（缓存数据一致性）
+     * 常用模式：
+     * 1、双写模式：更新数据库时，更新缓存。并发条件下会产生脏数据，解决方案：加锁
+     * 2、失效模式：更改了就删除缓存中的数据，下次查询在放入最新的数据。
+     * @Author JnYou
+     */
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedissonLock() {
+
+        // 占锁，锁的名字就是锁的粒度，力度越细越快。
+        // 锁的粒度规则：具体缓存的是某个数据，例：11号商品：product-11-lock、product-12-lock；防止等待问题
+        RLock lock = redisson.getLock("catelogJson-lock");
+        // 加锁
+        lock.lock();
+        // 占锁成功，执行数据库操作
+        Map<String, List<Catelog2Vo>> dataFromDb;
+        try {
+            dataFromDb = getDataFromDb();
+        } finally {
+            // 解锁
+            lock.unlock();
+        }
+        return dataFromDb;
     }
 
     private Map<String, List<Catelog2Vo>> getDataFromDb() {
@@ -219,6 +253,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 本地锁测试
+     *
      * @Author JnYou
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithLocalLock() {
