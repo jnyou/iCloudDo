@@ -17,6 +17,7 @@ import org.jnyou.gmall.productservice.vo.web.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  */
 @Service("categoryService")
 @Slf4j
+@SuppressWarnings(value = "unchecked")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
     @Autowired
@@ -92,8 +94,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      *
      * @param category
      * @return
+     * @CacheEvict:失效模式，allEntries:删除某个分区下的所有数据
+     * @Caching：同时进行多种缓存操作
      * @Author jnyou
      */
+//    @CacheEvict(value = {"category"},key = "'getLevel1Category'")
+//    @Caching(evict = {
+//            @CacheEvict(value = {"category"},key = "'getLevel1Category'"),
+//            @CacheEvict(value = {"category"},key = "'getCatelogJson'")
+//    })
+    @CacheEvict(value = {"category"}, allEntries = true)
+//    @CachePut // 双写模式，修改了在添加一份新数据到缓存中
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCascade(CategoryEntity category) {
@@ -118,8 +129,53 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
+    /**
+     * 常规数据，读多写少，即时性，一致性要求不高的额数据，使用spring-cache。
+     * 特殊数据：1、可以使用canal，感知到mysql的更新去更新缓存。2、读写加锁
+     *
+     * @Author JnYou
+     */
+    @Cacheable(cacheNames = "category", key = "#root.methodName", sync = true)
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
+        System.out.println("查询了数据库。。。");
+        // 将数据库的查询多次变为一次
+        List<CategoryEntity> selectList = this.baseMapper.selectList(null);
+
+        // 查出所有一级分类
+        List<CategoryEntity> level1Categorys = getParent_cid(selectList, 0L);
+
+        // key : 每个一级分类的ID，value : List<Catelog2Vo>
+        Map<String, List<Catelog2Vo>> listMap = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            // 根据一级分类查询二级分类集合
+            List<Catelog2Vo> catelog2Vos = new ArrayList<>();
+            List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
+
+            List<Catelog2Vo> catelog2VoList = null;
+            if (CollectionUtils.isNotEmpty(category2EntityList)) {
+                // 封装好需要返回的数据 List<Catelog2Vo>
+                catelog2VoList = category2EntityList.stream().map(c2 -> {
+                    // 查找当前二级分类下的三级分类
+                    List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
+                    List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
+                    if (CollectionUtils.isNotEmpty(category3Entities)) {
+                        // 封装三级分类VO
+                        catelog3Vos = category3Entities.stream().map(c3 -> {
+                            Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
+                            return catelog3Vo;
+                        }).collect(Collectors.toList());
+                    }
+                    Catelog2Vo catelog2Vo = new Catelog2Vo().setCatalog1Id(v.getCatId().toString()).setId(c2.getCatId().toString()).setName(c2.getName()).setCatalog3List(catelog3Vos);
+                    return catelog2Vo;
+                }).collect(Collectors.toList());
+            }
+            return catelog2VoList;
+        }));
+        return listMap;
+    }
+
+    //    @Override
+    public Map<String, List<Catelog2Vo>> getCatelogJson1() {
 
         /**
          * 解决缓存相关问题：
