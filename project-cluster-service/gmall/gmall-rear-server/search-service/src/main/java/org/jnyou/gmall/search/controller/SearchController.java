@@ -1,5 +1,9 @@
 package org.jnyou.gmall.search.controller;
 
+import org.elasticsearch.search.SearchService;
+import org.jnyou.gmall.search.service.MallSearchService;
+import org.jnyou.gmall.search.vo.SearchParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -12,8 +16,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SearchController {
 
-    @GetMapping("/list.html")
-    public String listPage() {
+    @Autowired
+    private MallSearchService mallSearchService;
+
+    @Autowired
+    private SearchService searchService;
+
+    @GetMapping(value = {"/list.html","/"})
+    public String listPage(SearchParam searchParam) {
+        mallSearchService.search(searchParam);
+
+
         return "list";
     }
 
