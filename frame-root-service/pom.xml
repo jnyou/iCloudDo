@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>netty</module>
+        <module>message-push</module>
     </modules>
 
 
