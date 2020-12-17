@@ -115,12 +115,12 @@
         <input id="searchText" type="text" placeholder="" />
         <span style="background: url('/static/index/img/img_12.png') 0 -1px;"></span>
         <!--<button><i class="glyphicon"></i></button>-->
-        <a href="#" ><img src="/static/index/img/img_09.png" onclick="search()" /></a>
+        <a href="javascript:search();" ><img src="/static/index/img/img_09.png" /></a>
       </div>
       <div class="header_ico">
         <div class="header_gw">
           <img src="/static/index/img/img_15.png" />
-          <span><a href="/static//购物车\One_JDshop.html">我的购物车</a></span>
+          <span><a href="/static/购物车/One_JDshop.html">我的购物车</a></span>
           <span>0</span>
         </div>
         <div class="header_ko">
@@ -607,7 +607,7 @@
 <script type="text/javascript">
   function search() {
       var keyword=$("#searchText").val()
-      window.location.href="/static/http://search.gulimall.com/search.html?keyword="+keyword;
+      window.location.href="http://search.gmall.com/list.html?keyword="+keyword;
   }
 
 </script>
