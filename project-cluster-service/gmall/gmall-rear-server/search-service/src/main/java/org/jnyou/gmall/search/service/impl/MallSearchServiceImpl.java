@@ -11,6 +11,9 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -50,7 +53,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             SearchResponse response = client.search(searchRequest, ElasticSearchConfig.COMMON_OPTIONS);
 
             // 分析响应数据进行封装成想要的数据格式
-            buildSearchResponse();
+            buildSearchResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,9 +136,34 @@ public class MallSearchServiceImpl implements MallSearchService {
             highlightBuilder.postTags("</b>");
             searchSourceBuilder.highlighter(highlightBuilder);
         }
-        System.out.println("构建的DSL语句：" + searchSourceBuilder);
         // 聚合分析
 
+        // 品牌聚合
+        TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brandAgg").field("brandId").size(50);
+        // 子聚合品牌名称
+        brandAgg.subAggregation(AggregationBuilders.terms("brandNameAgg").field("brandName").size(1));
+        // 子聚合品牌图片
+        brandAgg.subAggregation(AggregationBuilders.terms("brandImgAgg").field("brandImg").size(1));
+        searchSourceBuilder.aggregation(brandAgg);
+
+        // 分类聚合
+        TermsAggregationBuilder catalogAgg = AggregationBuilders.terms("catalogAgg").field("catalogId").size(20);
+        // 分类的子聚合
+        TermsAggregationBuilder builder = AggregationBuilders.terms("catalogNameAgg").field("catalogName").size(1);
+        catalogAgg.subAggregation(builder);
+        searchSourceBuilder.aggregation(catalogAgg);
+
+        // 属性聚合
+        NestedAggregationBuilder nested = AggregationBuilders.nested("attrAgg", "attrs");
+        // 属性
+        NestedAggregationBuilder attrIdAgg = nested.subAggregation(AggregationBuilders.terms("attrIdAgg").field("attrs.attrId"));
+        // 属性名称
+        attrIdAgg.subAggregation(AggregationBuilders.terms("attrNameAgg").field("attrs.attrName").size(1));
+        // 属性值
+        attrIdAgg.subAggregation(AggregationBuilders.terms("attrValueAgg").field("attrs.attrValue").size(50));
+        searchSourceBuilder.aggregation(nested);
+
+        System.out.println("构建的DSL语句：" + searchSourceBuilder);
         // 创建索引请求
         SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
         return searchRequest;
@@ -145,7 +173,8 @@ public class MallSearchServiceImpl implements MallSearchService {
      * 构建结果数据
      * @Author JnYou
      */
-    private void buildSearchResponse() {
+    private void buildSearchResponse(SearchResponse response) {
+        // TODO
     }
 
 
