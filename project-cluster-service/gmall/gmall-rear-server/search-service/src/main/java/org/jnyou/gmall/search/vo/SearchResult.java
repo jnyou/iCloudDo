@@ -67,7 +67,6 @@ public class SearchResult {
 
 
     @Data
-    @AllArgsConstructor
     public static class BrandVo {
 
         private Long brandId;
@@ -79,7 +78,6 @@ public class SearchResult {
 
 
     @Data
-    @AllArgsConstructor
     public static class AttrVo {
 
         private Long attrId;
@@ -91,7 +89,6 @@ public class SearchResult {
 
 
     @Data
-    @AllArgsConstructor
     public static class CatalogVo {
 
         private Long catalogId;

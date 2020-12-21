@@ -24,6 +24,7 @@
         <module>renren-fast</module>
         <module>renren-generator</module>
         <module>gmall-common</module>
+        <module>search-service</module>
     </modules>
 
 

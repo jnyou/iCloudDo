@@ -21,9 +21,6 @@ public class SearchController {
     @Autowired
     private MallSearchService mallSearchService;
 
-    @Autowired
-    private SearchService searchService;
-
     @GetMapping(value = {"/list.html","/"})
     public String listPage(SearchParam searchParam, Model model) {
         SearchResult searchResult = mallSearchService.search(searchParam);
