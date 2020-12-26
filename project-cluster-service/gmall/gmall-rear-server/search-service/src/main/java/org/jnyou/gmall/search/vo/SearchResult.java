@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jnyou.common.to.es.SkuEsModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class SearchResult {
 
 
     /* 面包屑导航数据 */
-    private List<NavVo> navs;
+    private List<NavVo> navs = new ArrayList<>();
 
     @Data
     public static class NavVo {

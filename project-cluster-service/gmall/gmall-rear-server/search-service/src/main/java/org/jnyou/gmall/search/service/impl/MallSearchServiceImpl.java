@@ -1,6 +1,7 @@
 package org.jnyou.gmall.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -23,9 +24,12 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.jnyou.common.to.es.SkuEsModel;
+import org.jnyou.common.utils.R;
 import org.jnyou.gmall.search.config.ElasticSearchConfig;
 import org.jnyou.gmall.search.constant.EsConstant;
+import org.jnyou.gmall.search.feign.ProductFeignClient;
 import org.jnyou.gmall.search.service.MallSearchService;
+import org.jnyou.gmall.search.vo.AttrResponseVo;
 import org.jnyou.gmall.search.vo.SearchParam;
 import org.jnyou.gmall.search.vo.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +55,9 @@ public class MallSearchServiceImpl implements MallSearchService {
 
     @Autowired
     private RestHighLevelClient client;
+
+    @Autowired
+    private ProductFeignClient productFeignClient;
 
     @Override
     public SearchResult search(SearchParam param) {
@@ -290,6 +299,51 @@ public class MallSearchServiceImpl implements MallSearchService {
         }
 
         searchResult.setAttrs(attrVos);
+
+        // 构建面包屑导航功能
+        if(null != param.getAttrs() && param.getAttrs().size() > 0){
+            List<SearchResult.NavVo> collect = param.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                // 1_其他:安卓
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignClient.attrInfo(Long.parseLong(s[0]));
+                if(r.getCode() == 0){
+                    AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(data.getAttrName());
+                } else {
+                    // 调用失败后给个默认值
+                    navVo.setNavName(s[0]);
+                }
+                // 取消面包屑以后，需要跳转的路径地址，将请求地址的URL条件置空
+                String encode = null;
+                try {
+                    encode = URLEncoder.encode(attr,"UTF-8");
+                    // 浏览器对空格编码和java不一样
+                    encode = encode.replace("+","%20");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace = param.get_queryString().replace("&attrs=" + encode, "");
+                navVo.setLink("http://search.gmall.com?" + replace);
+                return navVo;
+            }).collect(Collectors.toList());
+            searchResult.setNavs(collect);
+        }
+
+        // 品牌、分类上面包屑
+        if(null != param.getBrandId() && param.getBrandId().size() > 0){
+            List<SearchResult.NavVo> navVos = new ArrayList<>();
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+            navVo.setNavName("品牌");
+
+            navVos.add(navVo);
+            searchResult.setNavs(navVos);
+
+        }
+
+
         return searchResult;
     }
 
