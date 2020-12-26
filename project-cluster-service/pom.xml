@@ -12,7 +12,7 @@
     <artifactId>project-cluster-service</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>gmall</module>
+        <module>cloud-rear-server</module>
         <module>wms</module>
     </modules>
 
