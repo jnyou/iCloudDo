@@ -1,4 +1,4 @@
-package org.jnyou.gmallgateway;
+package org.jnyou.cloudgateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.jnyou</groupId>
-    <artifactId>gmall-gateway</artifactId>
+    <artifactId>cloud-gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>gmall-gateway</name>
+    <name>cloud-gateway</name>
     <description>网关服务</description>
 
     <properties>

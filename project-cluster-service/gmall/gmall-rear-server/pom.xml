@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>gmall-gateway</module>
+        <module>cloud-gateway</module>
         <module>storage-service</module>
         <module>product-service</module>
         <module>order-service</module>
