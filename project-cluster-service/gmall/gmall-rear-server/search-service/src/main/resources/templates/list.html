@@ -413,8 +413,8 @@
         <a href="http://gmall.com"><img src="/static/search/image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
-        <input type="text" placeholder="手机"/>
-        <a href="http://search.gmall.com">搜索</a>
+        <input id="keyword" type="text" placeholder="手机" th:value="${param.keyword}"/>
+        <a href="javascript:searchByKeyword();">搜索</a>
     </div>
     <div class="header_ico">
         <div class="header_gw">
@@ -1231,24 +1231,24 @@
                     <div class="filter_page">
                         <div class="page_wrap">
                             <span class="page_span1">
-                                <a href="/static/search/#">
+                                <a href="/static/search/#" th:attr="pn=${result.pageNum - 1}" class="page_a"
+                                   th:if="${result.pageNum > 1}">
                                     < 上一页
                                 </a>
-                                <a href="/static/search/#" style="border: 0;color:#ee2222;background: #fff">1</a>
-                                <a href="/static/search/#">2</a>
-                                <a href="/static/search/#">3</a>
-                                <a href="/static/search/#"
-                                   style="border: 0;font-size: 20px;color: #999;background: #fff">...</a>
-                                <a href="/static/search/#">169</a>
-                                <a href="/static/search/#">
+                                <a class="page_a"
+                                   th:attr="pn=${nav},style= ${nav == result.pageNum ? 'border: 0;color:#ee2222;background: #fff':''}"
+                                   th:each="nav:${result.pageNavs}"
+                                   >[[${nav}]]</a>
+                                <a class="page_a" th:attr="pn=${result.pageNum + 1}"
+                                   th:if="${result.pageNum < result.totalPages}">
                                     下一页 >
                                 </a>
                             </span>
                             <span class="page_span2">
-                                <em>共<b>169</b>页&nbsp;&nbsp;到第</em>
+                                <em>共<b>[[${result.totalPages}]]</b>页&nbsp;&nbsp;到第</em>
                                 <input type="number" value="1">
                                 <em>页</em>
-                                <a href="/static/search/#">确定</a>
+                                <a href="/static/search/#" class="page_submit">确定</a>
                             </span>
                         </div>
                     </div>
@@ -1998,13 +1998,50 @@
     })
 
     function searchProducts(name, value) {
-        // 获取原来的地址
-        if ("" + location.href.indexOf("?") != -1) {
-            location.href = location.href + "&" + name + "=" + value;
-        } else {
-            location.href = location.href + "?" + name + "=" + value;
-        }
+        //原來的页面
+        location.href = replaceParamVal(location.href,name,value,true)
     }
+
+    function searchByKeyword() {
+        location.href = replaceParamVal(location.href,"keyword", $("#keyword").val(),false);
+    }
+
+    $(".page_a").click(function () {
+        var pn = $(this).attr("pn");
+        location.href=replaceParamVal(location.href,"pageNum",pn,false);
+        console.log(replaceParamVal(location.href,"pageNum",pn,false))
+    })
+
+    /**
+     * @param url 目前的url
+     * @param paramName 需要替换的参数属性名
+     * @param replaceVal 需要替换的参数的新属性值
+     * @param forceAdd 该参数是否可以重复查询(attrs=1_3G:4G:5G&attrs=2_骁龙845&attrs=4_高清屏)
+     * @returns {string} 替换或添加后的url
+     */
+    function replaceParamVal(url, paramName, replaceVal,forceAdd) {
+        var oUrl = url.toString();
+        var nUrl;
+        if (oUrl.indexOf(paramName) != -1) {
+            if( forceAdd && oUrl.indexOf(paramName+"="+replaceVal)==-1) {
+                if (oUrl.indexOf("?") != -1) {
+                    nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+                } else {
+                    nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+                }
+            } else {
+                var re = eval('/(' + paramName + '=)([^&]*)/gi');
+                nUrl = oUrl.replace(re, paramName + '=' + replaceVal);
+            }
+        } else {
+            if (oUrl.indexOf("?") != -1) {
+                nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+            } else {
+                nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+            }
+        }
+        return nUrl;
+    };
 </script>
 </body>
 </html>

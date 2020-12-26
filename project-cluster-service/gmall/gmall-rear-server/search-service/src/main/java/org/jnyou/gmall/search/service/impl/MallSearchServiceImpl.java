@@ -204,10 +204,16 @@ public class MallSearchServiceImpl implements MallSearchService {
         long total = hits.getTotalHits().value;
         searchResult.setTotal(total);
         // 总页码
-        Integer page = ((int) total % EsConstant.PRODUCT_PAGESIZE) == 0 ? ((int) total / EsConstant.PRODUCT_PAGESIZE) : ((int) total / EsConstant.PRODUCT_PAGESIZE + 1);
+        int page = ((int) total % EsConstant.PRODUCT_PAGESIZE) == 0 ? ((int) total / EsConstant.PRODUCT_PAGESIZE) : ((int) total / EsConstant.PRODUCT_PAGESIZE + 1);
         searchResult.setTotalPages(page);
         // 当前页码
         searchResult.setPageNum(param.getPageNum());
+        // 组装一个页码集合
+        List<Integer> pageNavs = new ArrayList<>();
+        for (int i = 1; i <= page; i++) {
+            pageNavs.add(i);
+        }
+        searchResult.setPageNavs(pageNavs);
         // 商品信息
         List<SkuEsModel> skuEsModels = new ArrayList<>();
         if (null != hits.getHits() && hits.getHits().length > 0) {
