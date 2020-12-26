@@ -779,7 +779,8 @@
 
         <div class="JD_ipone_one c">
             <!-- 遍历面包屑功能 -->
-            <a th:href="${nav.link}" th:each="nav:${result.navs}"><span th:text="${nav.navName}"></span>：<span th:text="${nav.navValue}"></span> x</a>
+            <a th:href="${nav.link}" th:each="nav:${result.navs}"><span th:text="${nav.navName}"></span>：<span
+                    th:text="${nav.navValue}"></span> x</a>
         </div>
 
         <i><img src="/static/search/image/right-@1x.png" alt=""></i>
@@ -795,9 +796,9 @@
                 <h3><b>手机</b><em>商品筛选</em></h3>
                 <div class="st-ext">共&nbsp;<span>10135</span>个商品</div>
             </div>
-            <div class="JD_nav_logo">
+            <div class="JD_nav_logo" th:with="brandid = ${param.brandId}">
                 <!--品牌-->
-                <div class="JD_nav_wrap">
+                <div class="JD_nav_wrap" th:if="${#strings.isEmpty(brandid)}">
                     <div class="sl_key">
                         <span><b>品牌：</b></span>
                     </div>
@@ -857,7 +858,7 @@
                     </div>
                 </div>
                 <!--其他所有属性-->
-                <div class="JD_pre" th:each="attr:${result.attrs}">
+                <div class="JD_pre" th:each="attr:${result.attrs}" th:if="${!#lists.contains(result.attrIds,attr.attrId)}">
                     <div class="sl_key">
                         <span th:text="${attr.attrName}">屏幕尺寸：</span>
                     </div>
@@ -1072,13 +1073,13 @@
                                th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount')) ?
                                    'color: #fff; border-color: #e4393c; background: #e4393c;':'color: #333; border-color: #ccc; background: #fff;' }">
                                 销量[[${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount') &&
-                                #strings.endsWith(p,'desc'))?'↓':'↑'  }]]</a>
+                                #strings.endsWith(p,'desc'))?'↓':'↑' }]]</a>
                             <a sort="skuPrice"
                                th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice') && #strings.endsWith(p,'desc')) ? 'sort_a desc' : 'sort_a'}"
                                th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice')) ?
                                    'color: #fff; border-color: #e4393c; background: #e4393c;':'color: #333; border-color: #ccc; background: #fff;' }">
                                 价格[[${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice') &&
-                                #strings.endsWith(p,'desc'))?'↓':'↑'  }]]</a>
+                                #strings.endsWith(p,'desc'))?'↓':'↑' }]]</a>
                             <a sort="hotScore" class="sort_a">评论分</a>
                             <a sort="hotScore" class="sort_a">上架时间</a>
                             <input id="skuPriceFrom" type="number"
@@ -1198,7 +1199,8 @@
                                 </li>
                                 <li>
                                     <a th:with="check = ${param.hasStock}">
-                                        <input id="showHasStock" type="checkbox" th:checked="${#strings.equals(check,'1')?true:false}">
+                                        <input id="showHasStock" type="checkbox"
+                                               th:checked="${#strings.equals(check,'1')?true:false}">
                                         仅显示有货
                                     </a>
                                 </li>
@@ -1267,7 +1269,7 @@
                                 <a class="page_a"
                                    th:attr="pn=${nav},style= ${nav == result.pageNum ? 'border: 0;color:#ee2222;background: #fff':''}"
                                    th:each="nav:${result.pageNavs}"
-                                   >[[${nav}]]</a>
+                                >[[${nav}]]</a>
                                 <a class="page_a" th:attr="pn=${result.pageNum + 1}"
                                    th:if="${result.pageNum < result.totalPages}">
                                     下一页 >
@@ -2028,17 +2030,17 @@
 
     function searchProducts(name, value) {
         //原來的页面
-        location.href = replaceParamVal(location.href,name,value,true)
+        location.href = replaceParamVal(location.href, name, value, true)
     }
 
     function searchByKeyword() {
-        location.href = replaceParamVal(location.href,"keyword", $("#keyword").val(),false);
+        location.href = replaceParamVal(location.href, "keyword", $("#keyword").val(), false);
     }
 
     $(".page_a").click(function () {
         var pn = $(this).attr("pn");
-        location.href=replaceParamVal(location.href,"pageNum",pn,false);
-        console.log(replaceParamVal(location.href,"pageNum",pn,false))
+        location.href = replaceParamVal(location.href, "pageNum", pn, false);
+        console.log(replaceParamVal(location.href, "pageNum", pn, false))
     })
 
     $(".sort_a").click(function () {
@@ -2046,7 +2048,7 @@
         $(this).toggleClass("desc");
         let sort = $(this).attr("sort");
         sort = $(this).hasClass("desc") ? sort + "_desc" : sort + "_asc";
-        location.href = replaceParamVal(location.href, "sort", sort,false);
+        location.href = replaceParamVal(location.href, "sort", sort, false);
         return false;
     });
 
@@ -2054,7 +2056,7 @@
     $("#showHasStock").click(function () {
         let checked = $(this).prop("checked");
         console.log(checked);
-        location.href=replaceParamVal(location.href,"hasStock",checked?1:0,false)
+        location.href = replaceParamVal(location.href, "hasStock", checked ? 1 : 0, false)
     })
 
     <!--价格区间-->
@@ -2095,11 +2097,11 @@
      * @param forceAdd 该参数是否可以重复查询(attrs=1_3G:4G:5G&attrs=2_骁龙845&attrs=4_高清屏)
      * @returns {string} 替换或添加后的url
      */
-    function replaceParamVal(url, paramName, replaceVal,forceAdd) {
+    function replaceParamVal(url, paramName, replaceVal, forceAdd) {
         var oUrl = url.toString();
         var nUrl;
         if (oUrl.indexOf(paramName) != -1) {
-            if( forceAdd && oUrl.indexOf(paramName+"="+replaceVal)==-1) {
+            if (forceAdd && oUrl.indexOf(paramName + "=" + replaceVal) == -1) {
                 if (oUrl.indexOf("?") != -1) {
                     nUrl = oUrl + "&" + paramName + "=" + replaceVal;
                 } else {

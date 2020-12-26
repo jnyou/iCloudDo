@@ -24,6 +24,7 @@ import org.jnyou.gmall.productservice.vo.AttrRespVo;
 import org.jnyou.gmall.productservice.vo.AttrVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -110,6 +111,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             attrAttrgroupRelationDao.insert(new AttrAttrgroupRelationEntity().setAttrGroupId(attr.getAttrGroupId()).setAttrId(attrEntity.getAttrId()));
     }
 
+    @Cacheable(value = "attr", key = "'attrinfo:' + #root.args[0]", sync = true)
     @Override
     public AttrRespVo getAttrInfo(Long attrId) {
         List<Long> catIds = new ArrayList<>();
@@ -205,7 +207,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             return item.getAttrGroupId();
         }).collect(Collectors.toList());
 
-        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in(!CollectionUtils.isEmpty(attrGroupIds),"attr_group_id", attrGroupIds));
+        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in(!CollectionUtils.isEmpty(attrGroupIds), "attr_group_id", attrGroupIds));
         List<Long> attrIds = attrAttrgroupRelationEntities.stream().map(item -> {
             return item.getAttrId();
         }).collect(Collectors.toList());
@@ -229,6 +231,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     /**
      * 在指定的所有属性中过滤出需要检索的属性
+     *
      * @param attrIds
      * @Author JnYou
      */

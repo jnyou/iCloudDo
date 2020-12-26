@@ -30,6 +30,7 @@ import org.jnyou.gmall.search.constant.EsConstant;
 import org.jnyou.gmall.search.feign.ProductFeignClient;
 import org.jnyou.gmall.search.service.MallSearchService;
 import org.jnyou.gmall.search.vo.AttrResponseVo;
+import org.jnyou.gmall.search.vo.BrandVo;
 import org.jnyou.gmall.search.vo.SearchParam;
 import org.jnyou.gmall.search.vo.SearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -301,14 +302,15 @@ public class MallSearchServiceImpl implements MallSearchService {
         searchResult.setAttrs(attrVos);
 
         // 构建面包屑导航功能
-        if(null != param.getAttrs() && param.getAttrs().size() > 0){
+        if (null != param.getAttrs() && param.getAttrs().size() > 0) {
             List<SearchResult.NavVo> collect = param.getAttrs().stream().map(attr -> {
                 SearchResult.NavVo navVo = new SearchResult.NavVo();
                 // 1_其他:安卓
                 String[] s = attr.split("_");
                 navVo.setNavValue(s[1]);
                 R r = productFeignClient.attrInfo(Long.parseLong(s[0]));
-                if(r.getCode() == 0){
+                searchResult.getAttrIds().add(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
                     AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
                     });
                     navVo.setNavName(data.getAttrName());
@@ -316,16 +318,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                     // 调用失败后给个默认值
                     navVo.setNavName(s[0]);
                 }
-                // 取消面包屑以后，需要跳转的路径地址，将请求地址的URL条件置空
-                String encode = null;
-                try {
-                    encode = URLEncoder.encode(attr,"UTF-8");
-                    // 浏览器对空格编码和java不一样
-                    encode = encode.replace("+","%20");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                String replace = param.get_queryString().replace("&attrs=" + encode, "");
+                String replace = replaceQueryString(param, attr, "attrs");
                 navVo.setLink("http://search.gmall.com?" + replace);
                 return navVo;
             }).collect(Collectors.toList());
@@ -333,18 +326,42 @@ public class MallSearchServiceImpl implements MallSearchService {
         }
 
         // 品牌、分类上面包屑
-        if(null != param.getBrandId() && param.getBrandId().size() > 0){
+        if (null != param.getBrandId() && param.getBrandId().size() > 0) {
             List<SearchResult.NavVo> navVos = new ArrayList<>();
             SearchResult.NavVo navVo = new SearchResult.NavVo();
             navVo.setNavName("品牌");
-
+            R r = productFeignClient.infos(param.getBrandId());
+            if (r.getCode() == 0) {
+                List<BrandVo> data = r.getData("data", new TypeReference<List<BrandVo>>() {
+                });
+                StringBuffer buffer = new StringBuffer();
+                String replace = "";
+                for (BrandVo datum : data) {
+                    buffer = buffer.append(datum.getName() + ";");
+                    replace = replaceQueryString(param, datum.getBrandId() + "", "brandId");
+                }
+                navVo.setNavValue(buffer.toString());
+                navVo.setLink("http://search.gmall.com?" + replace);
+            }
             navVos.add(navVo);
             searchResult.setNavs(navVos);
 
         }
 
-
         return searchResult;
+    }
+
+    private String replaceQueryString(SearchParam param, String value, String key) {
+        // 取消面包屑以后，需要跳转的路径地址，将请求地址的URL条件置空
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(value, "UTF-8");
+            // 浏览器对空格编码和java不一样
+            encode = encode.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return param.get_queryString().replace("&" + key + "=" + encode, "");
     }
 
 

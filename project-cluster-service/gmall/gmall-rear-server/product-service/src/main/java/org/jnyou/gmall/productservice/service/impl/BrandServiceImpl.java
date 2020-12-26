@@ -1,19 +1,22 @@
 package org.jnyou.gmall.productservice.service.impl;
 
-import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
-
 import org.jnyou.gmall.productservice.dao.BrandDao;
 import org.jnyou.gmall.productservice.entity.BrandEntity;
 import org.jnyou.gmall.productservice.service.BrandService;
+import org.jnyou.gmall.productservice.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,7 +32,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
     public PageUtils queryPage(Map<String, Object> params) {
         String key = (String) params.get("key");
         QueryWrapper<BrandEntity> wrapper = new QueryWrapper<BrandEntity>();
-        if(!StringUtils.isEmpty(key)){
+        if (!StringUtils.isEmpty(key)) {
             wrapper.eq("brand_id", key).or().like("name", key);
         }
         IPage<BrandEntity> page = this.page(
@@ -44,10 +47,15 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
     public void updateDetail(BrandEntity brand) {
         // 由于电商数据过多，对表的设计有冗余的字段，此时需要在代码中进行维护冗余数据一致性
         this.updateById(brand);
-        if(!StringUtils.isEmpty(brand.getName())){
+        if (!StringUtils.isEmpty(brand.getName())) {
             // 更新品牌与分类关联表中的品牌名称
-            categoryBrandRelationService.updateBrand(brand.getBrandId(),brand.getName());
+            categoryBrandRelationService.updateBrand(brand.getBrandId(), brand.getName());
         }
+    }
+
+    @Override
+    public List<BrandEntity> getBrandsByIds(List<Long> brandIds) {
+        return this.baseMapper.selectList(Wrappers.<BrandEntity>lambdaQuery().in((!CollectionUtils.isEmpty(brandIds)), BrandEntity::getBrandId, brandIds));
     }
 
 }
