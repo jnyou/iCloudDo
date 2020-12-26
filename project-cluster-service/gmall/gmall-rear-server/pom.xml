@@ -23,7 +23,7 @@
         <module>coupon-service</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
-        <module>gmall-common</module>
+        <module>cloud-common</module>
         <module>search-service</module>
     </modules>
 
