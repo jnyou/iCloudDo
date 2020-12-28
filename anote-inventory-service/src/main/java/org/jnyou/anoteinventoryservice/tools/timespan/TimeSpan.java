@@ -1,8 +1,9 @@
-package com.blithe.cms.common.timespan;
+package org.jnyou.anoteinventoryservice.tools.timespan;
 
 import java.util.concurrent.TimeUnit;
 
 public class TimeSpan implements Comparable<Object> {
+
     private static final TimeUnit DEFAULT_UNIT;
     private TimeUnit unit;
     private long numeral;
@@ -29,6 +30,7 @@ public class TimeSpan implements Comparable<Object> {
         return this.numeral;
     }
 
+    @Override
     public String toString() {
         return (new Long(this.numeral)).toString().trim() + TimeUnitAbbr.fromUnit(this.unit);
     }
@@ -118,4 +120,19 @@ public class TimeSpan implements Comparable<Object> {
     static {
         DEFAULT_UNIT = TimeUnit.SECONDS;
     }
+
+    public static void main(String[] args) {
+        TimeSpan timeSpan = TimeSpan.parseValue("60m");
+        // 时间
+        long numeral = timeSpan.getNumeral();
+        // 单位
+        TimeUnit unit = timeSpan.getUnit();
+        // 转换为秒 等等...
+        long seconds = timeSpan.toSeconds();
+        System.out.println("时间："+ numeral);
+        System.out.println("单位：" + unit);
+        System.out.println("时间秒" + seconds);
+    }
+
+
 }

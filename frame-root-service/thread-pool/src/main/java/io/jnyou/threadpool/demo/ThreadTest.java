@@ -21,7 +21,6 @@ public class ThreadTest {
         /**
          *
          * 开启线程执行的4中方式：
-         *
          * 1、extends Thread class
          * 2、implements Runnable interface
          * 3、after jdk1.5，implements Callable<?> interface</>
@@ -42,8 +41,7 @@ public class ThreadTest {
          *  2、core满了。就会阻塞将任务放在队列中，空闲的时候直接从队列中获取任务执行
          *  3、如果队列满了，就会开启新的线程，但最多不能超过max的线程数量。
          *  4、如果max满了，就会使用RejectedExecutionHandler拒绝策略来拒绝接受任务，max都执行完成，有很多空闲，在指定的存活时间（keepAliveTime）以后，释放max-core这些线程
-         *
-         *  new LinkedBlockingQueue<>() ：默认是Integer的最大值。内存不够
+         *      new LinkedBlockingQueue<>() ：默认是Integer的最大值。内存不够
          *
          */
         ThreadPoolExecutor executor = new ThreadPoolExecutor(

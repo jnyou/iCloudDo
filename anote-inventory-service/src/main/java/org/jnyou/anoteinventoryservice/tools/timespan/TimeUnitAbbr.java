@@ -1,4 +1,4 @@
-package com.blithe.cms.common.timespan;
+package org.jnyou.anoteinventoryservice.tools.timespan;
 
 import java.util.concurrent.TimeUnit;
 
