@@ -2,6 +2,7 @@ package org.jnyou.gmall.productservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.jnyou.gmall.productservice.vo.SkuItemVo;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -60,6 +61,26 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Override
     public List<SkuInfoEntity> getSkuInfoBySpuId(Long spuId) {
         return this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
+    }
+
+    /**
+     * 商品详情页数据
+     * @param skuId
+     * @Author JnYou
+     */
+    @Override
+    public SkuItemVo item(Long skuId) {
+        SkuItemVo skuItemVo = new SkuItemVo();
+        // 1.sku基本信息获取pms_sku_info
+
+        // 2.sku的图片信息 pms_sku_imgs
+
+        //3.获取spu的销售属性组合
+
+        //4.获取spu的介绍
+
+        //5.获取spu的规格参数信息
+        return skuItemVo;
     }
 
 }
