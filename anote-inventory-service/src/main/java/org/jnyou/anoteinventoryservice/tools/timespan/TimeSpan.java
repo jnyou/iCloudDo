@@ -94,6 +94,7 @@ public class TimeSpan implements Comparable<Object> {
         return this.unit.toDays(this.numeral);
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == null) {
             return false;
@@ -104,6 +105,7 @@ public class TimeSpan implements Comparable<Object> {
         }
     }
 
+    @Override
     public int compareTo(Object other) {
         if (!(other instanceof TimeSpan)) {
             throw new IllegalArgumentException("a TimeSpan value cannot compare to a null value");
