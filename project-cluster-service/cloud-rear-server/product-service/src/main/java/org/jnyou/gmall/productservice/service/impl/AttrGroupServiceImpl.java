@@ -6,6 +6,8 @@ import org.jnyou.gmall.productservice.dao.AttrAttrgroupRelationDao;
 import org.jnyou.gmall.productservice.entity.AttrEntity;
 import org.jnyou.gmall.productservice.service.AttrService;
 import org.jnyou.gmall.productservice.vo.AttrGroupWithAttrsVo;
+import org.jnyou.gmall.productservice.vo.SkuItemVo;
+import org.jnyou.gmall.productservice.vo.SpuItemAttrGroupVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,6 +78,13 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return attrsVo;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        // 查询出当前spu对应的所有属性的分组信息以及当前分组下的所有属性对应的值
+        List<SpuItemAttrGroupVo> vos = this.baseMapper.getAttrGroupWithAttrsBySpuId(spuId,catalogId);
+        return vos;
     }
 
 }

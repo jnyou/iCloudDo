@@ -41,24 +41,4 @@ public class SkuItemVo {
      */
     List<SpuItemAttrGroupVo> groupAttrs;
 
-    @Data
-    public static class SkuItemSaleAttrVo {
-        private Long attrId;
-        private String attrName;
-        private List<String> attrValues;
-    }
-
-    @Data
-    public static class SpuItemAttrGroupVo {
-        private String groupNmae;
-        private List<SpuBaseAttrVo> attrs;
-    }
-
-    @Data
-    public static class SpuBaseAttrVo {
-        private String attrName;
-        private String attrValue;
-    }
-
-
 }
