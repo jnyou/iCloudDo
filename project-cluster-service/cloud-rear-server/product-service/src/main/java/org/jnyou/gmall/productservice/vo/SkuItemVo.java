@@ -34,11 +34,17 @@ public class SkuItemVo {
     /**
      * 4.获取spu的介绍
      */
-    SpuInfoDescEntity desp;
+    SpuInfoDescEntity descp;
 
     /**
      * 5.获取spu的规格参数信息
      */
     List<SpuItemAttrGroupVo> groupAttrs;
+
+    private SeckillSkuVo seckillSkuVo;
+
+    static class SeckillSkuVo{
+
+    }
 
 }

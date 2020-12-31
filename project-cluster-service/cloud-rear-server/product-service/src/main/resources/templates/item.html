@@ -624,11 +624,13 @@
 					<div class="box-attr clear" th:each="attr : ${item.saleAttr}">
 						<dl>
 							<dt>选择[[${attr.attrName}]]</dt>
-							<dd th:each="val : ${attr.attrValues}">
-								<a th:attr=" class=${#lists.contains(#strings.listSplit(val.skuIds,','),item.info.skuId.toString())
+							<dd th:each="val : ${#strings.listSplit(attr.attrValues,',')}">
+								<!--
+								th:attr=" class=${#lists.contains(#strings.listSplit(val.attrValues,','),item.info.skuId.toString())
                                    ? 'sku_attr_value checked': 'sku_attr_value'}, skus=${val.skuIds} "
-								>
-									[[${val.attrValue}]]
+								-->
+								<a>
+									[[${val}]]
 									<!--											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> -->
 								</a>
 							</dd>
@@ -896,74 +898,8 @@
 				<ul class="xuanxiangka">
 					<li class="jieshoa actives" id="li1">
 						<div class="shanpinsssss">
-							<!--									<p>-->
-							<!--										<a href="/static/item/#">品牌:华为（HUAWEI）</a>-->
-							<!--									</p>-->
-							<!--									<table>-->
-							<!--										<tr>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">商品名称：华为Mate 10</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">商品毛重：0.58kg</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">商品编号：5544038</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">商品产地：中国大陆</a>-->
-							<!--											</td>-->
-							<!--										</tr>-->
-							<!--										<tr>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">系统：安卓（Android）</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">前置摄像头像素：800万-1599万</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">后置摄像头像素：2000万及以上，1200万-1999万</a>-->
-							<!--											</td>-->
-							<!--											<td>-->
-							<!--												<a href="/static/item/##">机身内存：128GB</a>-->
-							<!--											</td>-->
-							<!--										</tr>-->
-							<!--										<tr>-->
-							<!--											<td colspan="4">-->
-							<!--												<a href="/static/item/##">全面屏，双卡双待，指纹识别，Type-C，VoLTE，2K屏，拍照神器，支持NFC，商务手机，安全手机，分辨率10</a>-->
-							<!--											</td>-->
-							<!--										</tr>-->
-							<!--									</table>-->
 							<img class="xiaoguo" th:src="${descp}"
-								 th:each="descp : ${#strings.listSplit(item.desc.decript,',')}"/>
-							<!--                            <div class="guiGebox guiGebox1">-->
-							<!--                                <div class="guiGe">-->
-							<!--                                    <h3 th:text="guige.groupName"></h3>-->
-							<!--                                    <dl>-->
-							<!--                                        <dt>品牌</dt>-->
-							<!--                                        <dd>华为(HUAWEI)</dd>-->
-							<!--                                        <dt>型号</dt>-->
-							<!--                                        <dd class="Ptable-tips">-->
-							<!--                                            <a href="/static/item/#"><i>？</i></a>-->
-							<!--                                        </dd>-->
-							<!--                                        <dd>ALP-AL00</dd>-->
-							<!--                                        <dt>入网型号</dt>-->
-							<!--                                        <dd class="Ptable-tips">-->
-							<!--                                            <a href="/static/item/#"><i>？</i></a>-->
-							<!--                                        </dd>-->
-							<!--                                        <dd>ALP-AL00</dd>-->
-							<!--                                        <dt>上市年份</dt>-->
-							<!--                                        <dd>2017年</dd>-->
-							<!--                                        <dt>上市时间</dt>-->
-							<!--                                        <dd>10月</dd>-->
-							<!--                                    </dl>-->
-							<!--                                </div>-->
-							<!--                                <div class="package-list">-->
-							<!--                                    <h3>包装清单</h3>-->
-							<!--                                    <p>手机（含内置电池） X 1、5A大电流华为SuperCharge充电器X 1、5A USB数据线 X 1、半入耳式线控耳机 X 1、快速指南X 1、三包凭证 X-->
-							<!--                                        1、取卡针 X 1、保护壳 X 1</p>-->
-							<!--                                </div>-->
-							<!--                            </div>-->
+								 th:each="descp : ${#strings.listSplit(item.descp.decript,',')}"/>
 						</div>
 					</li>
 					<li class="baozhuang actives" id="li2">
