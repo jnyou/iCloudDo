@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.jnyou.gmall.productservice.entity.SkuImagesEntity;
 import org.jnyou.gmall.productservice.entity.SpuInfoDescEntity;
-import org.jnyou.gmall.productservice.service.AttrGroupService;
-import org.jnyou.gmall.productservice.service.SkuImagesService;
-import org.jnyou.gmall.productservice.service.SpuInfoDescService;
+import org.jnyou.gmall.productservice.service.*;
+import org.jnyou.gmall.productservice.vo.SkuItemSaleAttrVo;
 import org.jnyou.gmall.productservice.vo.SkuItemVo;
 import org.jnyou.gmall.productservice.vo.SpuItemAttrGroupVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.jnyou.common.utils.Query;
 
 import org.jnyou.gmall.productservice.dao.SkuInfoDao;
 import org.jnyou.gmall.productservice.entity.SkuInfoEntity;
-import org.jnyou.gmall.productservice.service.SkuInfoService;
 import org.springframework.util.StringUtils;
 
 
@@ -40,6 +38,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     AttrGroupService attrGroupService;
+
+    @Autowired
+    SkuSaleAttrValueService skuSaleAttrValueService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -94,11 +95,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         // 2.sku的图片信息 pms_sku_imgs
         List<SkuImagesEntity> skuImagesEntities = skuImagesService.getImmageBySkuId(skuId);
         skuItemVo.setImages(skuImagesEntities);
-        //3.获取spu的销售属性组合
-
 
         Long spuId = skuBaswInfo.getSpuId();
         Long catalogId = skuBaswInfo.getCatalogId();
+
+        //3.获取spu的销售属性组合
+        List<SkuItemSaleAttrVo> skuItemSaleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(spuId);
+        skuItemVo.setSaleAttr(skuItemSaleAttrVos);
 
         //4.获取spu的介绍
         SpuInfoDescEntity spuInfoDesc = spuInfoDescService.getById(spuId);
@@ -106,8 +109,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         //5.获取spu的规格参数信息
         List<SpuItemAttrGroupVo> spuItemAttrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId,catalogId);
-
         skuItemVo.setGroupAttrs(spuItemAttrGroupVos);
+
         return skuItemVo;
     }
 
