@@ -2,12 +2,15 @@ package org.jnyou.component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.jnyou.entity.Student;
 import org.jnyou.util.BigDecimalUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 分类名称
@@ -23,26 +26,70 @@ public class CollectorsTest {
      */
     public static void main(String[] args) {
 
+        /**
+         * 归约(reduce)
+         */
         // 求和
         sumData();
+        reduceAll1();
+        reduceAll2();
 
-        // 最值
-        sumData();
+        /**
+         * 聚合（max/min/count)
+         */
+        bestValue();
+        bestValue1();
+        bestValue2();
+        bestValue3();
+
+        /**
+         * 映射(map/flatMap)
+         */
+        //map：接收一个函数作为参数，该函数会被应用到每个元素上，并将其映射成一个新的元素。
+        //flatMap：接收一个函数作为参数，将流中的每个值都换成另一个流，然后把所有流连接成一个流。
+        flatMap();
+
+        /**
+         * 统计(count/averaging)
+         */
+        // Collectors提供了一系列用于数据统计的静态方法：
+        // 计数：count
+        //  平均值：averagingInt、averagingLong、averagingDouble
+        // 最值：maxBy、minBy
+        // 求和：summingInt、summingLong、summingDouble
+        // 统计以上所有：summarizingInt、summarizingLong、summarizingDouble
+        statistics();
 
         // List -> Map
         listToMap();
 
-        // 排序
+        /**
+         * 排序(sorted)
+         */
         sorted();
+        sorted1();
 
-        // distinct去重
+        /**
+         * 接合(joining)
+         */
+        joinin();
+
+        /**
+         * 提取/组合
+         */
+        // 去重
         distinct();
+        distinct1();
 
         // TreeSet单个属性去重
         clearSameSinglton();
-
         // TreeSet多个属性进行去重
         clearSameMoreArgs();
+
+        /**
+         * 分组(partitioningBy/groupingBy)
+         */
+        group();
 
         // 分组：根据name进行分组 得到的是对象
         Map<String, List<Student>> resultListObj = loadData().stream().collect(Collectors.groupingBy(Student::getName));
@@ -110,6 +157,93 @@ public class CollectorsTest {
          */
     }
 
+    private static void distinct1() {
+        String[] arr1 = { "a", "b", "c", "d" };
+        String[] arr2 = { "d", "e", "f", "g" };
+
+        Stream<String> stream1 = Stream.of(arr1);
+        Stream<String> stream2 = Stream.of(arr2);
+        // concat:合并两个流 distinct：去重
+        List<String> newList = Stream.concat(stream1, stream2).distinct().collect(Collectors.toList());
+        // limit：限制从流中获得前n个数据
+        List<Integer> collect = Stream.iterate(1, x -> x + 2).limit(10).collect(Collectors.toList());
+        // skip：跳过前n个数据
+        List<Integer> collect2 = Stream.iterate(1, x -> x + 2).skip(1).limit(5).collect(Collectors.toList());
+
+        System.out.println("流合并：" + newList);
+        System.out.println("limit：" + collect);
+        System.out.println("skip：" + collect2);
+    }
+
+    private static void joinin() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
+        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
+
+        String names = personList.stream().map(p -> p.getName()).collect(Collectors.joining(","));
+        System.out.println("所有员工的姓名：" + names);
+        List<String> list = Arrays.asList("A", "B", "C");
+        String string = list.stream().collect(Collectors.joining("-"));
+        System.out.println("拼接后的字符串：" + string);
+    }
+
+    private static void group() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, "male", "New York"));
+        personList.add(new Person("Jack", 7000, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, "female", "Washington"));
+        personList.add(new Person("Anni", 8200, "female", "New York"));
+        personList.add(new Person("Owen", 9500, "male", "New York"));
+        personList.add(new Person("Alisa", 7900, "female", "New York"));
+
+        // 将员工按薪资是否高于8000分组
+        Map<Boolean, List<Person>> part = personList.stream().collect(Collectors.partitioningBy(x -> x.getSalary() > 8000));
+        // 将员工按性别分组
+        Map<String, List<Person>> group = personList.stream().collect(Collectors.groupingBy(Person::getSex));
+        // 将员工先按性别分组，再按地区分组
+        Map<String, Map<String, List<Person>>> group2 = personList.stream().collect(Collectors.groupingBy(Person::getSex, Collectors.groupingBy(Person::getArea)));
+        System.out.println("员工按薪资是否大于8000分组情况：" + part);
+        System.out.println("员工按性别分组情况：" + group);
+        System.out.println("员工按性别、地区：" + group2);
+    }
+
+    private static void statistics() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
+        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
+
+        // 求总数
+        Long count = personList.stream().collect(Collectors.counting());
+        // 求平均工资
+        Double average = personList.stream().collect(Collectors.averagingDouble(Person::getSalary));
+        // 求最高工资
+        Optional<Integer> max = personList.stream().map(Person::getSalary).collect(Collectors.maxBy(Integer::compare));
+        // 求工资之和
+        Integer sum = personList.stream().collect(Collectors.summingInt(Person::getSalary));
+        // 一次性统计所有信息
+        DoubleSummaryStatistics collect = personList.stream().collect(Collectors.summarizingDouble(Person::getSalary));
+
+        System.out.println("员工总数：" + count);
+        System.out.println("员工平均工资：" + average);
+        System.out.println("员工工资总和：" + sum);
+        System.out.println("员工工资所有统计：" + collect);
+    }
+
+    private static void flatMap() {
+        List<String> list = Arrays.asList("m,k,l,a", "1,3,5,7");
+        List<String> listNew = list.stream().flatMap(s -> {
+            // 将每个元素转换成一个stream
+            String[] split = s.split(",");
+            Stream<String> s2 = Arrays.stream(split);
+            return s2;
+        }).collect(Collectors.toList());
+
+        System.out.println("处理前的集合：" + list);
+        System.out.println("处理后的集合：" + listNew);
+    }
+
 
     // 求和： 分基本类型和大数类型求和，基本类型先mapToInt，然后调用sum方法，大数类型使用reduce调用BigDecimal::add方法
     public static void sumData() {
@@ -131,6 +265,42 @@ public class CollectorsTest {
 
         //最大
         Date maxEntryDate = loadData().stream().map(Student::getEntryDate).max(Date::compareTo).get();
+    }
+
+    public static void bestValue1() {
+        List<String> list = Arrays.asList("adnm", "admmt", "pot", "xbangd", "weoujgsd");
+
+        Optional<String> max = list.stream().max(Comparator.comparing(String::length));
+        System.out.println("最长的字符串：" + max.get());
+    }
+
+    public static void bestValue2() {
+        List<Integer> list = Arrays.asList(7, 6, 9, 4, 11, 6);
+
+        // 自然排序
+        Optional<Integer> max = list.stream().max(Integer::compareTo);
+        // 自定义排序
+        Optional<Integer> max2 = list.stream().max(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        System.out.println("自然排序的最大值：" + max.get());
+        System.out.println("自定义排序的最大值：" + max2.get());
+    }
+
+    public static void bestValue3() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
+        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
+        personList.add(new Person("Anni", 8200, 24, "female", "New York"));
+        personList.add(new Person("Owen", 9500, 25, "male", "New York"));
+        personList.add(new Person("Alisa", 7900, 26, "female", "New York"));
+
+        Optional<Person> max = personList.stream().max(Comparator.comparingInt(Person::getSalary));
+        System.out.println("员工工资最大值：" + max.get().getSalary());
     }
 
 
@@ -158,10 +328,42 @@ public class CollectorsTest {
         loadData().stream().sorted(Comparator.comparing(Student::getId).reversed()).collect(Collectors.toList());
 
         // 使用集合的sort排序，集合自身排序发生变化
-        loadData().sort((a,b)->a.getId().compareTo(b.getId()));
+        loadData().sort((a, b) -> a.getId().compareTo(b.getId()));
         loadData().stream().forEach(student -> System.out.println(student.getId()));
         System.out.println();
+    }
+    public static void sorted1() {
+        List<Person> personList = new ArrayList<Person>();
 
+        personList.add(new Person("Sherry", 9000, 24, "female", "New York"));
+        personList.add(new Person("Tom", 8900, 22, "male", "Washington"));
+        personList.add(new Person("Jack", 9000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 8800, 26, "male", "New York"));
+        personList.add(new Person("Alisa", 9000, 26, "female", "New York"));
+
+        // 按工资升序排序（自然排序）
+        List<String> newList = personList.stream().sorted(Comparator.comparing(Person::getSalary)).map(Person::getName)
+                .collect(Collectors.toList());
+        // 按工资倒序排序
+        List<String> newList2 = personList.stream().sorted(Comparator.comparing(Person::getSalary).reversed())
+                .map(Person::getName).collect(Collectors.toList());
+        // 先按工资再按年龄升序排序
+        List<String> newList3 = personList.stream()
+                .sorted(Comparator.comparing(Person::getSalary).thenComparing(Person::getAge)).map(Person::getName)
+                .collect(Collectors.toList());
+        // 先按工资再按年龄自定义排序（降序）
+        List<String> newList4 = personList.stream().sorted((p1, p2) -> {
+            if (p1.getSalary() == p2.getSalary()) {
+                return p2.getAge() - p1.getAge();
+            } else {
+                return p2.getSalary() - p1.getSalary();
+            }
+        }).map(Person::getName).collect(Collectors.toList());
+
+        System.out.println("按工资升序排序：" + newList);
+        System.out.println("按工资降序排序：" + newList2);
+        System.out.println("先按工资再按年龄升序排序：" + newList3);
+        System.out.println("先按工资再按年龄自定义降序排序：" + newList4);
     }
 
 
@@ -174,6 +376,7 @@ public class CollectorsTest {
         idList.add(2L);
         List<Long> distinctIdList = idList.stream().distinct().collect(Collectors.toList());
     }
+
     // TreeSet多条件去重
     public static void clearSameMoreArgs() {
 
@@ -182,6 +385,7 @@ public class CollectorsTest {
                         Comparator.comparing(o -> o.getName() + ";" + o.getClassName() + ";" + o.getGrade()))), ArrayList::new));
         System.out.println("多条件去重后:" + collect1.toString());
     }
+
     // TreeSet单条件去重
     public static void clearSameSinglton() {
         List<Student> collect = loadData().stream().collect(
@@ -191,18 +395,84 @@ public class CollectorsTest {
     }
 
 
+    public static void reduceAll1() {
+        List<Integer> list = Arrays.asList(1, 3, 2, 8, 11, 4);
+        // 求和方式1
+        Optional<Integer> sum = list.stream().reduce((x, y) -> x + y);
+        // 求和方式2
+        Optional<Integer> sum2 = list.stream().reduce(Integer::sum);
+        // 求和方式3
+        Integer sum3 = list.stream().reduce(0, Integer::sum);
 
+        // 求乘积
+        Optional<Integer> product = list.stream().reduce((x, y) -> x * y);
+
+        // 求最大值方式1
+        Optional<Integer> max = list.stream().reduce((x, y) -> x > y ? x : y);
+        // 求最大值写法2
+        Integer max2 = list.stream().reduce(1, Integer::max);
+
+        System.out.println("list求和：" + sum.get() + "," + sum2.get() + "," + sum3);
+        System.out.println("list求积：" + product.get());
+        System.out.println("list求和：" + max.get() + "," + max2);
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Person {
+        private String name;  // 姓名
+        private int salary; // 薪资
+        private int age; // 年龄
+        private String sex; //性别
+        private String area;  // 地区
+
+        public Person(String name, int salary, String sex, String area) {
+            this.name = name;
+            this.salary = salary;
+            this.sex = sex;
+            this.area = area;
+        }
+    }
+
+    public static void reduceAll2() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
+        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
+        personList.add(new Person("Anni", 8200, 24, "female", "New York"));
+        personList.add(new Person("Owen", 9500, 25, "male", "New York"));
+        personList.add(new Person("Alisa", 7900, 26, "female", "New York"));
+
+        // 求工资之和方式1：
+        Optional<Integer> sumSalary = personList.stream().map(Person::getSalary).reduce(Integer::sum);
+        // 求工资之和方式2：
+        Integer sumSalary2 = personList.stream().reduce(0, (sum, p) -> sum += p.getSalary(),
+                (sum1, sum2) -> sum1 + sum2);
+        // 求工资之和方式3：
+        Integer sumSalary3 = personList.stream().reduce(0, (sum, p) -> sum += p.getSalary(), Integer::sum);
+
+        // 求最高工资方式1：
+        Integer maxSalary = personList.stream().reduce(0, (max, p) -> max > p.getSalary() ? max : p.getSalary(),
+                Integer::max);
+        // 求最高工资方式2：
+        Integer maxSalary2 = personList.stream().reduce(0, (max, p) -> max > p.getSalary() ? max : p.getSalary(),
+                (max1, max2) -> max1 > max2 ? max1 : max2);
+
+        System.out.println("工资之和：" + sumSalary.get() + "," + sumSalary2 + "," + sumSalary3);
+        System.out.println("最高工资：" + maxSalary + "," + maxSalary2);
+    }
 
 
     //初始化数据
     public static List<Student> loadData() {
         List<Student> list = Arrays.asList(
-                new Student(1001L,"张三", "2班", "一年级", 85, BigDecimal.ONE, new Date()),
-                new Student(1002L,"李四", "2班", "一年级", 50, BigDecimal.ONE, new Date()),
-                new Student(1003L,"李四", "2班", "二年级", 55, BigDecimal.ONE, new Date()),
-                new Student(1004L,"张三", "1班", "一年级", 70, BigDecimal.ONE, new Date()),
-                new Student(1005L,"李四", "2班", "二年级", 60, BigDecimal.ONE, new Date()),
-                new Student(1006L,"张三", "2班", "一年级", 98, BigDecimal.ONE, new Date())
+                new Student(1001L, "张三", "2班", "一年级", 85, BigDecimal.ONE, new Date()),
+                new Student(1002L, "李四", "2班", "一年级", 50, BigDecimal.ONE, new Date()),
+                new Student(1003L, "李四", "2班", "二年级", 55, BigDecimal.ONE, new Date()),
+                new Student(1004L, "张三", "1班", "一年级", 70, BigDecimal.ONE, new Date()),
+                new Student(1005L, "李四", "2班", "二年级", 60, BigDecimal.ONE, new Date()),
+                new Student(1006L, "张三", "2班", "一年级", 98, BigDecimal.ONE, new Date())
         );
         return list;
     }
