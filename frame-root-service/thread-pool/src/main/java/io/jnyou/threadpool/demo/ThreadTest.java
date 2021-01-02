@@ -12,7 +12,12 @@ public class ThreadTest {
 
     public static ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    // CompletableFuture 异步编排；Future：能够获取异步的返回结果
+    /**
+     * CompletableFuture 异步编排；Future：能够获取异步的返回结果
+     *
+     * @param args
+     * @Author JnYou
+     */
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         System.out.println("main====start");
         // 无返回值
@@ -182,7 +187,7 @@ public class ThreadTest {
         System.out.println("main====end");
     }
 
-    // TODO
+
     public static void testThreads(String[] args) throws ExecutionException, InterruptedException {
         // 1、extends Thread class
         Thread thread = new ThreadVo();
@@ -225,6 +230,7 @@ public class ThreadTest {
          *
          */
 
+        // 创建线程池方式：
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 5, 200,10 , TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(100000),

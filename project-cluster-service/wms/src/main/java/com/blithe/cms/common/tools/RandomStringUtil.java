@@ -47,7 +47,7 @@ public class RandomStringUtil {
 		StringBuffer buffer = null;
 		StringBuffer sb = new StringBuffer();
 		Random r = new Random();
-		r.setSeed(new Date().getTime());
+		r.setSeed(System.currentTimeMillis());
 		switch (type) {
 		case 0:
 			buffer = new StringBuffer("0123456789");
