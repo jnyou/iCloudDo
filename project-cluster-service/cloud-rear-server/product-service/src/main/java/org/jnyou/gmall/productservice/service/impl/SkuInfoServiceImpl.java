@@ -2,6 +2,7 @@ package org.jnyou.gmall.productservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.jnyou.gmall.productservice.config.MyThreadConfig;
 import org.jnyou.gmall.productservice.entity.SkuImagesEntity;
 import org.jnyou.gmall.productservice.entity.SpuInfoDescEntity;
 import org.jnyou.gmall.productservice.service.*;
@@ -15,6 +16,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,6 +45,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    ThreadPoolExecutor executor;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -87,29 +94,44 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
      * @Author JnYou
      */
     @Override
-    public SkuItemVo item(Long skuId) {
+    public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
+
         SkuItemVo skuItemVo = new SkuItemVo();
-        // 1.sku基本信息获取pms_sku_info
-        SkuInfoEntity skuBaswInfo = getById(skuId);
-        skuItemVo.setInfo(skuBaswInfo);
-        // 2.sku的图片信息 pms_sku_imgs
-        List<SkuImagesEntity> skuImagesEntities = skuImagesService.getImmageBySkuId(skuId);
-        skuItemVo.setImages(skuImagesEntities);
 
-        Long spuId = skuBaswInfo.getSpuId();
-        Long catalogId = skuBaswInfo.getCatalogId();
+        // 使用线程池开启异步编排任务执行
+        CompletableFuture<SkuInfoEntity> infofuture = CompletableFuture.supplyAsync(() -> {
+            // 1.sku基本信息获取pms_sku_info
+            SkuInfoEntity skuBaswInfo = getById(skuId);
+            skuItemVo.setInfo(skuBaswInfo);
+            return skuBaswInfo;
+        }, executor);
 
-        //3.获取spu的销售属性组合
-        List<SkuItemSaleAttrVo> skuItemSaleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(spuId);
-        skuItemVo.setSaleAttr(skuItemSaleAttrVos);
+        CompletableFuture<Void> saleAttrFuture = infofuture.thenAcceptAsync((res) -> {
+            //3.获取spu的销售属性组合
+            List<SkuItemSaleAttrVo> skuItemSaleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(res.getSpuId());
+            skuItemVo.setSaleAttr(skuItemSaleAttrVos);
+        }, executor);
 
-        //4.获取spu的介绍
-        SpuInfoDescEntity spuInfoDesc = spuInfoDescService.getById(spuId);
-        skuItemVo.setDescp(spuInfoDesc);
+        CompletableFuture<Void> descFuture = infofuture.thenAcceptAsync((res) -> {
+            //4.获取spu的介绍
+            SpuInfoDescEntity spuInfoDesc = spuInfoDescService.getById(res.getSpuId());
+            skuItemVo.setDescp(spuInfoDesc);
+        }, executor);
 
-        //5.获取spu的规格参数信息
-        List<SpuItemAttrGroupVo> spuItemAttrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId,catalogId);
-        skuItemVo.setGroupAttrs(spuItemAttrGroupVos);
+        CompletableFuture<Void> baseInfoFuture = infofuture.thenAcceptAsync((res) -> {
+            //5.获取spu的规格参数信息
+            List<SpuItemAttrGroupVo> spuItemAttrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(),res.getCatalogId());
+            skuItemVo.setGroupAttrs(spuItemAttrGroupVos);
+        }, executor);
+
+        CompletableFuture<Void> imagesFuture = CompletableFuture.runAsync(() -> {
+            // 2.sku的图片信息 pms_sku_imgs
+            List<SkuImagesEntity> skuImagesEntities = skuImagesService.getImmageBySkuId(skuId);
+            skuItemVo.setImages(skuImagesEntities);
+        }, executor);
+
+        // 等待所有异步任务执行完成后返回result；阻塞式操作
+        CompletableFuture.allOf(saleAttrFuture,descFuture,baseInfoFuture,imagesFuture).get();
 
         return skuItemVo;
     }

@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * <p>
  *
@@ -21,7 +23,7 @@ public class ItemController {
     private SkuInfoService skuInfoService;
 
     @GetMapping("/{skuId}.html")
-    public String toItemDescPage(@PathVariable("skuId") Long skuId, Model model){
+    public String toItemDescPage(@PathVariable("skuId") Long skuId, Model model) throws ExecutionException, InterruptedException {
         System.out.println("准备查询" + skuId + "商品的详情信息");
         SkuItemVo skuItemVo = skuInfoService.item(skuId);
         model.addAttribute("item",skuItemVo);

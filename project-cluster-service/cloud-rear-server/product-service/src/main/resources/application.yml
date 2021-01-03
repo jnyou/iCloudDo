@@ -48,3 +48,8 @@ mybatis-plus:
 logging:
   level:
     org.jnyou.gmall: debug
+mall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10
