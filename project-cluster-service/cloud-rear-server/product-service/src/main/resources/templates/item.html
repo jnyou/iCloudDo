@@ -624,13 +624,10 @@
 					<div class="box-attr clear" th:each="attr : ${item.saleAttr}">
 						<dl>
 							<dt>选择[[${attr.attrName}]]</dt>
-							<dd th:each="val : ${#strings.listSplit(attr.attrValues,',')}">
-								<!--
-								th:attr=" class=${#lists.contains(#strings.listSplit(val.attrValues,','),item.info.skuId.toString())
-                                   ? 'sku_attr_value checked': 'sku_attr_value'}, skus=${val.skuIds} "
-								-->
-								<a>
-									[[${val}]]
+							<dd th:each="vals : ${attr.attrValues}">
+								<a th:attr=" class=${#lists.contains(#strings.listSplit(vals.skuIds,','),item.info.skuId.toString())
+                                   ? 'sku_attr_value checked': 'sku_attr_value'}, skus=${vals.skuIds} ">
+									[[${vals.attrValue}]]
 									<!--											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> -->
 								</a>
 							</dd>
@@ -1308,7 +1305,7 @@
 			filterEle = $(filterEle).filter(skus[i])[0];
 		}
 
-		location.href = "http://item.gulimall.com/" + filterEle + ".html";
+		location.href = "http://item.gmall.com/" + filterEle + ".html";
 
 		return false;
 	});
@@ -1325,7 +1322,7 @@
 	$(".addToCart").click(function () {
 		let skuId = $(this).attr("skuId");
 		let num = $("#productNum").val();
-		location.href = "http://cart.gulimall.com/addCartItem?skuId=" + skuId + "&num=" + num;
+		location.href = "http://cart.gmall.com/addCartItem?skuId=" + skuId + "&num=" + num;
 		return false;
 	});
 
@@ -1335,7 +1332,7 @@
 			var killId = $(this).attr("sessionid") + "-" + $(this).attr("skuid");
 			var code = $(this).attr("code");
 			var num = $("#productNum").val();
-			location.href = "http://seckill.gulimall.com/kill?killId=" + killId + "&key=" + code + "&num=" + num;
+			location.href = "http://seckill.gmall.com/kill?killId=" + killId + "&key=" + code + "&num=" + num;
 		} else {
 			alert("秒杀请先登录");
 		}

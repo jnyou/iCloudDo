@@ -12,9 +12,25 @@
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
 
-    <select id="getSaleAttrBySpuId" resultType="org.jnyou.gmall.productservice.vo.SkuItemSaleAttrVo">
-        SELECT ssav.attr_id AS attr_id,ssav.attr_name AS attr_name,GROUP_CONCAT(DISTINCT ssav.attr_value) AS attr_values
-        FROM pms_sku_info info LEFT JOIN pms_sku_sale_attr_value ssav ON info.sku_id = ssav.sku_id
-        WHERE info.spu_id = #{spuId,jdbcType=BIGINT} GROUP BY ssav.attr_id,ssav.attr_name
+    <resultMap id="SkuItemSaleAttrVo" type="org.jnyou.gmall.productservice.vo.SkuItemSaleAttrVo">
+        <result column="attr_id" property="attrId"></result>
+        <result column="attr_name" property="attrName"></result>
+        <collection property="attrValues" ofType="org.jnyou.gmall.productservice.vo.AttrValueWithSkuIdVo">
+            <result column="sku_ids" property="skuIds"></result>
+            <result column="attr_value" property="attrValue"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getSaleAttrBySpuId" resultMap="SkuItemSaleAttrVo">
+        SELECT
+            ssav.attr_id AS attr_id,
+            ssav.attr_name AS attr_name,
+            ssav.attr_value,
+            GROUP_CONCAT(info.sku_id) AS sku_ids
+        FROM
+            pms_sku_info info
+            LEFT JOIN pms_sku_sale_attr_value ssav ON info.sku_id = ssav.sku_id
+        WHERE
+            info.spu_id = #{spuId,jdbcType=BIGINT} GROUP BY ssav.attr_id,ssav.attr_name,ssav.attr_value
     </select>
 </mapper>
