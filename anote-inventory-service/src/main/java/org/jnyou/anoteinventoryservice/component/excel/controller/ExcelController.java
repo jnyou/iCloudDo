@@ -1,7 +1,7 @@
 package org.jnyou.anoteinventoryservice.component.excel.controller;
 
 import com.alibaba.excel.EasyExcel;
-import org.jnyou.anoteinventoryservice.common.R;
+import org.jnyou.anoteinventoryservice.component.R;
 import org.jnyou.anoteinventoryservice.component.excel.entity.PaymentChangeRecord;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

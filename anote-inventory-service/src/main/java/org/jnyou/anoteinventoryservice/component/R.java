@@ -1,4 +1,4 @@
-package org.jnyou.anoteinventoryservice.common;
+package org.jnyou.anoteinventoryservice.component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 返回数据
  *
- * @author Mark sunlightcs@gmail.com
+ * @author xiaojian19970910@gmail.com
  */
 public class R extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
