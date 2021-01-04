@@ -25,6 +25,7 @@
         <module>renren-generator</module>
         <module>cloud-common</module>
         <module>search-service</module>
+        <module>xxl-job</module>
     </modules>
 
 
