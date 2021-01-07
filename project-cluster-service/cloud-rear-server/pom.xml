@@ -26,6 +26,7 @@
         <module>cloud-common</module>
         <module>search-service</module>
         <module>xxl-job</module>
+        <module>auth-service</module>
     </modules>
 
 
