@@ -66,6 +66,10 @@ spring:
           predicates:
             - Host=search.gmall.com
 
+        - id: gmall_auth_route
+          uri: lb://auth-service
+          predicates:
+            - Host=auth.gmall.com
 
 ## 前端项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
