@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.jnyou.starter.autoconfigure.demo.AnimalAutoConfiguration,\
+  org.jnyou.starter.autoconfigure.jpush.JPushAutoConfiguration
