@@ -3,9 +3,11 @@ package io.jnyou.threadpool.demo;
 import java.util.concurrent.*;
 
 /**
- * Created by 13 on 2017/5/5.
+ * 线程池的拒绝策略
+ *
+ * @author jnyou
  */
-public class RejectThreadPoolDemo {
+public class RejectThreadPool {
     public static class MyTask implements Runnable {
 
         @Override

@@ -7,7 +7,11 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ThreadTests {
+/**
+ * 异步编排
+ * @author jnyou
+ */
+public class CompletableFuturePool2 {
     private static ExecutorService service = Executors.newFixedThreadPool(5);
 
     public static void main(String[] args) throws Exception {

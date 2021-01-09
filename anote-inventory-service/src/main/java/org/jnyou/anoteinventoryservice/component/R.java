@@ -73,7 +73,11 @@ public class R extends HashMap<String, Object> {
 		return this;
 	}
 
-	//利用fastjson进行逆转，
+	/**
+	 * 利用fastjson进行逆转，
+	 * @param typeReference
+	 * @Author JnYou
+	 */
 	public <T> T getData(TypeReference<T> typeReference){
 		//默认是map
 		Object data = get("data");
@@ -82,7 +86,12 @@ public class R extends HashMap<String, Object> {
 		return t;
 	}
 
-	//利用fastjson进行逆转，自定义返回名 key
+	/**
+	 * 利用fastjson进行逆转，自定义返回名 key
+	 * @param key
+	 * @param typeReference
+	 * @Author JnYou
+	 */
 	public <T> T getData(String key,TypeReference<T> typeReference){
 		//默认是map
 		Object data = get(key);
