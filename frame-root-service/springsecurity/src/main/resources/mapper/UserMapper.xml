@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.jnyou.springsecurity.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="io.jnyou.springsecurity.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="CHAR" property="password"/>
+        <result column="create_user" jdbcType="INTEGER" property="createUser"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_user" jdbcType="INTEGER" property="updateUser"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="list" resultType="io.jnyou.springsecurity.entity.User">
+        select * from sys_user
+    </select>
+
+    <select id="loadUserByUsername" resultType="io.jnyou.springsecurity.entity.User">
+        SELECT id,username,password FROM sys_user where name = #{username}
+    </select>
+
+</mapper>
