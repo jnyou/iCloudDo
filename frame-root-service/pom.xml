@@ -15,6 +15,12 @@
         <module>netty</module>
         <module>message-push</module>
         <module>jwt</module>
+        <module>rabbit</module>
+        <module>custom-starter</module>
+        <module>event</module>
+        <module>redis</module>
+        <module>thread-pool</module>
+        <module>springsecurity</module>
     </modules>
 
     <properties>
