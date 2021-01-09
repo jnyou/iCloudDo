@@ -1,0 +1,71 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: sharding, sharding0, sharding1
+      sharding:
+        #type: com.alibaba.druid.pool.DruidDataSource
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/sharding?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: root2019!
+      sharding0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/sharding0?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: root2019!
+      sharding1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class: com.mysql.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/sharding1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: root2019!
+    sharding:
+      # 默认数据源，不分片数据存放
+      default-data-source-name: sharding
+      # 默认分库策略
+      default-database-strategy:
+        # 行表达式
+        inline:
+          # 分库字段
+          sharding-column: id
+          # 分库规则
+          algorithm-expression: sharding$->{id % 2}
+      # 分表策略
+      tables:
+        sys_log:
+          # 真实的数据节点，数据源+表名的形式（临时数据，这里需要通过配置中心来实现动态配置）
+          actual-data-nodes: sharding$->{0..1}.sys_log_$->{[202007, 202008, 202009, 202010]}
+          database-strategy:
+            inline:
+              sharding-column: operation_id
+              algorithm-expression: sharding$->{operation_id % 2}
+          table-strategy:
+            standard:
+              sharding-column: create_time
+              precise-algorithm-class-name: org.ylc.note.shardingsphere.strategy.LogPreciseShardingAlgorithm
+              range-algorithm-className: org.ylc.note.shardingsphere.strategy.LogRangeShardingAlgorithm
+          # 自增列生成规则，这里用雪花算法
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+            props:
+              worker:
+                id: 33
+      # 配置绑定表，连表查询时减少路由查询次数。（相同分表字段和规则的表）
+#      binding-tables:
+#        - user
+#        - order
+      # 配置广播表：所有分片数据源中都存在的表，表结构和数据都一样。适用于数据量不大，但是需要和海量数据进行联查，如字典表
+#      broadcast-tables: dict
+    # 显示SQL
+    props:
+      sql:
+        show: true
+mybatis:
+  type-aliases-package: io.jnyou.shardingsphere.entity
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    # 开启驼峰类型的命名规则
+    map-underscore-to-camel-case: true
