@@ -21,6 +21,12 @@
         <module>redis</module>
         <module>thread-pool</module>
         <module>springsecurity</module>
+        <module>aop</module>
+        <module>actuator</module>
+        <module>sharding-srphee</module>
+        <module>quartz</module>
+        <module>rabbit</module>
+        <module>rate-limiter</module>
     </modules>
 
     <properties>
