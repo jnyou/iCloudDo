@@ -65,7 +65,6 @@ spring:
           uri: lb://search-service
           predicates:
             - Host=search.gmall.com
-
         - id: gmall_auth_route
           uri: lb://auth-service
           predicates:
