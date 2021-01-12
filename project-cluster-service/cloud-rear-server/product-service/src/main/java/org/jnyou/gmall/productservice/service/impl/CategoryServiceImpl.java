@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
 import org.jnyou.gmall.productservice.dao.CategoryDao;
@@ -23,6 +22,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -152,13 +152,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
 
             List<Catelog2Vo> catelog2VoList = null;
-            if (CollectionUtils.isNotEmpty(category2EntityList)) {
+            if (!CollectionUtils.isEmpty(category2EntityList)) {
                 // 封装好需要返回的数据 List<Catelog2Vo>
                 catelog2VoList = category2EntityList.stream().map(c2 -> {
                     // 查找当前二级分类下的三级分类
                     List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
                     List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
-                    if (CollectionUtils.isNotEmpty(category3Entities)) {
+                    if (!CollectionUtils.isEmpty(category3Entities)) {
                         // 封装三级分类VO
                         catelog3Vos = category3Entities.stream().map(c3 -> {
                             Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());
@@ -296,13 +296,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             List<CategoryEntity> category2EntityList = getParent_cid(selectList, v.getCatId());
 
             List<Catelog2Vo> catelog2VoList = null;
-            if (CollectionUtils.isNotEmpty(category2EntityList)) {
+            if (!CollectionUtils.isEmpty(category2EntityList)) {
                 // 封装好需要返回的数据 List<Catelog2Vo>
                 catelog2VoList = category2EntityList.stream().map(c2 -> {
                     // 查找当前二级分类下的三级分类
                     List<CategoryEntity> category3Entities = getParent_cid(selectList, c2.getCatId());
                     List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
-                    if (CollectionUtils.isNotEmpty(category3Entities)) {
+                    if (!CollectionUtils.isEmpty(category3Entities)) {
                         // 封装三级分类VO
                         catelog3Vos = category3Entities.stream().map(c3 -> {
                             Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo().setCatalog2Id(c2.getCatId().toString()).setId(c3.getCatId().toString()).setName(c3.getName());

@@ -53,6 +53,16 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>.*),/admin-vue/$\{segment}
+
+        - id: gmall_search_route
+          uri: lb://search-service
+          predicates:
+            - Host=search.gmall.com
+
+        - id: gmall_auth_route
+          uri: lb://auth-service
+          predicates:
+            - Host=auth.gmall.com
         # host域名映射配置跳转需要放置最下面，否则上述无法路由到其他服务接口
         # 所有的页面请求和接口请求都通过nginx反向代理到网关，网关配置域名映射跳转到响应的接口或者页面
         # 如果是/api/**,转交给对应的服务器请求接口，如果满足域名，则转交给对应的服务，比如下面的product-service服务
@@ -61,14 +71,7 @@ spring:
           predicates:
             - Host=gmall.com,item.gmall.com
 
-        - id: gmall_host_route
-          uri: lb://search-service
-          predicates:
-            - Host=search.gmall.com
-        - id: gmall_auth_route
-          uri: lb://auth-service
-          predicates:
-            - Host=auth.gmall.com
+
 
 ## 前端项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg

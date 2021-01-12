@@ -2,13 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>cloud-rear-server</artifactId>
-        <groupId>org.jnyou</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+<!--    <parent>-->
+<!--        <artifactId>cloud-rear-server</artifactId>-->
+<!--        <groupId>org.jnyou</groupId>-->
+<!--        <version>0.0.1-SNAPSHOT</version>-->
+<!--    </parent>-->
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cloud-common</artifactId>
+    <groupId>io.jnyou</groupId>
+    <version>0.0.1-SNAPSHOT</version>
     <description>各个微服务系统依赖的公共服务包，包括bean、utils等工具类</description>
 
     <properties>
