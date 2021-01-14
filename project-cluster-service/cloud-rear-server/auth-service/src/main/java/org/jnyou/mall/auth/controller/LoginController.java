@@ -16,14 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class LoginController {
 
-    @GetMapping("login.html")
-    public String toLogin(){
-        return "login";
-    }
 
-    @GetMapping("reg.html")
-    public String toReg(){
-        return "reg";
-    }
+
 
 }
