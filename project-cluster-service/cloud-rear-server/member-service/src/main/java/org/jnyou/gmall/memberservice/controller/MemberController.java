@@ -8,6 +8,7 @@ import org.jnyou.gmall.memberservice.entity.MemberEntity;
 import org.jnyou.gmall.memberservice.exception.PhoneExistException;
 import org.jnyou.gmall.memberservice.exception.UsernameExistException;
 import org.jnyou.gmall.memberservice.service.MemberService;
+import org.jnyou.gmall.memberservice.vo.MemberLoginVo;
 import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,16 @@ public class MemberController {
 
         //打印会员和优惠券信息
         return R.ok().put("member", memberEntity).put("coupons", membercoupons.get("coupons"));
+    }
+
+    @PostMapping("/login")
+    public R login(@RequestBody MemberLoginVo vo) {
+        MemberEntity memberEntity = memberService.login(vo);
+        if(null != memberEntity){
+            return R.ok();
+        } else {
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(),BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
     }
 
     /**

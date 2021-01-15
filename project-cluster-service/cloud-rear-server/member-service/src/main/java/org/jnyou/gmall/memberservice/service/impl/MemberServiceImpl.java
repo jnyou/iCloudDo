@@ -5,6 +5,7 @@ import org.jnyou.gmall.memberservice.entity.MemberLevelEntity;
 import org.jnyou.gmall.memberservice.exception.PhoneExistException;
 import org.jnyou.gmall.memberservice.exception.UsernameExistException;
 import org.jnyou.gmall.memberservice.service.MemberLevelService;
+import org.jnyou.gmall.memberservice.vo.MemberLoginVo;
 import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -70,6 +71,30 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         Integer count = this.baseMapper.selectCount(Wrappers.<MemberEntity>lambdaQuery().eq(MemberEntity::getUsername, username));
         if(count > 0){
             throw new UsernameExistException();
+        }
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVo vo) {
+        MemberEntity memberEntity = this.baseMapper.selectOne(Wrappers.<MemberEntity>lambdaQuery()
+                .eq(MemberEntity::getUsername, vo.getLoginAccount())
+                .or()
+                .eq(MemberEntity::getMobile, vo.getLoginAccount())
+        );
+        if(null == memberEntity){
+            // 登录失败
+            return null;
+        } else {
+            // 获取到数据库的password
+            String passwordDb = memberEntity.getPassword();
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            // 第一个传递过来的明文密码，第二个是数据库存储的密文密码进行匹配
+            boolean matches = passwordEncoder.matches(vo.getPassword(), passwordDb);
+            if(matches){
+                return memberEntity;
+            } else {
+                return null;
+            }
         }
     }
 

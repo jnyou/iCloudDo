@@ -6,6 +6,7 @@ import org.jnyou.common.exception.BizCodeEnume;
 import org.jnyou.common.utils.R;
 import org.jnyou.mall.auth.feign.MemberFeignClient;
 import org.jnyou.mall.auth.feign.ThridPartyFeignClient;
+import org.jnyou.mall.auth.vo.UserLoginVo;
 import org.jnyou.mall.auth.vo.UserRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -46,6 +47,22 @@ public class LoginController {
 
     @Autowired
     MemberFeignClient memberFeignClient;
+
+
+    @PostMapping("/login")
+    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes){
+        // 远程调用登录
+        R r = memberFeignClient.login(vo);
+        if(r.getCode() == 0){
+            return "redirect:http://gmall.com";
+        } else {
+            Map<String, String> errors = new HashMap<>(124);
+            errors.put("msg",r.getData("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors",errors);
+            return "redirect:http://auth.gmall.com/login.html";
+        }
+    }
+
 
     @GetMapping("/sendSms")
     @ResponseBody
@@ -103,7 +120,7 @@ public class LoginController {
                     return "redirect:http://auth.gmall.com/login.html";
                 } else {
                     Map<String, String> errors = new HashMap<>(124);
-                    errors.put("msg",r.getData(new TypeReference<String>(){}));
+                    errors.put("msg",r.getData("msg",new TypeReference<String>(){}));
                     redirectAttributes.addFlashAttribute("errors",errors);
                     return "redirect:http://auth.gmall.com/reg.html";
                 }
