@@ -21,7 +21,7 @@ public class UserRegisterVo {
     @Pattern(regexp = "^[1]([3-9])[0-9]{9}$", message = "手机号格式不正确")
     private String phone;
 
-    @NotEmpty(message = "验证码不能为空")
+//    @NotEmpty(message = "验证码不能为空")
     private String code;
 
 }

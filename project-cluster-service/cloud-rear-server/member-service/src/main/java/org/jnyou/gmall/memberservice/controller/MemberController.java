@@ -1,9 +1,12 @@
 package org.jnyou.gmall.memberservice.controller;
 
+import org.jnyou.common.exception.BizCodeEnume;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.R;
 import org.jnyou.gmall.memberservice.client.CouponFeignService;
 import org.jnyou.gmall.memberservice.entity.MemberEntity;
+import org.jnyou.gmall.memberservice.exception.PhoneExistException;
+import org.jnyou.gmall.memberservice.exception.UsernameExistException;
 import org.jnyou.gmall.memberservice.service.MemberService;
 import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Map;
-
 
 
 /**
@@ -31,29 +33,32 @@ public class MemberController {
 
     /**
      * 测试openFeign组件
+     *
      * @return
      * @Author jnyou
      */
     @RequestMapping("/coupons")
-    public R test(){
+    public R test() {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setNickname("会员昵称张三");
         //假设张三去数据库查了后返回了张三的优惠券信息
         R membercoupons = couponFeignService.membercoupons();
 
         //打印会员和优惠券信息
-        return R.ok().put("member",memberEntity).put("coupons",membercoupons.get("coupons"));
+        return R.ok().put("member", memberEntity).put("coupons", membercoupons.get("coupons"));
     }
 
     /**
      * 注册
      */
-    @RequestMapping("/regist")
-    public R regist(@RequestBody MemberRegistVo vo){
+    @PostMapping("/regist")
+    public R regist(@RequestBody MemberRegistVo vo) {
         try {
             memberService.regist(vo);
-        }catch (Exception e) {
-            e.printStackTrace();
+        } catch (PhoneExistException e) {
+            return R.error(BizCodeEnume.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXIST_EXCEPTION.getMsg());
+        } catch (UsernameExistException e) {
+            return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(), BizCodeEnume.USER_EXIST_EXCEPTION.getMsg());
         }
         return R.ok();
     }
@@ -63,7 +68,7 @@ public class MemberController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("memberservice:member:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = memberService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -75,8 +80,8 @@ public class MemberController {
      */
     @RequestMapping("/info/{id}")
     //@RequiresPermissions("memberservice:member:info")
-    public R info(@PathVariable("id") Long id){
-		MemberEntity member = memberService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        MemberEntity member = memberService.getById(id);
 
         return R.ok().put("member", member);
     }
@@ -86,8 +91,8 @@ public class MemberController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("memberservice:member:save")
-    public R save(@RequestBody MemberEntity member){
-		memberService.save(member);
+    public R save(@RequestBody MemberEntity member) {
+        memberService.save(member);
 
         return R.ok();
     }
@@ -97,8 +102,8 @@ public class MemberController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("memberservice:member:update")
-    public R update(@RequestBody MemberEntity member){
-		memberService.updateById(member);
+    public R update(@RequestBody MemberEntity member) {
+        memberService.updateById(member);
 
         return R.ok();
     }
@@ -108,8 +113,8 @@ public class MemberController {
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("memberservice:member:delete")
-    public R delete(@RequestBody Long[] ids){
-		memberService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        memberService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }
