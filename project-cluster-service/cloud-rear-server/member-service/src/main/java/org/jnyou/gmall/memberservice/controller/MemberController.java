@@ -1,20 +1,16 @@
 package org.jnyou.gmall.memberservice.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.jnyou.gmall.memberservice.client.CouponFeignService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.jnyou.gmall.memberservice.entity.MemberEntity;
-import org.jnyou.gmall.memberservice.service.MemberService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.R;
+import org.jnyou.gmall.memberservice.client.CouponFeignService;
+import org.jnyou.gmall.memberservice.entity.MemberEntity;
+import org.jnyou.gmall.memberservice.service.MemberService;
+import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -47,6 +43,19 @@ public class MemberController {
 
         //打印会员和优惠券信息
         return R.ok().put("member",memberEntity).put("coupons",membercoupons.get("coupons"));
+    }
+
+    /**
+     * 注册
+     */
+    @RequestMapping("/regist")
+    public R regist(@RequestBody MemberRegistVo vo){
+        try {
+            memberService.regist(vo);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return R.ok();
     }
 
     /**
