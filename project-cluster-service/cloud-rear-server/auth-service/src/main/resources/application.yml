@@ -1,7 +1,6 @@
 server:
   port: 20000
 
-
 spring:
   application:
     name: auth-service
@@ -11,3 +10,6 @@ spring:
         server-addr: 127.0.0.1:8848
   thymeleaf:
     cache: false
+  redis:
+    host: 192.168.56.10
+    port: 6379
