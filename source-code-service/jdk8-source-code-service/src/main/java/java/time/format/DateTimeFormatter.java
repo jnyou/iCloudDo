@@ -1952,7 +1952,8 @@ public final class DateTimeFormatter {
                         pos.getIndex(), text, pos.getIndex());
             }
         }
-        return context.toResolved(resolverStyle, resolverFields);
+//        return context.toResolved(resolverStyle, resolverFields);
+        return null;
     }
 
     /**
@@ -1999,7 +2000,8 @@ public final class DateTimeFormatter {
         if (context == null) {
             return null;
         }
-        return context.toUnresolved();
+//        return context.toUnresolved();
+        return null;
     }
 
     private DateTimeParseContext parseUnresolved0(CharSequence text, ParsePosition position) {
@@ -2136,7 +2138,8 @@ public final class DateTimeFormatter {
             Objects.requireNonNull(text, "text");
             DateTimeParseContext context;
             try {
-                context = formatter.parseUnresolved0(text, pos);
+//                context = formatter.parseUnresolved0(text, pos);
+                context = null;
             } catch (IndexOutOfBoundsException ex) {
                 if (pos.getErrorIndex() < 0) {
                     pos.setErrorIndex(0);
@@ -2150,11 +2153,12 @@ public final class DateTimeFormatter {
                 return null;
             }
             try {
-                TemporalAccessor resolved = context.toResolved(formatter.resolverStyle, formatter.resolverFields);
-                if (parseType == null) {
-                    return resolved;
-                }
-                return resolved.query(parseType);
+//                TemporalAccessor resolved = context.toResolved(formatter.resolverStyle, formatter.resolverFields);
+//                if (parseType == null) {
+//                    return resolved;
+//                }
+                return null;
+//                return resolved.query(parseType);
             } catch (RuntimeException ex) {
                 pos.setErrorIndex(0);
                 return null;

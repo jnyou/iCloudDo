@@ -154,11 +154,11 @@ class DatagramSocket implements java.io.Closeable {
                 // socket is now connected by the impl
                 connectState = ST_CONNECTED;
                 // Do we need to filter some packets?
-                int avail = getImpl().dataAvailable();
-                if (avail == -1) {
-                    throw new SocketException();
-                }
-                explicitFilter = avail > 0;
+//                int avail = getImpl().dataAvailable();
+//                if (avail == -1) {
+//                    throw new SocketException();
+//                }
+//                explicitFilter = avail > 0;
                 if (explicitFilter) {
                     bytesLeftToFilter = getReceiveBufferSize();
                 }
@@ -335,7 +335,7 @@ class DatagramSocket implements java.io.Closeable {
         }
         // creates a udp socket
         impl.create();
-        impl.setDatagramSocket(this);
+//        impl.setDatagramSocket(this);
         created = true;
     }
 
@@ -819,10 +819,10 @@ class DatagramSocket implements java.io.Closeable {
 
     private boolean checkFiltering(DatagramPacket p) throws SocketException {
         bytesLeftToFilter -= p.getLength();
-        if (bytesLeftToFilter <= 0 || getImpl().dataAvailable() <= 0) {
-            explicitFilter = false;
-            return true;
-        }
+//        if (bytesLeftToFilter <= 0 || getImpl().dataAvailable() <= 0) {
+//            explicitFilter = false;
+//            return true;
+//        }
         return false;
     }
 
