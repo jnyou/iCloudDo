@@ -84,4 +84,7 @@ feign调用流程：
                  lock.unlock();
              }
              return "hello";
-         }      `
+         } 
+         
+### OAuth2.0 认证开放标准
+对于用户相关的openAPI(例如获取用户的信息，动态同步，照片，日志，分享)

@@ -4,9 +4,9 @@
 ```
 个人资料：
 微信公众
-![微信公众](https://gitee.com/blithe0/upload-master/blob/master/info/qrcode_for_gh_fba54bcb6399_430.jpg)
+![微信公众](https://gitee.com/jnyou/upload-master/blob/master/info/qrcode_for_gh_fba54bcb6399_430.jpg)
 GitHub
-![GitHub](https://github.com/Blithe0)
+![GitHub](https://github.com/jnyou)
 blog
 ![blog](https://blog.csdn.net/qq_38129621)
 
@@ -85,10 +85,4 @@ MIT License
  */
  
  
-                 " .   ____          _            __ _ _\n" +
-                 " /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\\n" +
-                 "( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\\n" +
-                 " \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )\n" +
-                 "  '  |____| .__|_| |_|_| |_\\__, | / / / /\n" +
-                 " =========|_|==============|___/=/_/_/_/");
 
