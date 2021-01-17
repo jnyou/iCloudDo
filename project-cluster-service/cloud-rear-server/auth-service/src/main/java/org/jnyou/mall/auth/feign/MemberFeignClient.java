@@ -1,6 +1,7 @@
 package org.jnyou.mall.auth.feign;
 
 import org.jnyou.common.utils.R;
+import org.jnyou.mall.auth.vo.SocialUser;
 import org.jnyou.mall.auth.vo.UserLoginVo;
 import org.jnyou.mall.auth.vo.UserRegisterVo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -24,6 +25,9 @@ public interface MemberFeignClient {
 
     @PostMapping("/member/member/login")
     R login(@RequestBody UserLoginVo vo);
+
+    @PostMapping("/member/member/oauth2/login")
+    R oauthLogin(@RequestBody SocialUser user);
 
 
 }

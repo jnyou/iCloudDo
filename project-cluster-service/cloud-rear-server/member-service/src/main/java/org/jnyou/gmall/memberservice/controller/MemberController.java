@@ -10,6 +10,7 @@ import org.jnyou.gmall.memberservice.exception.UsernameExistException;
 import org.jnyou.gmall.memberservice.service.MemberService;
 import org.jnyou.gmall.memberservice.vo.MemberLoginVo;
 import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
+import org.jnyou.gmall.memberservice.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,16 @@ public class MemberController {
 
     @Autowired
     private CouponFeignService couponFeignService;
+
+    @PostMapping("/oauth2/login")
+    public R oauthLogin(@RequestBody SocialUser user) {
+        MemberEntity memberEntity = memberService.oauthLogin(user);
+        if(null != memberEntity){
+            return R.ok().put("memberEntity",memberEntity);
+        } else {
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(),BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
+    }
 
     /**
      * 测试openFeign组件

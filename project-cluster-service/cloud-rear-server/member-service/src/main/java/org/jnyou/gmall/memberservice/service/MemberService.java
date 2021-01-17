@@ -7,6 +7,7 @@ import org.jnyou.gmall.memberservice.exception.PhoneExistException;
 import org.jnyou.gmall.memberservice.exception.UsernameExistException;
 import org.jnyou.gmall.memberservice.vo.MemberLoginVo;
 import org.jnyou.gmall.memberservice.vo.MemberRegistVo;
+import org.jnyou.gmall.memberservice.vo.SocialUser;
 
 import java.util.Map;
 
@@ -27,5 +28,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkUserNameUnique(String username) throws UsernameExistException;
 
     MemberEntity login(MemberLoginVo vo);
+
+    MemberEntity oauthLogin(SocialUser user);
 }
 
