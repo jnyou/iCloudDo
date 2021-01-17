@@ -1,4 +1,4 @@
-package org.jnyou.gmall.thridpartyservice.util;
+package org.jnyou.common.utils;
 
 import com.alibaba.nacos.client.utils.StringUtils;
 import org.apache.http.HttpResponse;
