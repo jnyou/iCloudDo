@@ -62,6 +62,7 @@ public class OAuth2Controller {
                 MemberResponseVo memberResponseVo = JSON.parseObject(jsonString, new TypeReference<MemberResponseVo>() {
                 });
                 log.info("登录成功：用户：{}",memberResponseVo);
+                // 子域session共享问题，发session id 的时候指定为父级域名
                 session.setAttribute(AuthServerConstant.LOGIN_USER, memberResponseVo);
                 // 成功之后回到主页面
                 return "redirect:http://gmall.com";

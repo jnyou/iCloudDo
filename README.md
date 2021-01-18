@@ -88,3 +88,8 @@ feign调用流程：
          
 ### OAuth2.0 认证开放标准
 对于用户相关的openAPI(例如获取用户的信息，动态同步，照片，日志，分享)
+
+### 分布式springSession  [文档地址](https://docs.spring.io/spring-session/docs/2.3.1.RELEASE/reference/html5/guides/boot-redis.html#boot-sample)
+解决分布式session下的不同服务，不同域名，子域session共享问题
+- 将session存放在Redis中统一存储
+- 发session id 的时候指定为父级域名解决子域session共享问题
