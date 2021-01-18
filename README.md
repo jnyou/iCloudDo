@@ -11,7 +11,7 @@
 - springcloud alibaba openFeign：远程调用
 
 
-### spring cache
+### SpringCache
 - @Cacheable：触发将数据保存到缓存中的操作
    - 默认行为
    -  1）、如果缓存中有，方法不用调用
@@ -28,7 +28,7 @@
 - @Caching:组合以上多个操作
 - @CacheConfig:在类级别共享缓存的相同数据
 
-### springcloud alibaba openFeign
+### SpringCloud alibaba openFeign
 feign调用流程：
 
 * 1、构造请求数据，将对象转为json
@@ -58,7 +58,7 @@ feign调用流程：
                          }
                      }
                  }
-### redisson                 
+### Redisson                 
 看门狗：LockWatchdogTimeout原理：
      
          public String hello(){
@@ -89,7 +89,21 @@ feign调用流程：
 ### OAuth2.0 认证开放标准
 对于用户相关的openAPI(例如获取用户的信息，动态同步，照片，日志，分享)
 
-### 分布式springSession  [文档地址](https://docs.spring.io/spring-session/docs/2.3.1.RELEASE/reference/html5/guides/boot-redis.html#boot-sample)
+### 分布式SpringSession  [文档地址](https://docs.spring.io/spring-session/docs/2.3.1.RELEASE/reference/html5/guides/boot-redis.html#boot-sample)
 解决分布式session下的不同服务，不同域名，子域session共享问题
 - 将session存放在Redis中统一存储
 - 发session id 的时候指定为父级域名解决子域session共享问题
+
+核心原理：@EnableRedisHttpSession注解
+
+@EnableRedisHttpSession注解导入了RedisHttpSessionConfiguration配置类
+- 给容器中添加了一个组件RedisISessionRepositoryFilterndexedSessionRepository：Redis保存session，session的增删改查封装类
+- SessionRepositoryFilter：session 存储过滤器。实际就是实现了原生http的Filter接口
+- 1、创建的时候，就自动从容器中获取到sessionRepository。
+- 2、通过传过来的原生request，response都被包装成SessionRepositoryRequestWrapper,SessionRepositoryResponseWrapper
+- 3、以后获取session。request.getSession();
+- 4、wrapperRequest.getSession(); ==> SessionRepority中获取到
+
+`使用的是装饰者模式`
+
+

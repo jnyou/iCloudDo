@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import org.jnyou.common.constant.AuthServerConstant;
 import org.jnyou.common.exception.BizCodeEnume;
 import org.jnyou.common.utils.R;
+import org.jnyou.common.vo.MemberResponseVo;
 import org.jnyou.mall.auth.feign.MemberFeignClient;
 import org.jnyou.mall.auth.feign.ThridPartyFeignClient;
 import org.jnyou.mall.auth.vo.UserLoginVo;
@@ -18,6 +19,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
@@ -48,12 +50,23 @@ public class LoginController {
     @Autowired
     MemberFeignClient memberFeignClient;
 
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session) {
+        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
+        if(null == attribute){
+            // 没登录
+            return "login";
+        }
+        return "redirect:http://gmall.com";
+    }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes){
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
         // 远程调用登录
         R r = memberFeignClient.login(vo);
         if(r.getCode() == 0){
+            // 成功放入session中
+            session.setAttribute(AuthServerConstant.LOGIN_USER,r.getData(new TypeReference<MemberResponseVo>(){}));
             return "redirect:http://gmall.com";
         } else {
             Map<String, String> errors = new HashMap<>(124);
