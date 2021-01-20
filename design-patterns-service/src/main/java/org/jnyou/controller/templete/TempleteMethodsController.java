@@ -17,8 +17,6 @@ import java.util.Map;
  * @ClassName TempleteMethodsController
  * @Description: 模板方法模式接口
  * @Author: jnyou
- * @create 2020/07/27
- * @module 智慧园区
  **/
 @RestController
 @Slf4j
@@ -29,12 +27,12 @@ public class TempleteMethodsController {
     private UserService userService;
 
     @GetMapping("selectTemplete")
-    public Map<String,Object> selectTemplete(){
-        Map<String,Object> maps = new HashMap<>(124);
+    public Map<String, Object> selectTemplete() {
+        Map<String, Object> maps = new HashMap<>(124);
 
         User userByIdTemplate = userService.getUserByIdTemplate(1);
         System.out.println(userByIdTemplate);
-        maps.put("data",userByIdTemplate);
+        maps.put("data", userByIdTemplate);
         return maps;
     }
 

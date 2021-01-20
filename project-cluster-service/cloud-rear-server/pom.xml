@@ -33,6 +33,7 @@
         <module>search-service</module>
         <module>xxl-job</module>
         <module>auth-service</module>
+        <module>cart</module>
     </modules>
 
 
