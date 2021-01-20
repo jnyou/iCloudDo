@@ -116,3 +116,6 @@ while(true) {
 - 1、client1登录之后向认证服务器存入一个cookie，并带上token重定向到自己（client1）的页面，创建自己的会话
 - 2、client2没登录，跳转到登录页面，但是会带上认证服务器的那个cookie，带上token重定向到自己的页面，创建自己的会话
 
+### ThreadLocal -- 同一个线程共享数据
+从拦截器的执行 -- controller --  service -- dao 一直到请求结束给浏览器响应从始至终都是同一个线程，比如上一个人放的数据需要在下一个人使用
+其核心原理是一个Map<Thread,Object> key是当前线程，值是当前线程共享的数据，所以每个线程互不干扰

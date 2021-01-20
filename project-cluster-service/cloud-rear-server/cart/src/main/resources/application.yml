@@ -7,3 +7,7 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: cart-service
+  redis:
+    host: 192.168.56.10
+  session:
+    store-type: redis
