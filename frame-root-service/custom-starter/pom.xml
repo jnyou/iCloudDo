@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.jnyou.starter</groupId>
-    <artifactId>auto</artifactId>
+    <artifactId>custom-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>auto</name>
+    <name>custom-starter</name>
     <description>自定义的starter自动装配</description>
 
     <modules>
