@@ -2,9 +2,14 @@ package org.jnyou.mall.cart.controller;
 
 import org.jnyou.common.constant.AuthServerConstant;
 import org.jnyou.mall.cart.interceptor.InvokeInterceptor;
+import org.jnyou.mall.cart.service.CartService;
+import org.jnyou.mall.cart.vo.CartItemVo;
 import org.jnyou.mall.cart.vo.UserInfoTo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 
@@ -20,6 +25,9 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class CartController {
 
+    @Autowired
+    CartService cartService;
+
     /**
      * 登录  session 中有
      * 没登录：按照cookie里面带来的user-key来做
@@ -33,6 +41,13 @@ public class CartController {
         UserInfoTo userInfoTo = InvokeInterceptor.threadLocal.get();
         System.out.println(userInfoTo);
         return "cartList";
+    }
+
+    @GetMapping("/addToCart")
+    public String addToCart (@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num, Model model) {
+        CartItemVo cartItemVo = cartService.addToCart(skuId,num);
+        model.addAttribute("cartItem",cartItemVo);
+        return "success";
     }
 
 }

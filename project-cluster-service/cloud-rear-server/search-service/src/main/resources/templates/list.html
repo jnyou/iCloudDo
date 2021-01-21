@@ -76,7 +76,7 @@
         <ul>
             <li>
                 <a th:if="${session.loginUser == null}" href="http://auth.gmall.com/login.html" class="li_2">你好，请登录</a>
-                <a th:else style="width: 100px"> [[${session.loginUser.nickname}]] </a>
+                <a th:if="${session.loginUser != null}" style="width: 100px"> [[${session.loginUser.nickname}]] </a>
             </li>
             <li>
                 <a th:if="${session.loginUser == null}" href="http://auth.gmall.com/reg.html">免费注册</a>

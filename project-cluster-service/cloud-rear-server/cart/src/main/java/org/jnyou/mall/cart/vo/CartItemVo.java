@@ -1,6 +1,8 @@
 package org.jnyou.mall.cart.vo;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;

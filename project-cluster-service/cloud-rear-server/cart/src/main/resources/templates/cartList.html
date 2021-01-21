@@ -18,16 +18,16 @@
 					<ul class="header-left">
 						<li>
 
-							<a href="http://gulimall.com/">首页</a>
+							<a href="http://gmall.com/">首页</a>
 						</li>
 
 					</ul>
 					<ul class="header-right">
 						<li>
-							<a href="http://auth.gulimall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser.nickname}]]</a>
+							<a href="http://auth.gmall.com/login.html">你好，[[${session.loginUser==null?"请登录":session.loginUser.nickname}]]</a>
 						</li>
 						<li>
-							<a href="http://auth.gulimall.com/reg.html" class="li_2">免费注册</a>
+							<a href="http://auth.gmall.com/reg.html" class="li_2">免费注册</a>
 						</li>
 						<li class="spacer"></li>
 						<li><a href="">我的订单</a></li>
@@ -48,7 +48,7 @@
 			<div class="one_sousuo">
 				<div class="one_search_top">
 					<div class="one_top_left">
-						<a href="/static/cart/" class="one_left_logo"><img src="/static/cart/img/logo1.jpg"></a>
+						<a href="http://gmall.com" class="one_left_logo"><img src="/static/cart/img/logo1.jpg"></a>
 						<a href="#" class="one_left_link">购物车</a>
 					</div>
 					<div class="one_top_right">
@@ -250,15 +250,15 @@
 	<script src="/static/cart/js/index.js" charset="utf-8"></script>
 	<script type="text/javascript">
 		function toTrade() {
-			window.location.href = "http://order.gulimall.com/toTrade";
+			window.location.href = "http://order.gmall.com/toTrade";
 		}
 
 		function toItem(skuId) {
-			window.location.href = "http://item.gulimall.com/" + skuId + ".html";
+			window.location.href = "http://item.gmall.com/" + skuId + ".html";
 		}
 
 		function login() {
-			var s = encodeURIComponent("http://cart.gulimall.com/cartList");
+			var s = encodeURIComponent("http://cart.gmall.com/cartList");
 			window.location.href = "http://passport.atguigu.com/index?originUrl=" + s;
 		}
 
@@ -810,7 +810,7 @@
 		$(".countOpsBtn").click(function () {
 			const skuId=$(this).parent().attr("skuId");
 			const num = $(this).parent().find(".countOpsNum").text();
-			location.href = "http://cart.gulimall.com/countItem?skuId=" + skuId + "&num=" + num;
+			location.href = "http://cart.gmall.com/countItem?skuId=" + skuId + "&num=" + num;
 		})
 
 		let deleteSkuId=0;
@@ -819,7 +819,7 @@
 		})
 
 		function deleteItem() {
-			location.href="http://cart.gulimall.com/deleteItem?skuId=" + deleteSkuId;
+			location.href="http://cart.gmall.com/deleteItem?skuId=" + deleteSkuId;
 		}
 	</script>
 </html>
