@@ -2,6 +2,7 @@ package org.jnyou.mall.cart.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.extern.slf4j.Slf4j;
 import org.jnyou.common.constant.CartConstant;
 import org.jnyou.common.utils.R;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -46,30 +48,41 @@ public class CartServiceImpl implements CartService {
     public CartItemVo addToCart(Long skuId, Integer num) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
 
+        // 添加新商品到购物车
         CartItemVo cartItem = new CartItemVo();
         try {
-            CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
-                // 远程调用商品服务查询当前要添加的商品信息
-                R r = productFeignClient.info(skuId);
-                SkuInfoVo data = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-                });
-                cartItem.setCheck(true);
-                cartItem.setImage(data.getSkuDefaultImg());
-                cartItem.setTitle(data.getSkuTitle());
-                cartItem.setSkuId(skuId);
-                cartItem.setCount(num);
-                cartItem.setPrice(data.getPrice());
-            }, executor);
+            String res = (String) cartOps.get(skuId.toString());
+            if(StringUtils.isEmpty(res)){
+                // 购物车无此商品，则新增商品
+                CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
+                    // 远程调用商品服务查询当前要添加的商品信息
+                    R r = productFeignClient.info(skuId);
+                    SkuInfoVo data = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                    });
+                    cartItem.setCheck(true);
+                    cartItem.setImage(data.getSkuDefaultImg());
+                    cartItem.setTitle(data.getSkuTitle());
+                    cartItem.setSkuId(skuId);
+                    cartItem.setCount(num);
+                    cartItem.setPrice(data.getPrice());
+                }, executor);
 
-            CompletableFuture<Void> getAttrsInfoTask = CompletableFuture.runAsync(() -> {
-                // 远程调用商品服务查询sku的组合属性信息
-                List<String> value = productFeignClient.getSkuSaleAttrValue(skuId);
-                cartItem.setSkuAttrValues(value);
-            }, executor);
-            CompletableFuture.allOf(getSkuInfoTask,getAttrsInfoTask).get();
-            // 进行手动序列化后存入Redis中，除去了让Redis保存时将对象序列化的工作
-            String json = JSON.toJSONString(cartItem);
-            cartOps.put(skuId.toString(), json);
+                CompletableFuture<Void> getAttrsInfoTask = CompletableFuture.runAsync(() -> {
+                    // 远程调用商品服务查询sku的组合属性信息
+                    List<String> value = productFeignClient.getSkuSaleAttrValue(skuId);
+                    cartItem.setSkuAttrValues(value);
+                }, executor);
+                CompletableFuture.allOf(getSkuInfoTask,getAttrsInfoTask).get();
+                // 进行手动序列化后存入Redis中，除去了让Redis保存时将对象序列化的工作
+                String json = JSON.toJSONString(cartItem);
+                cartOps.put(skuId.toString(), json);
+            } else {
+                // 购物车中有此商品，修改数量即可
+                CartItemVo cartItemVo = JSON.parseObject(res, CartItemVo.class);
+                cartItemVo.setCount(cartItem.getCount() + num);
+                // 重新保存商品到Redis中
+                cartOps.put(skuId, JSON.toJSONString(cartItemVo));
+            }
         } catch (Exception e) {
             log.error("remote invoke method fail.", e);
             e.printStackTrace();
