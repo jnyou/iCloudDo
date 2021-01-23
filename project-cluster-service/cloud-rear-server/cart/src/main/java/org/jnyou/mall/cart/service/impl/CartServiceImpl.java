@@ -49,8 +49,8 @@ public class CartServiceImpl implements CartService {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
 
         // 添加新商品到购物车
-        CartItemVo cartItem = new CartItemVo();
         try {
+            CartItemVo cartItem = new CartItemVo();
             String res = (String) cartOps.get(skuId.toString());
             if(StringUtils.isEmpty(res)){
                 // 购物车无此商品，则新增商品
@@ -76,18 +76,20 @@ public class CartServiceImpl implements CartService {
                 // 进行手动序列化后存入Redis中，除去了让Redis保存时将对象序列化的工作
                 String json = JSON.toJSONString(cartItem);
                 cartOps.put(skuId.toString(), json);
+                return cartItem;
             } else {
                 // 购物车中有此商品，修改数量即可
                 CartItemVo cartItemVo = JSON.parseObject(res, CartItemVo.class);
-                cartItemVo.setCount(cartItem.getCount() + num);
+                cartItemVo.setCount(cartItemVo.getCount() + num);
                 // 重新保存商品到Redis中
-                cartOps.put(skuId, JSON.toJSONString(cartItemVo));
+                cartOps.put(skuId.toString(), JSON.toJSONString(cartItemVo));
+                return cartItemVo;
             }
         } catch (Exception e) {
             log.error("remote invoke method fail.", e);
             e.printStackTrace();
         }
-        return cartItem;
+        return null;
     }
 
     /**

@@ -58,10 +58,7 @@ spring:
           uri: lb://search-service
           predicates:
             - Host=search.gmall.com
-        - id: gmall_cart_route
-          uri: lb://cart-service
-          predicates:
-            - Host=cart.gmall.com
+
         - id: gmall_auth_route
           uri: lb://auth-service
           predicates:
@@ -73,6 +70,10 @@ spring:
           uri: lb://product-service
           predicates:
             - Host=gmall.com,item.gmall.com
+        - id: gmall_cart_route
+          uri: lb://cart-service
+          predicates:
+            - Host=cart.gmall.com
 
 
 
