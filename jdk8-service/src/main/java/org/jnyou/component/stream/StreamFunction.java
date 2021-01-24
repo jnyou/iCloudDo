@@ -1,6 +1,6 @@
 package org.jnyou.component.stream;
 
-import org.jnyou.entity.Person;
+import org.jnyou.entity.PersonNarmal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +30,7 @@ public class StreamFunction {
     /**
      * IntStream mapToInt(ToIntFunction<? super T> mapper);
      * IntStream: 内部操作的是int类型的数据,就可以节省内存,减少自动装箱和拆箱
+     *
      * @return
      * @Author jnyou
      */
@@ -54,10 +55,10 @@ public class StreamFunction {
         // 1.得到所有的年龄
         // 2.让年龄相加
         Integer totalAge = Stream.of(
-                new Person("刘德华", 58),
-                new Person("张学友", 56),
-                new Person("郭富城", 54),
-                new Person("黎明", 52))
+                new PersonNarmal("刘德华", 58),
+                new PersonNarmal("张学友", 56),
+                new PersonNarmal("郭富城", 54),
+                new PersonNarmal("黎明", 52))
                 .map((p) -> p.getAge()).reduce(0, Integer::sum);
 
         System.out.println("totalAge = " + totalAge);
@@ -67,10 +68,10 @@ public class StreamFunction {
         // 1.得到所有的年龄
         // 2.获取最大的年龄
         Integer maxAge = Stream.of(
-                new Person("刘德华", 58),
-                new Person("张学友", 56),
-                new Person("郭富城", 54),
-                new Person("黎明", 52))
+                new PersonNarmal("刘德华", 58),
+                new PersonNarmal("张学友", 56),
+                new PersonNarmal("郭富城", 54),
+                new PersonNarmal("黎明", 52))
                 .map(p -> p.getAge())
                 .reduce(0, Math::max);
         System.out.println("maxAge = " + maxAge);
@@ -141,13 +142,13 @@ public class StreamFunction {
 
     // distinct对自定义对象去除重复
     public void testDistinct2() {
-        Stream<Person> stream = Stream.of(
-                new Person("貂蝉", 18),
-                new Person("杨玉环", 20),
-                new Person("杨玉环", 20),
-                new Person("西施", 16),
-                new Person("西施", 16),
-                new Person("王昭君", 25)
+        Stream<PersonNarmal> stream = Stream.of(
+                new PersonNarmal("貂蝉", 18),
+                new PersonNarmal("杨玉环", 20),
+                new PersonNarmal("杨玉环", 20),
+                new PersonNarmal("西施", 16),
+                new PersonNarmal("西施", 16),
+                new PersonNarmal("王昭君", 25)
         );
 
         stream.distinct().forEach(System.out::println);
