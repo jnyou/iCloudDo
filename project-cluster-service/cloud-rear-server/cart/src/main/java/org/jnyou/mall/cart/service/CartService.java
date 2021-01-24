@@ -12,5 +12,18 @@ import org.jnyou.mall.cart.vo.CartItemVo;
  * @author: JnYou
  **/
 public interface CartService {
+    /**
+     * 添加购物车
+     * @param skuId
+     * @param num
+     * @Author JnYou
+     */
     CartItemVo addToCart(Long skuId, Integer num);
+
+    /**
+     * 购物项的获取
+     * @param skuId
+     * @Author JnYou
+     */
+    CartItemVo getCartItem(Long skuId);
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 
@@ -44,8 +45,16 @@ public class CartController {
     }
 
     @GetMapping("/addToCart")
-    public String addToCart (@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num, Model model) {
+    public String addToCart (@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num, RedirectAttributes model) {
         CartItemVo cartItemVo = cartService.addToCart(skuId,num);
+        model.addAttribute("skuId",skuId);
+        return "redirect:http://cart.gmall.com/addToCartSuccess.html";
+    }
+
+    @GetMapping("/addToCartSuccess.html")
+    public String addCartToSuccessPage(@RequestParam("skuId") Long skuId,Model model) {
+        // 重定向到成功页面，再次查询购物车即可,解决重复提交的问题
+        CartItemVo cartItemVo = cartService.getCartItem(skuId);
         model.addAttribute("cartItem",cartItemVo);
         return "success";
     }

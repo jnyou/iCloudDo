@@ -92,6 +92,14 @@ public class CartServiceImpl implements CartService {
         return null;
     }
 
+    @Override
+    public CartItemVo getCartItem(Long skuId) {
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        String json = (String) cartOps.get(skuId.toString());
+        CartItemVo cartItemVo = JSON.parseObject(json, CartItemVo.class);
+        return cartItemVo;
+    }
+
     /**
      * 获取到需要操作的购物车
      *

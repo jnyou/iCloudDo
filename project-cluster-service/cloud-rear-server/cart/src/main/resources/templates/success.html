@@ -63,7 +63,7 @@
     <div class="success-wrap">
         <div class="w" id="result">
             <div class="m succeed-box">
-                <div class="mc success-cont">
+                <div th:if="${cartItem!=null}" class="mc success-cont">
                     <div class="success-lcol">
                         <div class="success-top"><b class="succ-icon"></b>
                             <h3 class="ftx-02">商品已成功加入购物车</h3></div>
@@ -96,6 +96,9 @@
                                id="GotoShoppingCart"><b></b>去购物车结算</a>
                         </div>
                     </div>
+                </div>
+                <div th:if="${cartItem==null}" class="mc success-cont">
+                    <h2>购物车无此商品</h2><a href="http://gmall.com">去购物</a>
                 </div>
             </div>
         </div>
