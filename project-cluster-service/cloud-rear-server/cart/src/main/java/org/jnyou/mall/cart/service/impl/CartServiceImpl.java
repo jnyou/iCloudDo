@@ -2,7 +2,6 @@ package org.jnyou.mall.cart.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.extern.slf4j.Slf4j;
 import org.jnyou.common.constant.CartConstant;
 import org.jnyou.common.utils.R;
@@ -10,17 +9,20 @@ import org.jnyou.mall.cart.feign.ProductFeignClient;
 import org.jnyou.mall.cart.interceptor.InvokeInterceptor;
 import org.jnyou.mall.cart.service.CartService;
 import org.jnyou.mall.cart.vo.CartItemVo;
+import org.jnyou.mall.cart.vo.CartVo;
 import org.jnyou.mall.cart.vo.SkuInfoVo;
 import org.jnyou.mall.cart.vo.UserInfoTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 /**
  * 代码千万行，注释第一行
@@ -52,7 +54,7 @@ public class CartServiceImpl implements CartService {
         try {
             CartItemVo cartItem = new CartItemVo();
             String res = (String) cartOps.get(skuId.toString());
-            if(StringUtils.isEmpty(res)){
+            if (StringUtils.isEmpty(res)) {
                 // 购物车无此商品，则新增商品
                 CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
                     // 远程调用商品服务查询当前要添加的商品信息
@@ -72,7 +74,7 @@ public class CartServiceImpl implements CartService {
                     List<String> value = productFeignClient.getSkuSaleAttrValue(skuId);
                     cartItem.setSkuAttrValues(value);
                 }, executor);
-                CompletableFuture.allOf(getSkuInfoTask,getAttrsInfoTask).get();
+                CompletableFuture.allOf(getSkuInfoTask, getAttrsInfoTask).get();
                 // 进行手动序列化后存入Redis中，除去了让Redis保存时将对象序列化的工作
                 String json = JSON.toJSONString(cartItem);
                 cartOps.put(skuId.toString(), json);
@@ -100,6 +102,38 @@ public class CartServiceImpl implements CartService {
         return cartItemVo;
     }
 
+    @Override
+    public CartVo getCart() {
+        CartVo cart = new CartVo();
+        // 区分登录还是不登录状态
+        UserInfoTo userInfoTo = InvokeInterceptor.threadLocal.get();
+        if (null != userInfoTo.getUserId()) {
+            // 登录了 需要合并临时购物车的数据
+            String cartKey = CartConstant.CART_PREFIX + userInfoTo.getUserId();
+            // 判断临时购物车  临时购物车还没有进行合并
+            String tempCartKey = CartConstant.CART_PREFIX + userInfoTo.getUserKey();
+            List<CartItemVo> tempCartItem = getCartItem(tempCartKey);
+            if (!CollectionUtils.isEmpty(tempCartItem)) {
+                // 临时购物车有数据，需要合并
+                for (CartItemVo cartItemVo : tempCartItem) {
+                    addToCart(cartItemVo.getSkuId(), cartItemVo.getCount());
+                }
+                // 合并完成后，清空临时购物车数据
+                clearCart(tempCartKey);
+            }
+            // 临时购物车添加完成后，在重新获取登录后的购物车（包括登录的购物车和临时购物车数据）
+            List<CartItemVo> result = getCartItem(cartKey);
+            cart.setItems(result);
+        } else {
+            // 未登录
+            String cartKey = CartConstant.CART_PREFIX + userInfoTo.getUserKey();
+            // 获取临时购物车的所有项
+            List<CartItemVo> cartItem = getCartItem(cartKey);
+            cart.setItems(cartItem);
+        }
+        return cart;
+    }
+
     /**
      * 获取到需要操作的购物车
      *
@@ -121,4 +155,26 @@ public class CartServiceImpl implements CartService {
         BoundHashOperations<String, Object, Object> operations = redisTemplate.boundHashOps(cacheKey);
         return operations;
     }
+
+
+    private List<CartItemVo> getCartItem(String cartKey) {
+        BoundHashOperations<String, Object, Object> hashOps = redisTemplate.boundHashOps(cartKey);
+        // 获取所有的值
+        List<Object> values = hashOps.values();
+        if (!CollectionUtils.isEmpty(values)) {
+            List<CartItemVo> collect = values.stream().map(obj -> {
+                String json = obj.toString();
+                CartItemVo cartItemVo = JSON.parseObject(json, CartItemVo.class);
+                return cartItemVo;
+            }).collect(Collectors.toList());
+            return collect;
+        }
+        return null;
+    }
+
+    @Override
+    public void clearCart(String cartKey){
+        redisTemplate.delete(cartKey);
+    }
+
 }

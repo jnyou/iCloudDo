@@ -1,8 +1,6 @@
-server:
-  port: 20000
 spring:
   application:
-    name: auth-service
+    name: search-service
   cloud:
     nacos:
       discovery:
@@ -14,3 +12,5 @@ spring:
     port: 6379
   session:
     store-type: redis
+server:
+  port: 12000

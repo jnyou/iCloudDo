@@ -4,6 +4,7 @@ import org.jnyou.common.constant.AuthServerConstant;
 import org.jnyou.mall.cart.interceptor.InvokeInterceptor;
 import org.jnyou.mall.cart.service.CartService;
 import org.jnyou.mall.cart.vo.CartItemVo;
+import org.jnyou.mall.cart.vo.CartVo;
 import org.jnyou.mall.cart.vo.UserInfoTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,10 +38,12 @@ public class CartController {
      * @Author JnYou
      */
     @GetMapping("/cart.html")
-    public String cartListPage(HttpSession session){
+    public String cartListPage(Model model){
         // 快速获取到拦截器放行后的用户信息，使用ThreadLocal-同一个线程共享数据
-        UserInfoTo userInfoTo = InvokeInterceptor.threadLocal.get();
-        System.out.println(userInfoTo);
+//        UserInfoTo userInfoTo = InvokeInterceptor.threadLocal.get();
+//        System.out.println(userInfoTo);
+        CartVo cartVo = cartService.getCart();
+        model.addAttribute("cart",cartVo);
         return "cartList";
     }
 

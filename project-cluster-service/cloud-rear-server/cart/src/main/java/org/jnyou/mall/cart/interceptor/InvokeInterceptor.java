@@ -61,7 +61,7 @@ public class InvokeInterceptor implements HandlerInterceptor {
             }
         }
         // 如果没有临时用户，一定创建一个临时用户
-        if(StringUtils.isEmpty(userInfoTo.getUserId())){
+        if(StringUtils.isEmpty(userInfoTo.getUserKey())){
             String uuid = UUID.randomUUID().toString();
             userInfoTo.setUserKey(uuid);
         }

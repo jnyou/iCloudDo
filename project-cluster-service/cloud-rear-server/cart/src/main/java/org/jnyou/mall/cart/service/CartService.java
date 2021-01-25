@@ -1,6 +1,7 @@
 package org.jnyou.mall.cart.service;
 
 import org.jnyou.mall.cart.vo.CartItemVo;
+import org.jnyou.mall.cart.vo.CartVo;
 
 /**
  * 代码千万行，注释第一行
@@ -26,4 +27,18 @@ public interface CartService {
      * @Author JnYou
      */
     CartItemVo getCartItem(Long skuId);
+
+    /**
+     * 获取整个购物车数据
+     * @Author JnYou
+     */
+    CartVo getCart();
+
+    /**
+     * 清空购物车
+     * @param cartKey
+     * @Author JnYou
+     */
+    void clearCart(String cartKey);
+
 }

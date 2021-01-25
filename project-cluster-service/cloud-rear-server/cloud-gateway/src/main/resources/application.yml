@@ -1,3 +1,5 @@
+server:
+  port: 88
 spring:
   cloud:
     gateway:
@@ -12,13 +14,7 @@ spring:
           predicates:
             - Query=url,qq
 
-        - id: product_route
-          uri: lb://product-service
-          predicates:
-            - Path=/api/product/**,/hello
-          filters:
-            - RewritePath=/api/(?<segment>.*),/$\{segment}
-
+        #将路径为Path=/api/thirdparty/**转发至第三方服务模块
         - id: third_party_route
           uri: lb://third-party-service
           predicates:
@@ -26,6 +22,15 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        #将路径为Path=/api/product转发product-service微服务
+        - id: product_route
+          uri: lb://product-service
+          predicates:
+            - Path=/api/product/**,/hello
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        #将路径为Path=/api/member/**转发至会员服务
         - id: member_route
           uri: lb://member-service
           predicates:
@@ -33,6 +38,15 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
+        #将路径为Path=/api/ware/**转发至仓库服务
+        - id: ware_route
+          uri: lb://ware-service
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        #将路径为Path=/api/coupon/**转发至优惠服务
         - id: coupon_route
           uri: lb://coupon-service
           predicates:
@@ -40,13 +54,7 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
 
-        - id: ware_route
-          uri: lb://ware-service
-          predicates:
-            - Path=/api/ware/**
-          filters:
-            - RewritePath=/api/(?<segment>.*),/$\{segment}
-        ##lb：代表负载均衡
+        ##lb：代表负载均衡  #将路径为Path=/api/**转发至后台管理
         - id: admin_route
           uri: lb://admin-vue
           predicates:
@@ -54,30 +62,53 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*),/admin-vue/$\{segment}
 
-        - id: gmall_search_route
+        #将主机地址为search.gmall.com转发至search-service
+        - id: gmall_search_host
           uri: lb://search-service
           predicates:
             - Host=search.gmall.com
 
-        - id: gmall_auth_route
+        #将主机地址为auth.gmall.com转发至auth-service
+        - id: gmall_auth_host
           uri: lb://auth-service
           predicates:
             - Host=auth.gmall.com
-        # host域名映射配置跳转需要放置最下面，否则上述无法路由到其他服务接口
-        # 所有的页面请求和接口请求都通过nginx反向代理到网关，网关配置域名映射跳转到响应的接口或者页面
-        # 如果是/api/**,转交给对应的服务器请求接口，如果满足域名，则转交给对应的服务，比如下面的product-service服务
-        - id: gmall_host_route
-          uri: lb://product-service
-          predicates:
-            - Host=gmall.com,item.gmall.com
-        - id: gmall_cart_route
+
+        #将主机地址为cart.gmall.com转发至cart-service
+        - id: gmall_cart_host
           uri: lb://cart-service
           predicates:
             - Host=cart.gmall.com
 
+        #将主机地址为order.gulimall.com转发至gulimall-order
+        - id: gmall_order_host
+          uri: lb://order-service
+          predicates:
+            - Host=order.gmall.com
 
+        #将主机地址为seckill.gulimall.com转发至gulimall-seckill
+        - id: gmall_seckill_host
+          uri: lb://seckill-service
+          predicates:
+            - Host=seckill.gmall.com
+        # host域名映射配置跳转需要放置最下面，否则上述无法路由到其他服务接口
+        # 所有的页面请求和接口请求都通过nginx反向代理到网关，网关配置域名映射跳转到响应的接口或者页面
+        # 如果是/api/**,转交给对应的服务器请求接口，如果满足域名，则转交给对应的服务，比如下面的product-service服务
+        - id: gmall_host
+          uri: lb://product-service
+          predicates:
+            - Host=gmall.com,item.gmall.com
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: cloud-gateway
 
 ## 前端项目，/api
 ## http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
 ## http://localhost:88/api/product/category/list/tree http://localhost:10000/product/category/list/tree
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
