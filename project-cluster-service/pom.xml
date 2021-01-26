@@ -17,10 +17,5 @@
 
     <artifactId>project-cluster-service</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>cloud-rear-server</module>
-        <module>wms</module>
-    </modules>
-
 
 </project>

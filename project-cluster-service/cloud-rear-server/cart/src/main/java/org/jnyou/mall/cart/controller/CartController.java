@@ -62,4 +62,10 @@ public class CartController {
         return "success";
     }
 
+    @GetMapping("/checkItem")
+    public String checkItem(@RequestParam("skuId") Long skuId ,@RequestParam("check") Integer check) {
+        cartService.checkItem(skuId,check);
+        return "redirect:http://cart.gmall.com/cart.html";
+    }
+
 }

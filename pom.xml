@@ -9,7 +9,6 @@
         <module>java-senior-service</module>
         <module>source-code-service</module>
         <module>temporary-storage-service</module>
-        <module>project-cluster-service</module>
         <module>anote-inventory-service</module>
         <module>frame-root-service</module>
     </modules>
