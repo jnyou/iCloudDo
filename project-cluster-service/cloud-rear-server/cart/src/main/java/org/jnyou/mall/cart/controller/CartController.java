@@ -68,4 +68,10 @@ public class CartController {
         return "redirect:http://cart.gmall.com/cart.html";
     }
 
+    @GetMapping("/countItem")
+    public String countItem(@RequestParam("skuId") Long skuId ,@RequestParam("num") Integer num) {
+        cartService.countItem(skuId,num);
+        return "redirect:http://cart.gmall.com/cart.html";
+    }
+
 }

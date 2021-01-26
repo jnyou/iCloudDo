@@ -48,4 +48,12 @@ public interface CartService {
      * @Author JnYou
      */
     void checkItem(Long skuId, Integer check);
+
+    /**
+     * 修改购物项的数量
+     * @param skuId
+     * @param num
+     * @Author JnYou
+     */
+    void countItem(Long skuId, Integer num);
 }
