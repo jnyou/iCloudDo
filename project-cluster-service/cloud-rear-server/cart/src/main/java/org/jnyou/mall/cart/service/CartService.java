@@ -56,4 +56,11 @@ public interface CartService {
      * @Author JnYou
      */
     void countItem(Long skuId, Integer num);
+
+    /**
+     * 删除购物项
+     * @param skuId
+     * @Author JnYou
+     */
+    void deleteItem(Long skuId);
 }
