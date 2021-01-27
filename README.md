@@ -134,7 +134,9 @@ while(true) {
 
 ---
 ### RabbitMQ
-概念：
+简介：由erlang开发的AMQO的开源实现
+
+概念：当生产者发送消息以后，由消息代理接管，消息代理保证消息传递到指定的目的地。
 - 消息代理（message broker）：相当于中间的消息服务器
 - 目的地（destination）：主要有两种形式：
   - 队列（QUEUE）：点对点消息通信（point-to-point）
@@ -151,5 +153,9 @@ while(true) {
   - 高级消息队列协议，也是一个消息代理的规范，兼容JMS
   - RabbitMQ是AMQP的实现
 
-当生产者发送消息以后，由消息代理接管，消息代理保证消息传递到指定的目的地。
+核心概念：
+- Message：消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（路由链）、priority（相对于其他消息的优先权）、delivery-mode（指出该消息可能西药持久性存储）等。
+- Publisher：消息生成者。也是一个向交换器发布消息的客户端应用程序。
+- Exchange：交换器。用来接收生产者发送的消息并将这些消息路由给服务器中的队列。Exchange有4中类型：direct（默认）、fanout、topic和headers，不同类型的Exchange转发消息的策略有所区别。
+...
 
