@@ -28,6 +28,7 @@
 - @Caching:组合以上多个操作
 - @CacheConfig:在类级别共享缓存的相同数据
 
+
 ### SpringCloud alibaba openFeign
 feign调用流程：
 
@@ -59,8 +60,8 @@ while(true) {
          }
      }
 ```
-           
-         
+
+---
 ### Redisson                 
 看门狗：LockWatchdogTimeout原理：
      
@@ -90,11 +91,13 @@ while(true) {
      return "hello";
      } 
  
-```
-         
+```   
+
+---      
 ### OAuth2.0 认证开放标准
 对于用户相关的openAPI(例如获取用户的信息，动态同步，照片，日志，分享)
 
+---
 ### 分布式SpringSession  [文档地址](https://docs.spring.io/spring-session/docs/2.3.1.RELEASE/reference/html5/guides/boot-redis.html#boot-sample)
 解决分布式session下的不同服务，不同域名，子域session共享问题
 - 将session存放在Redis中统一存储
@@ -112,10 +115,41 @@ while(true) {
 
 `使用的是装饰者模式`
 
+---
 ### SSO单点登录流程 参考xxl-sso
 - 1、client1登录之后向认证服务器存入一个cookie，并带上token重定向到自己（client1）的页面，创建自己的会话
 - 2、client2没登录，跳转到登录页面，但是会带上认证服务器的那个cookie，带上token重定向到自己的页面，创建自己的会话
 
+---
 ### ThreadLocal -- 同一个线程共享数据
 从拦截器的执行 -- controller --  service -- dao 一直到请求结束给浏览器响应从始至终都是同一个线程，比如上一个人放的数据需要在下一个人使用
 其核心原理是一个Map<Thread,Object> key是当前线程，值是当前线程共享的数据，所以每个线程互不干扰
+
+---
+### QUEUE base
+类型：
+- 先进先出（队头进，队尾出）
+- 先进后出（队头进，队头出）`是典型的栈结构`
+- 双端队列（队头和队尾都能进和出）
+
+---
+### RabbitMQ
+概念：
+- 消息代理（message broker）：相当于中间的消息服务器
+- 目的地（destination）：主要有两种形式：
+  - 队列（QUEUE）：点对点消息通信（point-to-point）
+  - 主题（topic）：订阅（subscribe）/ 发布（publish） 消息通信
+
+1、点对点式：
+  - 消息发送者发送消息，消息代理将其放入一个队列汇中，消息接受者从队列中获取消息内容，消息读取后被移除队列
+  - 消息只有唯一的发送者和接受者，但并不是说只能有一个接受者 
+2、发布订阅式：
+  - 发送者发送消息主题，多个接受者监听这个主题，那么就会在消息到达时同时收到消息。
+3、JMS（Java Message Service）Java消息服务：
+  - 基于JVM消息代理的规范。ActiveMQ、HornetMq是JMS实现
+4、AMQP（Advanced Message Queuing Protocol）
+  - 高级消息队列协议，也是一个消息代理的规范，兼容JMS
+  - RabbitMQ是AMQP的实现
+
+当生产者发送消息以后，由消息代理接管，消息代理保证消息传递到指定的目的地。
+
