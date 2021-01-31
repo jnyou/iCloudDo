@@ -1,17 +1,20 @@
 package org.jnyou.gmall.orderservice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jnyou.gmall.orderservice.entity.OrderEntity;
 import org.jnyou.gmall.orderservice.entity.OrderReturnReasonEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @SpringBootTest
@@ -26,14 +29,19 @@ class OrderServiceApplicationTests {
     @Test
     public void sendMessageTest() {
         for (int i = 0; i < 10; i++) {
-            OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
-            reasonEntity.setId(1L).setCreateTime(new Date()).setName("退货-" + i);
-            // 发送消息 tip：如果发送的消息是对象，需要使用序列化机制，所以bean需要实现Serializable接口
-            String message = "Hello World!";
-            rabbitTemplate.convertAndSend("java-exchange", "hello.java", reasonEntity);
-            log.info("消息发送完成{}", reasonEntity.getName());
+            if(i % 2 == 0){
+                OrderReturnReasonEntity reasonEntity = new OrderReturnReasonEntity();
+                reasonEntity.setId(1L).setCreateTime(new Date()).setName("退货-" + i);
+                // 发送消息 tip：如果发送的消息是对象，需要使用序列化机制，所以bean需要实现Serializable接口
+                String message = "Hello World!";
+                rabbitTemplate.convertAndSend("java-exchange", "hello.java", reasonEntity,new CorrelationData(UUID.randomUUID().toString()));
+                log.info("OrderReturnReasonEntity类型的消息发送完成{}", reasonEntity.getName());
+            } else {
+                OrderEntity orderEntity = new OrderEntity().setOrderSn(UUID.randomUUID().toString());
+                rabbitTemplate.convertAndSend("java-exchange", "hello.java", orderEntity,new CorrelationData(UUID.randomUUID().toString()));
+                log.info("OrderEntity类型的消息发送完成{}", orderEntity.getOrderSn());
+            }
         }
-
     }
 
     /**
