@@ -1,6 +1,5 @@
 server:
   port: 5555
-
 spring:
   datasource:
     username: root
@@ -13,6 +12,10 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  rabbitmq:
+    host: 192.168.56.10
+    port: 5672
+    virtual-host: /
 
 # MapperScan
 # sql映射文件位置
