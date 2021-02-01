@@ -35,6 +35,13 @@ public class MyRabbitConfig {
     /**
      * 消息确认机制
      *
+     * 消费者确认（ack确认模式）（保证每个消息被正确消费，此时才可以从broker删除这个消息）
+     * 默认是自动确认的，只要消息接收到，客户端会自动确认，服务端就会移除这个消息
+     *   问题？ 我们收到很多消息，自动回复给服务器ack，只有一个消息处理成功，宕机了，其他消息发生消息丢失。
+     *   solve：手动确认模式。一定加上配置 spring.rabbitmq.listener.direct.acknowledge-mode: manual。只要没有明确告诉MQ，货物被签收。没有ack，消息一是unacked状态。即使consumer宕机，消息也不会丢失，会重新变为ready状态，下次再次发送给消费者。
+     *   使用channel.basicAck(deliveryTag, false); 签收模式
+     *      channel.basicNack(deliveryTag,false,false); 拒签模式
+     *
      * @Author JnYou
      */
     @PostConstruct // 相当于MyRabbitConfig这个类初始化完成之后进行调用

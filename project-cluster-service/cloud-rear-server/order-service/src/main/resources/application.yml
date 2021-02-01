@@ -23,6 +23,10 @@ spring:
     # 只要抵达队列，就会以异步模式优先回调returnconfirm
     template:
       mandatory: true
+    # 消费者手动ack（确认）消息
+    listener:
+      direct:
+        acknowledge-mode: manual
 
 # MapperScan
 # sql映射文件位置
