@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>Spring Boot 整合 RabbitMQ</description>
-
+    <artifactId>rabbit</artifactId>
     <modules>
         <module>producer</module>
         <module>consumer</module>
