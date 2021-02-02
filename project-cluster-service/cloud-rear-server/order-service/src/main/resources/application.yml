@@ -27,7 +27,13 @@ spring:
     listener:
       direct:
         acknowledge-mode: manual
-
+  thymeleaf:
+    cache: false
+  session:
+    store-type: redis
+  redis:
+    host: 192.168.56.10
+    port: 6379
 # MapperScan
 # sql映射文件位置
 mybatis-plus:
@@ -35,3 +41,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+mall:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 200
+    keep-alive-time: 10
