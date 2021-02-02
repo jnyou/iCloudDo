@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * 代码千万行，注释第一行，
  * 注释不规范，同事泪两行。
  * <p>
- * 消费信息确认
+ * 消费信息确认配置，可直接在配置文件yml进行配置，详见application.yml
  *
  * @author JnYou
  * @version 1.0.0

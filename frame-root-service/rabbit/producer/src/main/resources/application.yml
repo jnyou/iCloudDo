@@ -8,7 +8,11 @@ spring:
     port: 5672
     username: guest
     password: guest
-    # 确认消息已发送到队列（Queue）
+    virtual-host: /
+    # 确认消息已发送到队列（Queue） 开启发送端消息抵达队列的确认（E->Q）
     publisher-returns: true
-    # 消息确认类别，已发送到交换机（Exchange）
+    # 消息确认类别，已发送到交换机（Exchange） 开启发送端被broker收到的确认（P->B）  old version use：publisher-confirms: true
     publisher-confirm-type: correlated
+    # 只要抵达队列，就会以异步模式优先回调returnconfirm
+    template:
+      mandatory: true

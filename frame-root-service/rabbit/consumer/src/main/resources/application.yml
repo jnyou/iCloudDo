@@ -8,3 +8,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+    # 消费者手动ack（确认）消息
+    listener:
+      direct:
+        acknowledge-mode: manual
