@@ -73,7 +73,9 @@ public class CartVo {
         BigDecimal amount = new BigDecimal(0);
         if (!CollectionUtils.isEmpty(items)) {
             for (CartItemVo item : items) {
-                amount = amount.add(item.getTotalPrice());
+                if(item.getCheck()) {
+                    amount = amount.add(item.getTotalPrice());
+                }
             }
         }
         // 减去优惠总价

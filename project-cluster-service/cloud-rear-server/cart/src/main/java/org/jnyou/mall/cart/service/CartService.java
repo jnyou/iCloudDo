@@ -3,6 +3,8 @@ package org.jnyou.mall.cart.service;
 import org.jnyou.mall.cart.vo.CartItemVo;
 import org.jnyou.mall.cart.vo.CartVo;
 
+import java.util.List;
+
 /**
  * 代码千万行，注释第一行
  * 注释不规范，同事泪两行
@@ -63,4 +65,10 @@ public interface CartService {
      * @Author JnYou
      */
     void deleteItem(Long skuId);
+
+    /**
+     * 获取当前用户选中的购物项
+     * @Author JnYou
+     */
+    List<CartItemVo> getUserCartItems();
 }
