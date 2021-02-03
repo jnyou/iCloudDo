@@ -171,3 +171,4 @@ Tip：
 
 ### 接口防刷
 1、OAuth2Controller
+2、幂等性处理

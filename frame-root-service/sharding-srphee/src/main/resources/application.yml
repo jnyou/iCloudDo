@@ -26,17 +26,20 @@ spring:
       default-data-source-name: sharding
       # 默认分库策略
       default-database-strategy:
-        # 行表达式
+        # 行表达式分库策略
         inline:
           # 分库字段
           sharding-column: id
           # 分库规则
           algorithm-expression: sharding$->{id % 2}
+#          algorithm-expression: ds$->{(month+"").substring(0,4) }  month格式为：202001 年表达式 年分库2020
       # 分表策略
       tables:
         sys_log:
           # 真实的数据节点，数据源+表名的形式（临时数据，这里需要通过配置中心来实现动态配置）
           actual-data-nodes: sharding$->{0..1}.sys_log_$->{[202007, 202008, 202009, 202010]}
+          # 月份分表
+#          actual-data-nodes: ds$->{2020..2022}.t_probe_data_0$->{1..9},ds$->{2020..2022}.t_probe_data_1$->{0..2}
           database-strategy:
             inline:
               sharding-column: operation_id
