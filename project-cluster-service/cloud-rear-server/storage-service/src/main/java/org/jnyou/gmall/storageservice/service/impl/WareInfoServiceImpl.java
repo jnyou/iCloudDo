@@ -61,7 +61,7 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
             });
             if(!Objects.isNull(data)){
                 // TODO 远程调用第三方物流服务
-                // 模拟
+                // 模拟手机号最后一位为运费价格
                 String phone = data.getPhone();
                 String fare = phone.substring(phone.length() - 1, phone.length());
                 fareVo.setFare(new BigDecimal(fare));
