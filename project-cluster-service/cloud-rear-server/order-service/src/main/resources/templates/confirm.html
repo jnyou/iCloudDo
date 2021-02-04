@@ -1003,6 +1003,7 @@
 
 	//查运费
 	function getFare(addrId) {
+		console.log(addrId);
 		//给表单回填选择的地址
 		$("#addrInput").val(addrId);
 		$.get("http://gmall.com/api/ware/wareinfo/fare/" + addrId, function (resp) {
