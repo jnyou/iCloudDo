@@ -8,6 +8,6 @@ public class SubmitOrderResponseVo {
 
     private OrderEntity order;
 
-    /** 错误状态码 **/
+    /** 错误状态码 0:下单成功**/
     private Integer code;
 }

@@ -2,6 +2,8 @@ package org.jnyou.gmall.orderservice.feign;
 
 import org.jnyou.common.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,6 +22,9 @@ import java.util.List;
 public interface WareFeignClient {
 
     @PostMapping("/ware/waresku/hasStock")
-    public R getSkuHasStock(@RequestBody List<Long> skuIds);
+    R getSkuHasStock(@RequestBody List<Long> skuIds);
+
+    @GetMapping("/ware/wareinfo/fare/{addrId}")
+    R getFare(@PathVariable("addrId") Long addrId);
 
 }

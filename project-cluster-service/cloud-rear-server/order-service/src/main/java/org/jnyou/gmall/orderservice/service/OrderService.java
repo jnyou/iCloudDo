@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.orderservice.entity.OrderEntity;
 import org.jnyou.gmall.orderservice.vo.OrderConfirmVo;
+import org.jnyou.gmall.orderservice.vo.OrderSubmitVo;
+import org.jnyou.gmall.orderservice.vo.SubmitOrderResponseVo;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -23,5 +25,12 @@ public interface OrderService extends IService<OrderEntity> {
      * @Author JnYou
      */
     OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException;
+
+    /**
+     * 下单功能：创建订单、验令牌、验价格、锁库存
+     * @param vo
+     * @Author JnYou
+     */
+    SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
 }
 

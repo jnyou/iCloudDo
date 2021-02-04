@@ -299,4 +299,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // TODO Question：重复调用？（也就是接口幂等性问题：重试机制等。。。）
         }
     }
+
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        SkuInfoEntity entity = skuInfoService.getById(skuId);
+        return this.getById(entity.getSpuId());
+    }
 }
