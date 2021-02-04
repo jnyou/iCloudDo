@@ -29,13 +29,15 @@ public class MyFeignConfig {
             public void apply(RequestTemplate requestTemplate) {
                 // 获取开始浏览器请求过来的所有头信息
                 ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                // 获取浏览器发送的老请求的信息
-                HttpServletRequest request = requestAttributes.getRequest();
-                if(null != request) {
-                    // 同步头信息到新请求，最主要的是cookie信息
-                    System.out.println("调用feign 之前先进行RequestInterceptor.apply()");
-                    // 给新请求（feign的请求模板）添加了老请求的cookie信息
-                    requestTemplate.header("Cookie",request.getHeader("Cookie"));
+                if(null != requestAttributes){
+                    // 获取浏览器发送的老请求的信息
+                    HttpServletRequest request = requestAttributes.getRequest();
+                    if(null != request) {
+                        // 同步头信息到新请求，最主要的是cookie信息
+                        System.out.println("调用feign 之前先进行RequestInterceptor.apply()");
+                        // 给新请求（feign的请求模板）添加了老请求的cookie信息
+                        requestTemplate.header("Cookie",request.getHeader("Cookie"));
+                    }
                 }
             }
         };
