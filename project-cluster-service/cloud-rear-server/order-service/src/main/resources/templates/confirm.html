@@ -1008,17 +1008,17 @@
 		$("#addrInput").val(addrId);
 		$.get("http://gmall.com/api/ware/wareinfo/fare/" + addrId, function (resp) {
 			console.log(resp);
-			$("#fare").text(resp.fare);
+			$("#fare").text(resp.data.fare);
 			var total = [[${confirmOrder.total}]];
 
-			var payPrice = total * 1 + resp.fare * 1;
+			var payPrice = total * 1 + resp.data.fare * 1;
 			//设置运费
 			$("#payPrice").text(payPrice);
 			$("#payPriceInput").val(payPrice);
 
 			//设置收获地址人信息
-			$("#receiveAddress").text(resp.address.province + " " + resp.address.city + " " + " " + resp.address.region + resp.address.detailAddress);
-			$("#receiver").text(resp.address.name);
+			$("#receiveAddress").text(resp.data.address.province + " " + resp.data.address.city + " " + " " + resp.data.address.region + resp.data.address.detailAddress);
+			$("#receiver").text(resp.data.address.name);
 		})
 	}
 </script>

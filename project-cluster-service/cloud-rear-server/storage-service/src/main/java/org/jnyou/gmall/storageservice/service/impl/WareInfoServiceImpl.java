@@ -12,6 +12,7 @@ import org.jnyou.gmall.storageservice.dao.WareInfoDao;
 import org.jnyou.gmall.storageservice.entity.WareInfoEntity;
 import org.jnyou.gmall.storageservice.feign.MemberFeignClient;
 import org.jnyou.gmall.storageservice.service.WareInfoService;
+import org.jnyou.gmall.storageservice.vo.FareVo;
 import org.jnyou.gmall.storageservice.vo.MemberAddressVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,8 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
     }
 
     @Override
-    public BigDecimal getFare(Long addrId) {
+    public FareVo getFare(Long addrId) {
+        FareVo fareVo = new FareVo();
         R r = memberFeignClient.info(addrId);
         if(r.getCode() == 0){
             MemberAddressVo data = r.getData("memberReceiveAddress",new TypeReference<MemberAddressVo>() {
@@ -62,7 +64,9 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
                 // 模拟
                 String phone = data.getPhone();
                 String fare = phone.substring(phone.length() - 1, phone.length());
-                return new BigDecimal(fare);
+                fareVo.setFare(new BigDecimal(fare));
+                fareVo.setAddress(data);
+                return fareVo;
             }
         }
         return null;
