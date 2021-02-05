@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jnyou.common.exception.NoStockException;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
 import org.jnyou.common.utils.R;
@@ -19,6 +20,7 @@ import org.jnyou.gmall.orderservice.feign.MemberFeignClient;
 import org.jnyou.gmall.orderservice.feign.ProductFeignClient;
 import org.jnyou.gmall.orderservice.feign.WareFeignClient;
 import org.jnyou.gmall.orderservice.interceptor.LoginUserInterceptor;
+import org.jnyou.gmall.orderservice.service.OrderItemService;
 import org.jnyou.gmall.orderservice.service.OrderService;
 import org.jnyou.gmall.orderservice.to.OrderCreateTo;
 import org.jnyou.gmall.orderservice.to.SpuInfoTo;
@@ -27,16 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -61,6 +61,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     ProductFeignClient productFeignClient;
+    @Autowired
+    OrderItemService orderItemService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -124,9 +126,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
+    @Transactional
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         submitThreadLocal.set(vo);
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
+        responseVo.setCode(0);
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
 
         // 1、验证防重令牌[令牌的对比和删除应该是原子操作，0-令牌失败 - 1、删除成功]
@@ -142,14 +146,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 验证成功
             responseVo.setCode(0);
             // TODO  创建订单、验令牌、验价格、锁库存
-            // 创建订单
+            // 1、创建订单
             OrderCreateTo ordered = createOrdered();
 
-            // 验价
+            // 2、验价
             BigDecimal payAmount = ordered.getOrder().getPayAmount();
             BigDecimal payPrice = vo.getPayPrice();
             if(Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
                 // 金额对比成功...
+                // 3、保存订单和订单项
+                saveOrder(ordered);
+                // 4、远程锁定库存
+                WareSkuLockVo lockVo = new WareSkuLockVo();
+                lockVo.setOrderSn(ordered.getOrder().getOrderSn());
+                List<OrderItemVo> locks = ordered.getOrderItems().stream().map(item -> {
+                    OrderItemVo itemVo = new OrderItemVo();
+                    itemVo.setSkuId(item.getSkuId());
+                    itemVo.setCount(item.getSkuQuantity());
+                    itemVo.setTitle(item.getSkuName());
+                    return itemVo;
+                }).collect(Collectors.toList());
+                lockVo.setLocks(locks);
+                R r = wareFeignClient.orderLockStock(lockVo);
+                if(r.getCode() == 0){
+                    // 锁定成功
+                    responseVo.setOrder(ordered.getOrder());
+                    return responseVo;
+                } else {
+                    // 锁定失败
+                    String msg = (String) r.get("msg");
+                    throw new NoStockException(msg);
+                }
 
             } else {
                 responseVo.setCode(2);
@@ -163,6 +190,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 //
 //        }
         return responseVo;
+    }
+
+    /**
+     * 保存订单数据 (包括订单和订单项)
+     * @param ordered
+     * @Author JnYou
+     */
+    private void saveOrder(OrderCreateTo ordered) {
+        OrderEntity orderEntity = new OrderEntity();
+        OrderEntity order = ordered.getOrder();
+        order.setModifyTime(new Date());
+        order.setCreateTime(new Date());
+        // 保存订单
+        this.save(order);
+        // 批量保存订单项
+        orderItemService.saveBatch(ordered.getOrderItems());
+
     }
 
     /**
@@ -226,9 +270,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @Author JnYou
      */
     private OrderEntity buildOrder(String orderSn) {
+        MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
         OrderSubmitVo orderSubmitVo = submitThreadLocal.get();
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderSn);
+        orderEntity.setMemberId(memberResponseVo.getId());
         // 远程获取收回地址信息
         R r = wareFeignClient.getFare(orderSubmitVo.getAddrId());
         FareVo data = r.getData(new TypeReference<FareVo>() {
@@ -266,6 +312,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 itemEntity.setOrderSn(orderSn);
                 return itemEntity;
             }).collect(Collectors.toList());
+            return collect;
         }
 
         return null;

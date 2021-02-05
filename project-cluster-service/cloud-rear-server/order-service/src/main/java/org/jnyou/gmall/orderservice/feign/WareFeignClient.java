@@ -1,6 +1,7 @@
 package org.jnyou.gmall.orderservice.feign;
 
 import org.jnyou.common.utils.R;
+import org.jnyou.gmall.orderservice.vo.WareSkuLockVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,5 +27,13 @@ public interface WareFeignClient {
 
     @GetMapping("/ware/wareinfo/fare/{addrId}")
     R getFare(@PathVariable("addrId") Long addrId);
+
+    /**
+     * 锁定订单的库存
+     * @param vo
+     * @Author JnYou
+     */
+    @PostMapping("/ware/waresku/lock/order")
+    R orderLockStock(@RequestBody WareSkuLockVo vo);
 
 }

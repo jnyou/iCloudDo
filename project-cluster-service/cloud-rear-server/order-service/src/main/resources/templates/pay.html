@@ -11,7 +11,7 @@
       <div class="Jdbox_head">
         <img src="/static/order/pay/img\logo1.jpg" alt=""><span class="bank">收银台</span>
         <ul>
-          <li><span>尚硅谷</span><span>退出</span></li>
+          <li><span>主页</span><span>退出</span></li>
           <li>我的订单</li>
           <li>支付帮助</li>
         </ul>
@@ -20,8 +20,9 @@
         <dl>
           <dt><img src="/static/order/pay/img\saoyisao.png" alt=""></dt>
           <dd>
-            <span>订单提交成功，请尽快付款！订单号：[[${order.orderSn}]]</span>
-            <span>应付金额<font>[[${order.payAmount}]]</font>元</span>
+            <span>订单提交成功，请尽快付款！订单号：[[${responseVo.order.orderSn}]]</span>
+            <span>应付金额<font>[[${#numbers.formatDecimal(responseVo.order.payAmount,1,2)}]]</font>元</span>
+
           </dd>
           <dd>
             <span>推荐使用</span>
@@ -101,7 +102,7 @@
           </li>
 		  <li>
             <img src="/static/order/pay/img\zhifubao.png" style="weight:auto;height:30px;" alt="">
-            <a th:href="'http://order.gmall.com/aliPayOrder?orderSn='+${order.getOrderSn()}">支付宝</a>
+            <a th:href="'http://order.gmall.com/aliPayOrder?orderSn='+${responseVo.order.getOrderSn()}">支付宝</a>
           </li>
         </ul>
       </div>

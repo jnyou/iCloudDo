@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.Data;
+import org.jnyou.common.exception.NoStockException;
 import org.jnyou.common.to.SkuHasStockVo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
@@ -13,8 +15,11 @@ import org.jnyou.gmall.storageservice.dao.WareSkuDao;
 import org.jnyou.gmall.storageservice.entity.WareSkuEntity;
 import org.jnyou.gmall.storageservice.feign.ProductFeignClient;
 import org.jnyou.gmall.storageservice.service.WareSkuService;
+import org.jnyou.gmall.storageservice.vo.OrderItemVo;
+import org.jnyou.gmall.storageservice.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -81,4 +86,63 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         return collect;
     }
 
+    /**
+     * 为某个订单锁库存
+     *
+     * @param vo
+     * @Author JnYou
+     */
+    @Override
+    @Transactional(rollbackFor = NoStockException.class)
+    public Boolean orderLockStock(WareSkuLockVo vo) {
+        // 找到每个商品在哪个仓库都有库存
+        List<OrderItemVo> locks = vo.getLocks();
+        List<SkuWareHasStock> collect = locks.stream().map(item -> {
+            SkuWareHasStock wareHasStock = new SkuWareHasStock();
+            Long skuId = item.getSkuId();
+            wareHasStock.setSkuId(skuId);
+            wareHasStock.setCount(item.getCount());
+            List<Long> wareId = this.baseMapper.listWareIdHasStock(skuId);
+            wareHasStock.setWareId(wareId);
+            return wareHasStock;
+        }).collect(Collectors.toList());
+
+        // 是否全部锁定成功
+        Boolean allLocks = true;
+        // 锁定库存
+        for (SkuWareHasStock wareHasStock : collect) {
+            Boolean skuLock = false;
+            List<Long> wareIds = wareHasStock.getWareId();
+            Long skuId = wareHasStock.getSkuId();
+            if(CollectionUtils.isEmpty(wareIds)){
+                // 这个商品在任何仓库中都没有库存，直接快速失败
+                throw new NoStockException(skuId);
+            }
+            for (Long wareId : wareIds) {
+                // 锁定成功返回1，锁定失败返回0
+                Long count = this.baseMapper.lockSkuStock(skuId,wareId,wareHasStock.getCount());
+                if(count == 1){
+                    skuLock = true;
+                    break;
+                } else {
+                    // 当前仓库锁失败
+                }
+            }
+            if(skuLock == false){
+                // 当前商品所有仓库都没有锁住
+                throw new NoStockException(skuId);
+            }
+        }
+        // 全部成功
+        return true;
+    }
+
+
+}
+
+@Data
+class SkuWareHasStock {
+    private Long skuId;
+    private Integer count;
+    private List<Long> wareId;
 }

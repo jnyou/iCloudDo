@@ -20,4 +20,12 @@
     <select id="getSkuStock" resultType="Long">
         select sum(stock - stock_locked) from wms_ware_sku where sku_id = #{skuId}
     </select>
+
+    <select id="listWareIdHasStock" resultType="java.lang.Long">
+        SELECT ware_id FROM wms_ware_sku WHERE sku_id=#{skuId,jdbcType=BIGINT} AND stock - stock_locked > 0
+    </select>
+
+    <update id="lockSkuStock">
+        UPDATE wms_ware_sku SET stock_locked = stock_locked + #{count,jdbcType=INTEGER} WHERE sku_id = #{skuId,jdbcType=BIGINT} AND ware_id = #{wareId,jdbcType=BIGINT} AND stock - stock_locked >= #{count,jdbcType=INTEGER}
+    </update>
 </mapper>

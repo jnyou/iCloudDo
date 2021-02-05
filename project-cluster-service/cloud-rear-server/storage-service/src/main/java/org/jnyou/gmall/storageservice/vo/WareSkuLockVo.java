@@ -1,4 +1,4 @@
-package org.jnyou.gmall.orderservice.vo;
+package org.jnyou.gmall.storageservice.vo;
 
 import lombok.Data;
 

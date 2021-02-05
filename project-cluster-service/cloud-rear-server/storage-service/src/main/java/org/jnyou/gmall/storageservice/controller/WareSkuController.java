@@ -1,10 +1,14 @@
 package org.jnyou.gmall.storageservice.controller;
 
+import org.jnyou.common.exception.BizCodeEnume;
+import org.jnyou.common.exception.NoStockException;
 import org.jnyou.common.to.SkuHasStockVo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.R;
 import org.jnyou.gmall.storageservice.entity.WareSkuEntity;
 import org.jnyou.gmall.storageservice.service.WareSkuService;
+import org.jnyou.gmall.storageservice.vo.LockStockResult;
+import org.jnyou.gmall.storageservice.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +28,22 @@ import java.util.Map;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+    /**
+     * 锁定订单的库存
+     *
+     * @param vo
+     * @Author JnYou
+     */
+    @PostMapping("/lock/order")
+    public R orderLockStock(@RequestBody WareSkuLockVo vo) {
+        try {
+            Boolean results = wareSkuService.orderLockStock(vo);
+            return R.ok();
+        }catch (NoStockException e){
+            return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(),BizCodeEnume.NO_STOCK_EXCEPTION.getMsg());
+        }
+    }
 
     /**
      * 查询sku是否有库存
