@@ -25,10 +25,13 @@ import org.jnyou.gmall.orderservice.service.OrderService;
 import org.jnyou.gmall.orderservice.to.OrderCreateTo;
 import org.jnyou.gmall.orderservice.to.SpuInfoTo;
 import org.jnyou.gmall.orderservice.vo.*;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.aop.framework.AopProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -124,9 +127,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         CompletableFuture.allOf(getAddressTaskFuture, getCartItemsTaskFuture).get();
         return confirmVo;
     }
+    @Transactional(timeout = 30)
+    public void c(){
+        /** 失效 **/
+        a();
+        b();
+        /** 解决方案 **/
+        OrderServiceImpl orderService = (OrderServiceImpl) AopContext.currentProxy();
+        orderService.b();
+        orderService.c();
+    }
+    @Transactional(propagation = Propagation.REQUIRED,timeout = 2)
+    public void a(){}
+    @Transactional(propagation = Propagation.REQUIRES_NEW,timeout = 30)
+    public void b(){}
 
     @Override
-    @Transactional
+    @Transactional // 本地事务，只能控制住自己的回滚，控制不了其他服务的回滚
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         submitThreadLocal.set(vo);
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();

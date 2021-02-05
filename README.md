@@ -200,3 +200,32 @@ Tip：
 - 防重表
 - 全局请求唯一id
 
+### 本地事务失效问题
+同一个对象内事务方法互调默认失效，原因是绕过了代理对象，事务是使用代理对象来控制的
+
+解决：使用代理对象来调用事务方法
+- 1、引入aop的starter，内部引用了aspectj
+- 2、@EnableAspectJAutoProxy(exposeProxy = true)，开启aspectj动态代理功能。以后所有的动态代理都是aspectj动态构建的（即使没有接口也可以创建动态代理）
+exposeProxy：对外暴露代理对象
+- 3、暴露互调使用代理对象调用
+```$xslt
+@Service("orderService")
+public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {    
+    @Transactional(timeout = 30)
+    public void c(){
+        /** 失效 **/
+        a(); 
+        b();
+        /** 解决方案 **/
+        OrderServiceImpl orderService = (OrderServiceImpl) AopContext.currentProxy();
+        orderService.b();
+        orderService.c();
+    }
+    @Transactional(propagation = Propagation.REQUIRED,timeout = 2)
+    public void a(){}
+    @Transactional(propagation = Propagation.REQUIRES_NEW,timeout = 30)
+    public void b(){}
+}
+```
+
+
