@@ -10,7 +10,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.sql.DataSource;
 
-
+/**
+ * 分布式事务seata
+ * @Author JnYou
+ */
 //@Configuration
 public class MySeataConfig {
 

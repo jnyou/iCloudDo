@@ -1,21 +1,21 @@
 package org.jnyou.gmall.orderservice.config;
 
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.rabbitmq.client.Channel;
+import org.jnyou.gmall.orderservice.entity.OrderEntity;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 代码千万行，注释第一行
  * 注释不规范，同事泪两行
  * <p>
- * MyRabbitConfig
+ * MyMQConfig
  *
  * @version 1.0.0
  * @author: JnYou
@@ -23,60 +23,75 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class MyRabbitConfig {
 
-    @Autowired
-    RabbitTemplate rabbitTemplate;
-
-    @Bean
-    public MessageConverter messageConverter() {
-        // 使用json序列化消息转换器
-        return new Jackson2JsonMessageConverter();
+    @RabbitListener(queues = "order.release.order.queue")
+    public void listener(OrderEntity orderEntity, Channel channel, Message message) throws IOException {
+        System.out.println("收到过期的订单信息，准备关闭订单" + orderEntity);
+        // 确认模式
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
     }
 
     /**
-     * 消息确认机制
-     *
-     * 消费者确认（ack确认模式）（保证每个消息被正确消费，此时才可以从broker删除这个消息）
-     * 默认是自动确认的，只要消息接收到，客户端会自动确认，服务端就会移除这个消息
-     *   问题？ 我们收到很多消息，自动回复给服务器ack，只有一个消息处理成功，宕机了，其他消息发生消息丢失。
-     *   solve：手动确认模式。一定加上配置 spring.rabbitmq.listener.direct.acknowledge-mode: manual。只要没有明确告诉MQ，货物被签收。没有ack，消息一是unacked状态。即使consumer宕机，消息也不会丢失，会重新变为ready状态，下次再次发送给消费者。
-     *   使用channel.basicAck(deliveryTag, false); 签收模式
-     *      channel.basicNack(deliveryTag,false,false); 拒签模式
-     *
+     * 延迟队列
      * @Author JnYou
      */
-    @PostConstruct // 相当于MyRabbitConfig这个类初始化完成之后进行调用
-    public void initRabbitTemplate() {
-        // 服务器设置确认回调（P -> B）
-        rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
-            /**
-             *
-             * @param correlationData 当前消息的唯一关联数据（相当于消息的唯一id）
-             * @param ack 消息是否被broker收到
-             * @param cause 失败的原因
-             * @Author JnYou
-             */
-            @Override
-            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-                System.out.println("confirm...CorrelationData【" + correlationData + "】===》ack【" + ack + "】===》失败的原因【" + cause + "】");
-            }
-        });
-        // 设置消息被队列确认的回调（E -> Q）
-        rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
-            /**
-             * 只要消息没有投递到指定的队列，就会触发这个失败回调
-             * @param message 投递失败的详细信息
-             * @param replyCode 回复的状态码
-             * @param replyText 回复的文本内容
-             * @param exchange  当时消息发给哪个交换机
-             * @param routingKey 当时这个消息用的路由键
-             * @Author JnYou
-             */
-            @Override
-            public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-                System.out.println("Fail Massage【" + message + "】===》replyCode【" + replyCode + "】===》replyText【" + replyText + "】===》exchange【" + exchange + "】===》routingKey【" + routingKey + "】");
-            }
-        });
+    @Bean
+    public Queue orderDelayQueue(){
+        Map<String, Object> arguments = new HashMap<>(124);
+        // 死信路由交换器
+        arguments.put("x-dead-letter-exchange","order-event-exchange");
+        // 死信路由键
+        arguments.put("x-dead-letter-routing-key","order.release.order");
+        // 过期时间，一分钟
+        arguments.put("x-message-ttl",60000);
+        /**
+         Queue(String name,  队列名字
+         boolean durable,  是否持久化
+         boolean exclusive,  是否排他
+         boolean autoDelete, 是否自动删除
+         Map<String, Object> arguments) 属性
+         */
+        return new Queue("order.delay.queue", true, false, false,arguments);
     }
 
+    /**
+     * 死信队列
+     * @Author JnYou
+     */
+    @Bean
+    public Queue orderReleaseOrderQueue(){
+// String name, boolean durable, boolean exclusive, boolean autoDelete, @Nullable Map<String, Object> arguments
+        return new Queue("order.release.order.queue", true, false, false);
+    }
+
+    @Bean
+    public Exchange orderEventQueue(){
+        /**
+         *   String name,
+         *   boolean durable,
+         *   boolean autoDelete,
+         *   Map<String, Object> arguments
+         */
+        return new TopicExchange("order-event-exchange", true, false);
+    }
+
+    @Bean
+    public Binding OrderCreateOrderBingding(){
+        /**
+         * String destination, 目的地（队列名或者交换机名字）
+         * DestinationType destinationType, 目的地类型（Queue、Exhcange）
+         * String exchange,
+         * String routingKey,
+         * Map<String, Object> arguments
+         * */
+        Binding binding = new Binding("order.delay.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.create.order",null);
+        return binding;
+    }
+
+    @Bean
+    public Binding OrderReleaseOrderBingding(){
+        // String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object> arguments
+        Binding binding = new Binding("order.release.order.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.release.order",null);
+        return binding;
+    }
 
 }
