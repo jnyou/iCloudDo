@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.jnyou.common.constant.ProductConstant;
 import org.jnyou.common.to.SkuHasStockVo;
 import org.jnyou.common.to.SkuReductionTo;
@@ -82,12 +83,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     /**
-     * TODO 分布式功能完善
-     *
+     * seata 进行全局事务管理
      * @param vo
      * @return
      * @Author jnyou
      */
+    @GlobalTransactional
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {
