@@ -24,21 +24,21 @@ import javax.sql.DataSource;
 @Configuration
 public class MySeataConfig {
 
-    @Autowired
-    DataSourceProperties dataSourceProperties;
+//    @Autowired
+//    DataSourceProperties dataSourceProperties;
 
     /**
      * 包装本服务的数据源到seata的代理数据源中
      * @param dataSourceProperties
      * @Author JnYou
      */
-    @Bean
-    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
-        HikariDataSource dataSource = dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
-        if(StringUtils.hasText(dataSourceProperties.getName())){
-            dataSource.setPoolName(dataSourceProperties.getName());
-        }
-        return new DataSourceProxy(dataSource);
-    }
+//    @Bean
+//    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
+//        HikariDataSource dataSource = dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
+//        if(StringUtils.hasText(dataSourceProperties.getName())){
+//            dataSource.setPoolName(dataSourceProperties.getName());
+//        }
+//        return new DataSourceProxy(dataSource);
+//    }
 
 }
