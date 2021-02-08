@@ -18,6 +18,9 @@ spring:
   rabbitmq:
     host: 192.168.56.10
     virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
 # MapperScan
 # sql映射文件位置
 mybatis-plus:

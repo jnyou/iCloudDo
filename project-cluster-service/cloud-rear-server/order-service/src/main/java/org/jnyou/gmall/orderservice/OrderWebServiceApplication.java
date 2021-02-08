@@ -1,5 +1,6 @@
 package org.jnyou.gmall.orderservice;
 
+import io.seata.spring.annotation.GlobalTransactional;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;

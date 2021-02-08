@@ -3,6 +3,7 @@ package org.jnyou.gmall.orderservice.interceptor;
 import org.jnyou.common.constant.AuthServerConstant;
 import org.jnyou.common.vo.MemberResponseVo;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,12 @@ public class LoginUserInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        boolean match = new AntPathMatcher().match("/orderservice/order/status/**", request.getRequestURI());
+        if(match){
+            return true;
+        }
+
         MemberResponseVo attribute = (MemberResponseVo) request.getSession().getAttribute(AuthServerConstant.LOGIN_USER);
         if(null != attribute){
             // 登录了，将用户信息放入ThreadLocal中，其他的线程都能获取

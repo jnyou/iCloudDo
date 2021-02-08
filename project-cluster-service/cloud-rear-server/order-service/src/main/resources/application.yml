@@ -25,7 +25,7 @@ spring:
       mandatory: true
     # 消费者手动ack（确认）消息
     listener:
-      direct:
+      simple:
         acknowledge-mode: manual
   thymeleaf:
     cache: false
