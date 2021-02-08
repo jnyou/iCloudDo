@@ -20,11 +20,6 @@ import java.util.Map;
 @Configuration
 public class MyRabbitConfig {
 
-    @RabbitListener(queues = "stock.release.stock.queue")
-    public void handle(Message message){
-
-    }
-
     @Bean
     public Exchange stockEventExchange() {
         // String name, boolean durable, boolean autoDelete, Map<String, Object> arguments

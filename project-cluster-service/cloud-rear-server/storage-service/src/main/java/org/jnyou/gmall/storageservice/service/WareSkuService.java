@@ -2,6 +2,7 @@ package org.jnyou.gmall.storageservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.to.SkuHasStockVo;
+import org.jnyou.common.to.mq.StockLockedTo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.storageservice.entity.WareSkuEntity;
 import org.jnyou.gmall.storageservice.vo.LockStockResult;
@@ -25,5 +26,8 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     List<SkuHasStockVo> getSkuHasStock(List<Long> skuIds);
 
     Boolean orderLockStock(WareSkuLockVo vo);
+
+    void unLockStock(StockLockedTo stock);
+
 }
 

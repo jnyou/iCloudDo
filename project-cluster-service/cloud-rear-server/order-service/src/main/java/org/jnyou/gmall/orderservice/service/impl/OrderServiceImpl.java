@@ -192,6 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if(r.getCode() == 0){
                     // 锁定成功
                     responseVo.setOrder(ordered.getOrder());
+                    int i = 10/0;
                     return responseVo;
                 } else {
                     // 锁定失败
