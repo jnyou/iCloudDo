@@ -55,4 +55,18 @@ public class StockReleaseListener {
 
     }
 
+    @RabbitHandler
+    public void handleOrderCloseRelease(OrderTo orderTo,Message message,Channel channel) throws IOException {
+        try {
+            System.out.println("订单关闭，准备解锁库存");
+            wareSkuService.unLockStock(orderTo);
+            // 手动ack机制
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+        } catch (Exception e) {
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
+        }
+
+
+    }
+
 }

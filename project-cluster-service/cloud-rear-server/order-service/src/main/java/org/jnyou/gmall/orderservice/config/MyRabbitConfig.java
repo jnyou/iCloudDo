@@ -75,7 +75,7 @@ public class MyRabbitConfig {
     }
 
     @Bean
-    public Binding OrderCreateOrderBingding(){
+    public Binding OrderCreateOrderBinding(){
         /**
          * String destination, 目的地（队列名或者交换机名字）
          * DestinationType destinationType, 目的地类型（Queue、Exhcange）
@@ -88,9 +88,19 @@ public class MyRabbitConfig {
     }
 
     @Bean
-    public Binding OrderReleaseOrderBingding(){
+    public Binding OrderReleaseOrderBinding(){
         // String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object> arguments
         Binding binding = new Binding("order.release.order.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.release.order",null);
+        return binding;
+    }
+
+    /**
+     * 订单释放和库存释放绑定
+     */
+    @Bean
+    public Binding OrderReleaseOtherBinding(){
+        // String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object> arguments
+        Binding binding = new Binding("stock.release.stock.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.release.other.#",null);
         return binding;
     }
 

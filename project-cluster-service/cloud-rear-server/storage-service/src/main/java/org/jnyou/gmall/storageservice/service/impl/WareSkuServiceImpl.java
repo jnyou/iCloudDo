@@ -61,7 +61,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         // 更新工作单的状态
         WareOrderTaskDetailEntity orderTaskDetailEntity = new WareOrderTaskDetailEntity();
         orderTaskDetailEntity.setId(taskDetailId);
-        orderTaskDetailEntity.setLockStatus(2);// 已解锁
+        // 已解锁
+        orderTaskDetailEntity.setLockStatus(2);
         wareOrderTaskDetailService.updateById(orderTaskDetailEntity);
     }
 
@@ -187,7 +188,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     public void unLockStock(StockLockedTo stock) {
         // 库存解锁
         StockDetailTo detailTo = stock.getDetailTo();
-        Long detailId = detailTo.getId(); // 锁库存详情id
+        // 锁库存详情id
+        Long detailId = detailTo.getId();
         // 先查询一次看看库存单详情是否存在
         WareOrderTaskDetailEntity detailEntity = wareOrderTaskDetailService.getById(detailId);
         if (Objects.nonNull(detailEntity)) {
@@ -200,7 +202,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 });
                 if (Objects.isNull(data) || data.getStatus() == 4) {
                     // 订单不存在 || 订单被取消了，需要解库存
-                    if(detailEntity.getLockStatus() == 1){
+                    if (detailEntity.getLockStatus() == 1) {
                         // 当前工作单详情状态为1已锁定但未解锁
                         unLockStock(detailTo.getSkuId(), detailTo.getWareId(), detailTo.getSkuNum(), detailId);
                     }
@@ -213,6 +215,25 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
     }
 
+    /**
+     * 防止订单服务卡顿等等原因，导致订单状态消息一直改变不了，库存消息优先到期。查订单状态一直为新建状态。
+     *
+     * @param orderTo
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void unLockStock(OrderTo orderTo) {
+        String orderSn = orderTo.getOrderSn();
+        // 查询库存的最新状态，防止重复解锁库存
+        WareOrderTaskEntity entity = wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+        if (Objects.nonNull(entity)) {
+            List<WareOrderTaskDetailEntity> list = wareOrderTaskDetailService.list(Wrappers.<WareOrderTaskDetailEntity>lambdaQuery().eq(WareOrderTaskDetailEntity::getTaskId, entity.getId()).eq(WareOrderTaskDetailEntity::getLockStatus, 1));
+            for (WareOrderTaskDetailEntity detailEntity : list) {
+                // 解锁库存
+                this.unLockStock(detailEntity.getSkuId(), detailEntity.getWareId(), detailEntity.getSkuNum(), detailEntity.getTaskId());
+            }
+        }
+    }
 
 }
 

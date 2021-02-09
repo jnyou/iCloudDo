@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.jnyou.common.exception.NoStockException;
+import org.jnyou.common.to.mq.OrderTo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
 import org.jnyou.common.utils.R;
@@ -27,10 +28,10 @@ import org.jnyou.gmall.orderservice.service.OrderService;
 import org.jnyou.gmall.orderservice.to.OrderCreateTo;
 import org.jnyou.gmall.orderservice.to.SpuInfoTo;
 import org.jnyou.gmall.orderservice.vo.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.aop.framework.AopContext;
-import org.springframework.aop.framework.AopProxy;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     ProductFeignClient productFeignClient;
     @Autowired
     OrderItemService orderItemService;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -130,8 +133,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         CompletableFuture.allOf(getAddressTaskFuture, getCartItemsTaskFuture).get();
         return confirmVo;
     }
+
     @Transactional(timeout = 30)
-    public void c(){
+    public void c() {
         /** 失效 **/
         a();
         b();
@@ -140,10 +144,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderService.b();
         orderService.c();
     }
-    @Transactional(propagation = Propagation.REQUIRED,timeout = 2)
-    public void a(){}
-    @Transactional(propagation = Propagation.REQUIRES_NEW,timeout = 30)
-    public void b(){}
+
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 2)
+    public void a() {
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 30)
+    public void b() {
+    }
 
     @Override
     @Transactional // 本地事务，只能控制住自己的回滚，控制不了其他服务的回滚
@@ -173,7 +181,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 2、验价
             BigDecimal payAmount = ordered.getOrder().getPayAmount();
             BigDecimal payPrice = vo.getPayPrice();
-            if(Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
+            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
                 // 金额对比成功...
                 // 3、保存订单和订单项
                 saveOrder(ordered);
@@ -189,10 +197,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 }).collect(Collectors.toList());
                 lockVo.setLocks(locks);
                 R r = wareFeignClient.orderLockStock(lockVo);
-                if(r.getCode() == 0){
+                if (r.getCode() == 0) {
                     // 锁定成功
                     responseVo.setOrder(ordered.getOrder());
-                    int i = 10/0;
+//                    int i = 10/0;
+                    // 订单创建成功，发送消息给MQ,让MQ执行关单逻辑到新的队列中
+                    rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", ordered.getOrder());
                     return responseVo;
                 } else {
                     // 锁定失败
@@ -216,11 +226,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     public OrderEntity getOrderStatus(String orderSn) {
-        return this.getOne(Wrappers.<OrderEntity>lambdaQuery().eq(OrderEntity::getOrderSn,orderSn));
+        return this.getOne(Wrappers.<OrderEntity>lambdaQuery().eq(OrderEntity::getOrderSn, orderSn));
+    }
+
+    @Override
+    public void closeOrder(OrderEntity orderEntity) {
+        // 查询当前订单的最新状态
+        OrderEntity entity = this.getById(orderEntity.getId());
+        if (OrderStatusEnum.CREATE_NEW.getCode().equals(entity.getStatus())) {
+            // 关单
+            OrderEntity order = new OrderEntity().setId(entity.getId()).setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(order);
+        }
+        OrderTo orderTo = new OrderTo();
+        BeanUtils.copyProperties(entity,orderTo);
+        // 关闭订单后，发送消息给MQ
+        rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTo);
     }
 
     /**
      * 保存订单数据 (包括订单和订单项)
+     *
      * @param ordered
      * @Author JnYou
      */
