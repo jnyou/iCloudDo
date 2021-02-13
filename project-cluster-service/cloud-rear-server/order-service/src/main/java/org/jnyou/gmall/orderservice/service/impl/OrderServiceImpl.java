@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.jnyou.common.exception.NoStockException;
 import org.jnyou.common.to.mq.OrderTo;
 import org.jnyou.common.utils.PageUtils;
@@ -155,7 +154,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     @Transactional // 本地事务，只能控制住自己的回滚，控制不了其他服务的回滚
-    @GlobalTransactional
+//    @GlobalTransactional
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         submitThreadLocal.set(vo);
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
@@ -239,7 +238,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.updateById(order);
         }
         OrderTo orderTo = new OrderTo();
-        BeanUtils.copyProperties(entity,orderTo);
+        BeanUtils.copyProperties(entity, orderTo);
         // 关闭订单后，发送消息给MQ
         try {
             // 保证消息一定发送出去，每一个消息都可以做好日志记录（给数据库保存每一个消息的详细信息）
@@ -255,7 +254,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public PayVo getPayData(String orderSn) {
         OrderEntity order = this.getOrderByOrderSn(orderSn);
         List<OrderItemEntity> list = orderItemService.list(Wrappers.<OrderItemEntity>lambdaQuery().eq(OrderItemEntity::getOrderSn, orderSn));
-        BigDecimal payAmount = order.getPayAmount().setScale(2,BigDecimal.ROUND_UP);
+        BigDecimal payAmount = order.getPayAmount().setScale(2, BigDecimal.ROUND_UP);
         PayVo payVo = new PayVo().setTotal_amount(payAmount.toString()).setOut_trade_no(order.getOrderSn()).setSubject(list.get(0).getSkuName()).setBody(list.get(0).getSkuAttrsVals());
         return payVo;
     }

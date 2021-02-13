@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 代码千万行，注释第一行
@@ -27,12 +28,18 @@ public class PayWebController {
     @Autowired
     AlipayTemplate alipayTemplate;
 
-    @GetMapping("/aliPayOrder")
+    /**
+     * 给支付宝相应HTML网页数据
+     * @param orderSn
+     * @Author JnYou
+     */
+    @ResponseBody
+    @GetMapping(value = "/aliPayOrder",produces = "text/html")
     public String aliPay(@RequestParam("orderSn") String orderSn) throws AlipayApiException {
         PayVo payVo = orderServicel.getPayData(orderSn);
+        // result 返回的是一个页面，将此页面直接交给浏览器就行
         String result = alipayTemplate.pay(payVo);
-        System.out.println(result);
-        return "hello";
+        return result;
     }
 
 }
