@@ -225,7 +225,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
-    public OrderEntity getOrderStatus(String orderSn) {
+    public OrderEntity getOrderByOrderSn(String orderSn) {
         return this.getOne(Wrappers.<OrderEntity>lambdaQuery().eq(OrderEntity::getOrderSn, orderSn));
     }
 
@@ -249,6 +249,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 将设法将消息进行重试发送
         }
 
+    }
+
+    @Override
+    public PayVo getPayData(String orderSn) {
+        OrderEntity order = this.getOrderByOrderSn(orderSn);
+        List<OrderItemEntity> list = orderItemService.list(Wrappers.<OrderItemEntity>lambdaQuery().eq(OrderItemEntity::getOrderSn, orderSn));
+        BigDecimal payAmount = order.getPayAmount().setScale(2,BigDecimal.ROUND_UP);
+        PayVo payVo = new PayVo().setTotal_amount(payAmount.toString()).setOut_trade_no(order.getOrderSn()).setSubject(list.get(0).getSkuName()).setBody(list.get(0).getSkuAttrsVals());
+        return payVo;
     }
 
     /**

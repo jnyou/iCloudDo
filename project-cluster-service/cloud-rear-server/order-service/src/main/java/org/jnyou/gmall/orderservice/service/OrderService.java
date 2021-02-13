@@ -5,6 +5,7 @@ import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.orderservice.entity.OrderEntity;
 import org.jnyou.gmall.orderservice.vo.OrderConfirmVo;
 import org.jnyou.gmall.orderservice.vo.OrderSubmitVo;
+import org.jnyou.gmall.orderservice.vo.PayVo;
 import org.jnyou.gmall.orderservice.vo.SubmitOrderResponseVo;
 
 import java.util.Map;
@@ -33,8 +34,10 @@ public interface OrderService extends IService<OrderEntity> {
      */
     SubmitOrderResponseVo submitOrder(OrderSubmitVo vo);
 
-    OrderEntity getOrderStatus(String orderSn);
+    OrderEntity getOrderByOrderSn(String orderSn);
 
     void closeOrder(OrderEntity orderEntity);
+
+    PayVo getPayData(String orderSn);
 }
 

@@ -27,7 +27,7 @@ public class OrderController {
 
     @GetMapping("status/{orderSn}")
     public R getOrderStatus(@PathVariable("orderSn") String orderSn){
-        OrderEntity orderEntity = orderService.getOrderStatus(orderSn);
+        OrderEntity orderEntity = orderService.getOrderByOrderSn(orderSn);
         return R.ok().setData(orderEntity);
     }
 
