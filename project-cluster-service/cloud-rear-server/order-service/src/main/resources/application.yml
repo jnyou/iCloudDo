@@ -34,6 +34,8 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
 # MapperScan
 # sql映射文件位置
 mybatis-plus:

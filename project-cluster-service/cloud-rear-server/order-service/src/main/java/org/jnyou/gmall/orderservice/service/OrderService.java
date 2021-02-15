@@ -3,10 +3,7 @@ package org.jnyou.gmall.orderservice.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.gmall.orderservice.entity.OrderEntity;
-import org.jnyou.gmall.orderservice.vo.OrderConfirmVo;
-import org.jnyou.gmall.orderservice.vo.OrderSubmitVo;
-import org.jnyou.gmall.orderservice.vo.PayVo;
-import org.jnyou.gmall.orderservice.vo.SubmitOrderResponseVo;
+import org.jnyou.gmall.orderservice.vo.*;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -41,5 +38,7 @@ public interface OrderService extends IService<OrderEntity> {
     PayVo getPayData(String orderSn);
 
     PageUtils queryPageWithItem(Map<String, Object> params);
+
+    String handlePayResult(PayAsyncVo vo);
 }
 

@@ -4,7 +4,10 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.util.Date;
-
+/**
+ * 支付宝的异步通知属性：官方网址：https://opendocs.alipay.com/open/270/105902
+ * @Author JnYou
+ */
 @ToString
 @Data
 public class PayAsyncVo {

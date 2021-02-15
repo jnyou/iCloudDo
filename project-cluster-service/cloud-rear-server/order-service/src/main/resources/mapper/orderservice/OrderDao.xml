@@ -49,5 +49,7 @@
         <result property="modifyTime" column="modify_time"/>
     </resultMap>
 
-
+    <update id="updateOrderStatus">
+        update oms_order set status = #{code,jdbcType=INTEGER},pay_type = #{alipay,jdbcType=INTEGER} where order_sn = #{orderSn,jdbcType=VARCHAR}
+    </update>
 </mapper>

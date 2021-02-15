@@ -13,9 +13,11 @@ import org.jnyou.common.utils.Query;
 import org.jnyou.common.utils.R;
 import org.jnyou.common.vo.MemberResponseVo;
 import org.jnyou.gmall.orderservice.constant.OrderConstant;
+import org.jnyou.gmall.orderservice.constant.PayConstant;
 import org.jnyou.gmall.orderservice.dao.OrderDao;
 import org.jnyou.gmall.orderservice.entity.OrderEntity;
 import org.jnyou.gmall.orderservice.entity.OrderItemEntity;
+import org.jnyou.gmall.orderservice.entity.PaymentInfoEntity;
 import org.jnyou.gmall.orderservice.enume.OrderStatusEnum;
 import org.jnyou.gmall.orderservice.feign.CartFeignClient;
 import org.jnyou.gmall.orderservice.feign.MemberFeignClient;
@@ -24,6 +26,7 @@ import org.jnyou.gmall.orderservice.feign.WareFeignClient;
 import org.jnyou.gmall.orderservice.interceptor.LoginUserInterceptor;
 import org.jnyou.gmall.orderservice.service.OrderItemService;
 import org.jnyou.gmall.orderservice.service.OrderService;
+import org.jnyou.gmall.orderservice.service.PaymentInfoService;
 import org.jnyou.gmall.orderservice.to.OrderCreateTo;
 import org.jnyou.gmall.orderservice.to.SpuInfoTo;
 import org.jnyou.gmall.orderservice.vo.*;
@@ -71,6 +74,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     OrderItemService orderItemService;
     @Autowired
     RabbitTemplate rabbitTemplate;
+    @Autowired
+    PaymentInfoService paymentInfoService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -264,7 +269,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
         IPage<OrderEntity> page = this.page(
                 new Query<OrderEntity>().getPage(params),
-                new QueryWrapper<OrderEntity>().eq("member_id",memberResponseVo.getId()).orderByDesc("id")
+                new QueryWrapper<OrderEntity>().eq("member_id", memberResponseVo.getId()).orderByDesc("id")
         );
 
         List<OrderEntity> records = page.getRecords();
@@ -276,6 +281,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         page.setRecords(collect);
         return new PageUtils(page);
+    }
+
+    @Override
+    public String handlePayResult(PayAsyncVo payAsyncVo) {
+        // 保存交易流水
+        PaymentInfoEntity infoEntity = new PaymentInfoEntity();
+        String orderSn = payAsyncVo.getOut_trade_no();
+        infoEntity.setOrderSn(orderSn);
+        infoEntity.setAlipayTradeNo(payAsyncVo.getTrade_no());
+        infoEntity.setSubject(payAsyncVo.getSubject());
+        String trade_status = payAsyncVo.getTrade_status();
+        infoEntity.setPaymentStatus(trade_status);
+        infoEntity.setCreateTime(new Date());
+        infoEntity.setCallbackTime(payAsyncVo.getNotify_time());
+        paymentInfoService.save(infoEntity);
+        //判断交易状态是否成功
+        if (trade_status.equals("TRADE_SUCCESS") || trade_status.equals("TRADE_FINISHED")) {
+            // 支付成功，修改订单的状态
+            this.baseMapper.updateOrderStatus(orderSn, OrderStatusEnum.PAYED.getCode(), PayConstant.ALIPAY);
+        }
+        return "success";
     }
 
     /**
