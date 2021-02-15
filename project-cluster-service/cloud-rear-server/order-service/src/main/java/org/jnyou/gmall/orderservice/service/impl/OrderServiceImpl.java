@@ -259,6 +259,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return payVo;
     }
 
+    @Override
+    public PageUtils queryPageWithItem(Map<String, Object> params) {
+        MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+        IPage<OrderEntity> page = this.page(
+                new Query<OrderEntity>().getPage(params),
+                new QueryWrapper<OrderEntity>().eq("member_id",memberResponseVo.getId()).orderByDesc("id")
+        );
+
+        List<OrderEntity> records = page.getRecords();
+        List<OrderEntity> collect = records.stream().map(item -> {
+            List<OrderItemEntity> list = orderItemService.list(Wrappers.<OrderItemEntity>lambdaQuery().eq(OrderItemEntity::getOrderSn, item.getOrderSn()));
+            item.setOrderItemEntities(list);
+            return item;
+        }).collect(Collectors.toList());
+
+        page.setRecords(collect);
+        return new PageUtils(page);
+    }
+
     /**
      * 保存订单数据 (包括订单和订单项)
      *
