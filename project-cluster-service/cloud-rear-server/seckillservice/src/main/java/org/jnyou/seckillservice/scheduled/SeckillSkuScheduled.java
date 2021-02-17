@@ -32,7 +32,7 @@ public class SeckillSkuScheduled {
     // 分布式锁
     private final String UPLOAD_LOCK = "seckill:upload:lock";
 
-    @Scheduled(cron = "*/3 * * * * ?")
+    @Scheduled(cron = "* * 3 * * ?")
     public void uploadSeckillSkuLatest3Days() {
         // 幂等性处理，分布式定时任务下只需要一台机器上架商品即可，使用分布式锁
         RLock lock = redissonClient.getLock(UPLOAD_LOCK);
