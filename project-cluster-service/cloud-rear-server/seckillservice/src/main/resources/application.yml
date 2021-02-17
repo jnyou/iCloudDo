@@ -5,5 +5,13 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 50
+  redis:
+    host: 192.168.56.10
+    port: 6379
 server:
   port: 25000
