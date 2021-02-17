@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.jnyou.gmall.productservice.entity.SkuImagesEntity;
 import org.jnyou.gmall.productservice.entity.SkuInfoEntity;
 import org.jnyou.gmall.productservice.entity.SpuInfoDescEntity;
+import org.jnyou.gmall.productservice.vo.web.SeckillSkuInfo;
 
 import java.util.List;
 
@@ -41,10 +42,7 @@ public class SkuItemVo {
      */
     List<SpuItemAttrGroupVo> groupAttrs;
 
-    private SeckillSkuVo seckillSkuVo;
+    private SeckillSkuInfo seckillSkuVo;
 
-    static class SeckillSkuVo{
-
-    }
 
 }
