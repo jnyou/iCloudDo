@@ -104,4 +104,19 @@ public class MyRabbitConfig {
         return binding;
     }
 
+    /**
+     * 处理秒杀的队列
+     */
+    @Bean
+    public Queue orderSeckillOrderQueue(){
+        return new Queue("order.seckill.order.queue", true, false, false);
+    }
+
+    @Bean
+    public Binding OrderSeckillBinding(){
+        // String destination, Binding.DestinationType destinationType, String exchange, String routingKey, @Nullable Map<String, Object> arguments
+        Binding binding = new Binding("order.seckill.order.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.seckill.order",null);
+        return binding;
+    }
+
 }

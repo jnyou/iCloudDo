@@ -1,10 +1,12 @@
 package org.jnyou.common.to.mq;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
 @Data
+@Accessors(chain = true)
 public class SeckillOrderTo {
     /**
      * 订单号

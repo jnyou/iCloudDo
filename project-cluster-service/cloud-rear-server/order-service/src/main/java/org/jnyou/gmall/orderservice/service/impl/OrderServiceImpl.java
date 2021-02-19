@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jnyou.common.exception.NoStockException;
 import org.jnyou.common.to.mq.OrderTo;
+import org.jnyou.common.to.mq.SeckillOrderTo;
 import org.jnyou.common.utils.PageUtils;
 import org.jnyou.common.utils.Query;
 import org.jnyou.common.utils.R;
@@ -302,6 +303,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.baseMapper.updateOrderStatus(orderSn, OrderStatusEnum.PAYED.getCode(), PayConstant.ALIPAY);
         }
         return "success";
+    }
+
+    @Override
+    public void createSeckillOrder(SeckillOrderTo order) {
+        // TODO 保存订单
+        BigDecimal price = order.getSeckillPrice().multiply(new BigDecimal(order.getNum()));
+        OrderEntity orderEntity = new OrderEntity()
+                .setOrderSn(order.getOrderSn())
+                .setMemberId(order.getMemberId())
+                .setStatus(OrderStatusEnum.CREATE_NEW.getCode())
+                .setPayAmount(price);
+        this.save(orderEntity);
+
+
+        // 保存订单项信息，其他信息都能通过远程product服务获取
+        OrderItemEntity entity = new OrderItemEntity().setOrderSn(order.getOrderSn()).setRealAmount(price).setSkuQuantity(order.getNum());
+        orderItemService.save(entity);
     }
 
     /**

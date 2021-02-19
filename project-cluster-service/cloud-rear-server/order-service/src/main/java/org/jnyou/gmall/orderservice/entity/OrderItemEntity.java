@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 订单项信息
@@ -16,6 +17,7 @@ import lombok.Data;
  */
 @Data
 @TableName("oms_order_item")
+@Accessors(chain = true)
 public class OrderItemEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

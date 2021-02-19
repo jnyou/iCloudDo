@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
+import org.jnyou.common.to.mq.SeckillOrderTo;
 import org.jnyou.common.utils.R;
 import org.jnyou.common.vo.MemberResponseVo;
 import org.jnyou.seckillservice.feign.CouponFeignClient;
@@ -16,6 +17,7 @@ import org.jnyou.seckillservice.vo.SeckillSessionsWithSkus;
 import org.jnyou.seckillservice.vo.SkuInfoVo;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -52,6 +54,8 @@ public class SeckillServiceImpl implements SeckillService {
     ProductFeignClient productFeignClient;
     @Autowired
     RedissonClient redissonClient;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     private final String SESSION_CACHE_PREFIX = "seckill:session:";
     private final String SKUKILL_CACHE_PREFIX = "seckill:skus:";
@@ -135,7 +139,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Override
     public String kill(String killId, String key, Integer num) {
-
+        long s = System.currentTimeMillis();
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
 
         // 判断是否登录  拦截器执行
@@ -169,18 +173,26 @@ public class SeckillServiceImpl implements SeckillService {
                             // 占位成功，当前用户从来没有买过
                             RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
                             // 尝试从信号量中取出i个
-                            try {
-                                semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                            boolean b = semaphore.tryAcquire(num);
+                            if (b) {
                                 // 秒杀成功，发送MQ消息给订单服务，快速下单
-
                                 // 返回订单号
                                 String orderSn = IdWorker.getTimeId();
-                                log.info("秒杀成功。。。");
+                                SeckillOrderTo seckillOrderTo = new SeckillOrderTo()
+                                        .setOrderSn(orderSn)
+                                        .setNum(num)
+                                        .setSkuId(redis.getSkuId())
+                                        .setPromotionSessionId(redis.getPromotionSessionId())
+                                        .setMemberId(memberResponseVo.getId())
+                                        .setSeckillPrice(redis.getSeckillPrice());
+                                rabbitTemplate.convertAndSend("order-event-exchange", "order.seckill.order", seckillOrderTo);
+                                long e = System.currentTimeMillis();
+                                log.info("秒杀成功。。。耗时{}毫秒" , e - s);
                                 return orderSn;
-                            } catch (InterruptedException e) {
-                                return null;
                             }
+                            return null;
                         } else {
+                            // 说明已经买过了
                             return null;
                         }
                     }
@@ -220,7 +232,7 @@ public class SeckillServiceImpl implements SeckillService {
                 if (!hashOps.hasKey(skuInfo.getPromotionSessionId() + "_" + skuInfo.getSkuId())) {
                     // 缓存活动商品信息
                     SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
-
+                    seckillSkuRedisTo.setRandomCode(token);
                     // 1、sku的基本信息
                     R r = productFeignClient.getSkuInfo(skuInfo.getSkuId());
                     if (r.getCode() == 0) {
