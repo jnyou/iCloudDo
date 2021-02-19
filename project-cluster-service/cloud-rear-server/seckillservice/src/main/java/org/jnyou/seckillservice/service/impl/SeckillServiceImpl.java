@@ -137,6 +137,13 @@ public class SeckillServiceImpl implements SeckillService {
         return null;
     }
 
+    /**
+     * 秒杀业务
+     * TODO 上架秒杀的商品，每一个数据都应该有过期时间
+     * TODO 秒杀的后袖流程，简化了收货地址
+     *
+     * @Author JnYou
+     */
     @Override
     public String kill(String killId, String key, Integer num) {
         long s = System.currentTimeMillis();
