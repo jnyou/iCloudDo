@@ -18,6 +18,7 @@ spring:
   rabbitmq:
     host: 192.168.56.10
     virtual-host: /
-
+  thymeleaf:
+    cache: false
 server:
   port: 25000
