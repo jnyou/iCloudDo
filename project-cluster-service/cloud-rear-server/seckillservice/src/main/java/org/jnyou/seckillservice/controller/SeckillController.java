@@ -6,6 +6,7 @@ import org.jnyou.seckillservice.to.SeckillSkuRedisTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,6 +42,13 @@ public class SeckillController {
     public R getCurrentSeckillInfo(@PathVariable("skuId") Long skuId){
         SeckillSkuRedisTo to = seckillService.getCurrentSeckillInfo(skuId);
         return R.ok().setData(to);
+    }
+
+    // http://seckill.gmall.com/kill?killId=4_10&key=undefined&num=1
+    @GetMapping("/kill")
+    public R seckill(@RequestParam("killId") String killId, @RequestParam("key") String key,@RequestParam("num") Integer num){
+        String orderSn = seckillService.kill(killId,key,num);
+        return R.ok().setData(orderSn);
     }
 
 

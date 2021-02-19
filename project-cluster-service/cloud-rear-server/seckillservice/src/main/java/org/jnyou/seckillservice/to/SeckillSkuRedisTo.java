@@ -37,11 +37,11 @@ public class SeckillSkuRedisTo {
     /**
      * 秒杀总量
      */
-    private BigDecimal seckillCount;
+    private Integer seckillCount;
     /**
      * 每人限购数量
      */
-    private BigDecimal seckillLimit;
+    private Integer seckillLimit;
     /**
      * 排序
      */

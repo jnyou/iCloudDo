@@ -3,10 +3,13 @@ package org.jnyou.seckillservice.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.jnyou.common.utils.R;
+import org.jnyou.common.vo.MemberResponseVo;
 import org.jnyou.seckillservice.feign.CouponFeignClient;
 import org.jnyou.seckillservice.feign.ProductFeignClient;
+import org.jnyou.seckillservice.interceptor.LoginUserInterceptor;
 import org.jnyou.seckillservice.service.SeckillService;
 import org.jnyou.seckillservice.to.SeckillSkuRedisTo;
 import org.jnyou.seckillservice.vo.SeckillSessionsWithSkus;
@@ -18,8 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -102,23 +110,85 @@ public class SeckillServiceImpl implements SeckillService {
         BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
 
         Set<String> keys = hashOps.keys();
-        if(CollectionUtils.isNotEmpty(keys)){
+        if (CollectionUtils.isNotEmpty(keys)) {
             String regx = "\\d_" + skuId;
             for (String key : keys) {
                 boolean matches = Pattern.matches(regx, key);
-                if(matches){
+                if (matches) {
                     String json = hashOps.get(key);
                     SeckillSkuRedisTo seckillSkuRedisTo = JSON.parseObject(json, SeckillSkuRedisTo.class);
 
                     // 随机码处理
                     long time = new Date().getTime();
-                    if(time >= seckillSkuRedisTo.getStartTime() && time <= seckillSkuRedisTo.getEndTime()){
+                    if (time >= seckillSkuRedisTo.getStartTime() && time <= seckillSkuRedisTo.getEndTime()) {
 
                     } else {
                         seckillSkuRedisTo.setRandomCode(null);
                     }
                     return seckillSkuRedisTo;
                 }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String kill(String killId, String key, Integer num) {
+
+        MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+
+        // 判断是否登录  拦截器执行
+        // 合法性校验
+        // 1、获取当前秒杀商品的详细信息
+        BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+        // http://seckill.gmall.com/kill?killId=4_10&key=undefined&num=1
+        String str = hashOps.get(killId);
+        if (StringUtils.isEmpty(str)) {
+            return null;
+        } else {
+            SeckillSkuRedisTo redis = JSON.parseObject(str, SeckillSkuRedisTo.class);
+            // 合法性校验
+            // 1.1、校验时间的合法性
+            Long startTime = redis.getStartTime();
+            Long endTime = redis.getEndTime();
+            long time = new Date().getTime();
+            long ttl = endTime - time;
+            if (time >= startTime && time <= endTime) {
+                // 1.2、校验随机码和商品id
+                String randomCode = redis.getRandomCode();
+                Long skuId = redis.getSkuId();
+                String bizKillId = redis.getPromotionSessionId() + "_" + redis.getSkuId();
+                if (randomCode.equals(key) && bizKillId.equals(killId)) {
+                    // 1.3 验证购物数量
+                    if (num <= redis.getSeckillLimit()) {
+                        // 1.4、验证是否购买过；幂等性处理：如果只要秒杀成功，就去占位。userId_sessionId_skuId
+                        String redisKey = memberResponseVo.getId() + "_" + bizKillId;
+                        Boolean aBoolean = stringRedisTemplate.opsForValue().setIfAbsent(redisKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
+                        if (aBoolean) {
+                            // 占位成功，当前用户从来没有买过
+                            RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
+                            // 尝试从信号量中取出i个
+                            try {
+                                semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                                // 秒杀成功，发送MQ消息给订单服务，快速下单
+
+                                // 返回订单号
+                                String orderSn = IdWorker.getTimeId();
+                                log.info("秒杀成功。。。");
+                                return orderSn;
+                            } catch (InterruptedException e) {
+                                return null;
+                            }
+                        } else {
+                            return null;
+                        }
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
             }
         }
 

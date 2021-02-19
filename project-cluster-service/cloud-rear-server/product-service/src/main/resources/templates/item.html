@@ -1329,7 +1329,7 @@
     $(".seckill").click(function () {
         var isLogin = [[${session.loginUser != null}]];     //true
         if (isLogin) {
-            var killId = $(this).attr("sessionid") + "-" + $(this).attr("skuid");
+            var killId = $(this).attr("sessionid") + "_" + $(this).attr("skuid");
             var code = $(this).attr("code");
             var num = $("#productNum").val();
             location.href = "http://seckill.gmall.com/kill?killId=" + killId + "&key=" + code + "&num=" + num;
