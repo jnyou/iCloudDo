@@ -194,7 +194,7 @@ public class SeckillServiceImpl implements SeckillService {
                                         .setSeckillPrice(redis.getSeckillPrice());
                                 rabbitTemplate.convertAndSend("order-event-exchange", "order.seckill.order", seckillOrderTo);
                                 long e = System.currentTimeMillis();
-                                log.info("秒杀成功。。。耗时{}毫秒" , e - s);
+                                log.info("秒杀成功。。。耗时{}毫秒", e - s);
                                 return orderSn;
                             }
                             return null;
@@ -228,42 +228,44 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     private void saveSessionSkuInfos(List<SeckillSessionsWithSkus> sessions) {
+        if (CollectionUtils.isNotEmpty(sessions)) {
+            sessions.stream().forEach(session -> {
+                BoundHashOperations<String, Object, Object> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                session.getEntities().stream().forEach(skuInfo -> {
+                    // 秒杀随机码，防止恶意侵入
+                    String token = UUID.randomUUID().toString().replace("-", "");
 
-        sessions.stream().forEach(session -> {
-            BoundHashOperations<String, Object, Object> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
-            session.getEntities().stream().forEach(skuInfo -> {
-                // 秒杀随机码，防止恶意侵入
-                String token = UUID.randomUUID().toString().replace("-", "");
+                    // 判断保证接口幂等
+                    if (!hashOps.hasKey(skuInfo.getPromotionSessionId() + "_" + skuInfo.getSkuId())) {
+                        // 缓存活动商品信息
+                        SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
+                        seckillSkuRedisTo.setRandomCode(token);
+                        // 1、sku的基本信息
+                        R r = productFeignClient.getSkuInfo(skuInfo.getSkuId());
+                        if (r.getCode() == 0) {
+                            SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                            });
+                            seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
+                        }
 
-                // 判断保证接口幂等
-                if (!hashOps.hasKey(skuInfo.getPromotionSessionId() + "_" + skuInfo.getSkuId())) {
-                    // 缓存活动商品信息
-                    SeckillSkuRedisTo seckillSkuRedisTo = new SeckillSkuRedisTo();
-                    seckillSkuRedisTo.setRandomCode(token);
-                    // 1、sku的基本信息
-                    R r = productFeignClient.getSkuInfo(skuInfo.getSkuId());
-                    if (r.getCode() == 0) {
-                        SkuInfoVo skuInfoVo = r.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-                        });
-                        seckillSkuRedisTo.setSkuInfoVo(skuInfoVo);
+                        // 2、sku的秒杀信息
+                        BeanUtils.copyProperties(skuInfo, seckillSkuRedisTo);
+
+                        // 3、秒杀商品的开始时间和结束时间
+                        seckillSkuRedisTo.setStartTime(session.getStartTime().getTime());
+                        seckillSkuRedisTo.setEndTime(session.getEndTime().getTime());
+
+                        String json = JSON.toJSONString(seckillSkuRedisTo);
+                        hashOps.put(skuInfo.getPromotionSessionId() + "_" + skuInfo.getSkuId(), json);
+
+                        // 4、redisson分布式信号量减库存
+                        RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
+                        semaphore.trySetPermits(skuInfo.getSeckillCount());
                     }
-
-                    // 2、sku的秒杀信息
-                    BeanUtils.copyProperties(skuInfo, seckillSkuRedisTo);
-
-                    // 3、秒杀商品的开始时间和结束时间
-                    seckillSkuRedisTo.setStartTime(session.getStartTime().getTime());
-                    seckillSkuRedisTo.setEndTime(session.getEndTime().getTime());
-
-                    String json = JSON.toJSONString(seckillSkuRedisTo);
-                    hashOps.put(skuInfo.getPromotionSessionId() + "_" + skuInfo.getSkuId(), json);
-
-                    // 4、redisson分布式信号量减库存
-                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
-                    semaphore.trySetPermits(skuInfo.getSeckillCount());
-                }
+                });
             });
-        });
+        }
+
     }
 
 
