@@ -311,3 +311,4 @@ try \ confirm \ cancel ， 通过cancel来进行事务的rollback机制进行事
 - 队列削峰（使用消息队列通知订单系统，让订单服务慢慢消费处理创建订单）
 
 ### [Sentinel](https://github.com/alibaba/Sentinel/wiki/%E4%BB%8B%E7%BB%8D)
+远程服务被降级，就会触发熔断回调方法（降级数据）

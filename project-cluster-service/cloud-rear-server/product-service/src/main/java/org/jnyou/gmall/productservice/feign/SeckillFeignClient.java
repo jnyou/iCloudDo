@@ -1,6 +1,7 @@
 package org.jnyou.gmall.productservice.feign;
 
 import org.jnyou.common.utils.R;
+import org.jnyou.gmall.productservice.feign.fallback.SeckillFeignFallbackImpl;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @version 1.0.0
  * @author: JnYou
  **/
-@FeignClient("seckill-service")
+@FeignClient(value = "seckill-service",fallback = SeckillFeignFallbackImpl.class)
 public interface SeckillFeignClient {
 
     @GetMapping("/sku/seckill/{skuId}")

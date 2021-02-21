@@ -52,7 +52,7 @@ mybatis-plus:
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
 logging:
   level:
-    org.jnyou.gmall: debug
+    org.jnyou.gmall: info
 mall:
   thread:
     core-pool-size: 20
