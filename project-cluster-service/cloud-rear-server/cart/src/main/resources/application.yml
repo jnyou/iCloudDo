@@ -15,6 +15,25 @@ spring:
     host: 192.168.56.10
   session:
     store-type: redis
+
+  # 服务追踪发现
+  zipkin:
+    base-url: http://192.168.56.10:9411/
+    # 关闭自己的服务发现功能
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
+    redis:
+      enabled: false
+# 开启debug日志
+log:
+  level:
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
+
 mall:
   thread:
     core-pool-size: 20

@@ -2,14 +2,16 @@
 ☀小剑Javaの学习☁整理笔记❤ Backstage-end-learning-to-organize-notes
 
 ###springcloud alibaba 系列：
-- springcloud nacos：注册中心（服务注册/发现），配置中心（动态配置管理）
-- springcloud ribbon：负载均衡
+- nacos：注册中心（服务注册/发现），配置中心（动态配置管理）
 - 原fescar --> seata  （分布式事务解决方案）
-- 原Hystrix --> sentinel（服务容错，限流，降级，熔断）
-- springcloud alibaba gateway：API网关（webflux编程模式）
-- springcloud sleuth：调用链监控
-- springcloud alibaba openFeign：远程调用
+- 原Hystrix --> sentinel（熔断，限流，降级）
+- OSS （对象存储）
 
+###springcloud 系列：
+- openFeign：远程调用
+- ribbon：负载均衡
+- gateway：API网关（reactive&webflux响应式编程）
+- sleuth + zipkin：调用链监控
 
 ### SpringCache
 - @Cacheable：触发将数据保存到缓存中的操作
@@ -61,37 +63,6 @@ while(true) {
      }
 ```
 
----
-### Redisson                 
-看门狗：LockWatchdogTimeout原理：
-     
-```
-
-     public String hello(){
-     // 1、获取一把可重入锁（可避免死锁的锁），只要锁的名字一样。就是同一把锁
-     RLock lock = redisson.getLock("my-lock");     
-     // 加锁
-     // lock.lock(); // 阻塞式等待，相当于自旋方式. 默认加的锁为30s，Redisson内部提供了一个监控锁的看门狗，有自动蓄积的锁时长，执行完成后30s就释放锁
-     // 看门狗（LockWatchdogTimeout） 实现原理：
-     // 如果指定了锁的超时时间，就发送给Redis执行lua脚本执行，进行占锁，默认超时就是我们指定的时间
-     // 没有指定时间。就使用30 * 1000 【LockWatchdogTimeout看门狗的默认时间30000L】，只要占锁成功，就会启动一个定时任务，重新给锁设置过期时间，新的过期时间就是看门狗的默认时间
-     // 啥时候蓄积？this.internalLockLeaseTime / 3L 。 当前看门狗默认时长/3 。 也就是10s蓄积一次，蓄积到满时间，也就是20s的时候就会蓄积一次到30s
-     // 最佳实践
-     lock.lock(30, TimeUnit.SECONDS);
-     try {
-         System.out.println("加锁成功，执行业务。。。" + Thread.currentThread().getId());
-         Thread.sleep(30000);
-     }catch (Exception e) {
-
-     } finally {
-         // 解锁
-         System.out.println("释放锁" + Thread.currentThread().getId());
-         lock.unlock();
-     }
-     return "hello";
-     } 
- 
-```   
 
 ---      
 ### OAuth2.0 认证开放标准
@@ -117,6 +88,7 @@ while(true) {
 
 ---
 ### SSO单点登录流程 参考xxl-sso
+使用springsession技术
 - 1、client1登录之后向认证服务器存入一个cookie，并带上token重定向到自己（client1）的页面，创建自己的会话
 - 2、client2没登录，跳转到登录页面，但是会带上认证服务器的那个cookie，带上token重定向到自己的页面，创建自己的会话
 
@@ -227,11 +199,11 @@ Tip：
 不是主键插入、更新时进行计算操作等都不是幂等的
 
 解决方案：
-- token令牌机制
+- token令牌机制（常用）（比如秒杀时派发一个令牌，只有秒杀开始的时候才会返回这个令牌，可以将令牌保存在redis中，然后处理秒杀业务时候可以进行校验）
 - 各种锁机制
   - 数据库悲观锁 查询操作
   - 数据库乐观锁 更新操作
-  - 业务层分布式锁
+  - 业务层Redisson分布式锁
 - 各种唯一约束机制
   - 数据库唯一约束（比如订单号是唯一主键）
   - redis set 防重
@@ -265,7 +237,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public void b(){}
 }
 ```
-## 分布式事务
+## 分布式事务 seata：（通常用于后台管理系统，对于并发不是很高的业务场景中使用，比如保存订单的时候，还要远程调用保存库存、优惠等信息）
 ### CAP定理
 - 一致性 C
 - 可用性 A
@@ -278,6 +250,7 @@ raft：有三种状态，follow、Candidate、leader；领导选举，通过领�
 日志复制：在发生改变后的下一次心跳时间复制日志给其他的随从节点（其他系统 ），随从节点收到后响应给领导节点.
 
 需要保证服务的可用：舍弃CP强一致性定理，使用弱一致性;BASEA定理
+
 ### BASE定理
 保证系统的基本可用性，软状态，最终一致性
 
@@ -298,7 +271,7 @@ XA 是一个两阶段提交协议，分为以下两个阶段
 
 try \ confirm \ cancel ， 通过cancel来进行事务的rollback机制进行事务补偿（比如之前数量+2，出现问题程序员编写好程序逻辑进行-2）
 - 3、柔性事务-最大努力通知型方案：发送MQ消息进行最大努力通知（支付宝异步通知，每隔4m,10m,10m,1h,2h,6h,15h进行通知，直到返回给支付宝success，就不会通知了）
-- 4、柔性事务-可靠消息+最终一致性方案（异步确保型）（延迟队列关单，延迟队列解库存）
+- 4、柔性事务-可靠消息+最终一致性方案（异步确保型）（延迟队列关单，延迟队列解库存）常用于高并发场景
 
 ### 秒杀（高并发）系统设计原则：
 - 服务单一职责 + 独立部署 （seckillservice服务，且独立部署）
@@ -312,3 +285,53 @@ try \ confirm \ cancel ， 通过cancel来进行事务的rollback机制进行事
 
 ### [Sentinel](https://github.com/alibaba/Sentinel/wiki/%E4%BB%8B%E7%BB%8D)
 远程服务被降级，就会触发熔断回调方法（降级数据）
+
+### [Sleuth + zipkin] 
+Sleuth基本术语：
+- span（跨度）
+- trace（跟踪）
+- annotation（标注） 
+  - cs - Client Sent - 客户端发送一个请求，这个注解描述了这个Span的开始。
+  - sr - Server Received - 服务端获得请求并准备开始处理它，其中（sr – cs） 时间戳便可得到网络传输的时间。
+  - ss - Server Sent （服务端发送响应）– 该注解表明请求处理的完成(当请求返回客户端)， （ss – sr）时间戳就可以得到服务器请求的时间。
+  - cr - Client Received （客户端接收响应）- 表明此时Span的结束，（cr – cs）时间戳便可以得到整个请求所消耗的时间。
+
+Sleuth 与 zipkin 的关系
+- Sleuth用来追踪操作，zipkin是一个可视化界面工具
+
+### TODO 缓存 和 分布式锁
+
+### Redisson                 
+看门狗：LockWatchdogTimeout原理：
+     
+```
+
+     public String hello(){
+     // 1、获取一把可重入锁（可避免死锁的锁），只要锁的名字一样。就是同一把锁
+     RLock lock = redisson.getLock("my-lock");     
+     // 加锁
+     // lock.lock(); // 阻塞式等待，相当于自旋方式. 默认加的锁为30s，Redisson内部提供了一个监控锁的看门狗，有自动蓄积的锁时长，执行完成后30s就释放锁
+     // 看门狗（LockWatchdogTimeout） 实现原理：
+     // 如果指定了锁的超时时间，就发送给Redis执行lua脚本执行，进行占锁，默认超时就是我们指定的时间
+     // 没有指定时间。就使用30 * 1000 【LockWatchdogTimeout看门狗的默认时间30000L】，只要占锁成功，就会启动一个定时任务，重新给锁设置过期时间，新的过期时间就是看门狗的默认时间
+     // 啥时候蓄积？this.internalLockLeaseTime / 3L 。 当前看门狗默认时长/3 。 也就是10s蓄积一次，蓄积到满时间，也就是20s的时候就会蓄积一次到30s
+     // 最佳实践
+     lock.lock(30, TimeUnit.SECONDS);
+     try {
+         System.out.println("加锁成功，执行业务。。。" + Thread.currentThread().getId());
+         Thread.sleep(30000);
+     }catch (Exception e) {
+
+     } finally {
+         // 解锁
+         System.out.println("释放锁" + Thread.currentThread().getId());
+         lock.unlock();
+     }
+     return "hello";
+     } 
+ 
+```   
+
+
+### TODO 异步&线程池&异步编排
+

@@ -41,6 +41,10 @@
                     <groupId>com.alibaba.cloud</groupId>
                     <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-zipkin</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
