@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.repository.cdi.Eager;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -85,8 +86,8 @@ public class SeckillServiceImpl implements SeckillService {
 
     /**
      * 自定义受保护的方法资源：
-     * 基于try...catch
-     * 基于注解：@SentinelResource
+     * 1、基于try...catch
+     * 2、基于注解：@SentinelResource
      */
     public List<SeckillSkuRedisTo> blockHandler() {
         log.error("getCurrentSeckillSkusResourse被限流了...");
@@ -158,7 +159,7 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * 秒杀业务
      * TODO 上架秒杀的商品，每一个数据都应该有过期时间
-     * TODO 秒杀的后袖流程，简化了收货地址
+     * TODO 秒杀的后续流程，简化了收货地址
      *
      * @Author JnYou
      */
