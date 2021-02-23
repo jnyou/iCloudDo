@@ -9,9 +9,6 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:8333
-      eager: true
-      filter:
-        url-patterns: /**
   task:
     execution:
       pool:

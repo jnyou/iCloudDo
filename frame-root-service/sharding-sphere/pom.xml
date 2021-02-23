@@ -8,10 +8,10 @@
         <version>2.4.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.jnyou.sharding-srphee</groupId>
-    <artifactId>sharding-srphee</artifactId>
+    <groupId>io.jnyou.sharding-sphere</groupId>
+    <artifactId>sharding-sphere</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>sharding-srphee</name>
+    <name>sharding-sphere</name>
     <description>分库分表sharding-jdbc</description>
 
     <properties>

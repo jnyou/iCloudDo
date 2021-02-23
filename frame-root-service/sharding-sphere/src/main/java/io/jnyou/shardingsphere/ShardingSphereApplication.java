@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @MapperScan("io.jnyou.shardingsphere.mapper")
 @SpringBootApplication
-public class ShardingSrpheeApplication {
+public class ShardingSphereApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ShardingSrpheeApplication.class, args);
+        SpringApplication.run(ShardingSphereApplication.class, args);
     }
 
 }
