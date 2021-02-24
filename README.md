@@ -106,7 +106,7 @@ while(true) {
 
 ---
 ### RabbitMQ
-简介：由erlang开发的AMQO的开源实现
+简介：由erlang开发的AMQP的开源实现
 
 概念：当生产者发送消息以后，由消息代理接管，消息代理保证消息传递到指定的目的地。
 - 消息代理（message broker）：相当于中间的消息服务器

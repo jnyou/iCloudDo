@@ -10,7 +10,7 @@ public class ThreadPoolCollect {
 
     /**
      *
-     * 开启线程执行的4中方式：
+     * 开启线程执行的4种方式：
      * 1、extends Thread class
      * 2、implements Runnable interface
      * 3、after jdk1.5，implements Callable<?> interface</>

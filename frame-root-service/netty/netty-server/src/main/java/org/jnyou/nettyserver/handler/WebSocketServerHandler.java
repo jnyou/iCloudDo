@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -15,8 +16,14 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.jnyou.nettyserver.base.BaseMsg;
+import org.jnyou.nettyserver.base.LoginMsg;
+import org.jnyou.nettyserver.base.PingMsg;
+import org.jnyou.nettyserver.base.PongMsg;
+import org.jnyou.nettyserver.client.NettyChannelMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +33,7 @@ import java.util.concurrent.ConcurrentMap;
  * @ClassName WebSocketServerHandler
  * @Author: JnYou
  **/
+@Component
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,7 +47,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     }
     //存储ip和channel的容器
-    private static ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
+    public static ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
 
     /**
      * Handler活跃状态，表示连接成功
@@ -51,6 +59,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("与客户端连接成功");
         channelGroup.add(ctx.channel());
+        channelMap.put(ctx.channel().id().asLongText(),ctx.channel());
     }
 
     /**
@@ -75,7 +84,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             //  WebSocket 接入
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }
-
 
     }
 
@@ -129,7 +137,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         logger.info("{} received {}", ctx.channel(), request);
 
         //第一次连接成功后，给客户端发送消息
-        sendMessageAll();
+        sendMessageAll("连接成功");
         //获取当前channel绑定的IP地址
         InetSocketAddress ipSocket = (InetSocketAddress)ctx.channel().remoteAddress();
         String address = ipSocket.getAddress().getHostAddress();
@@ -151,18 +159,18 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
      * 给指定用户发内容
      * 后续可以掉这个方法推送消息给客户端
      */
-    public void  sendMessage(String address){
+    public void  sendMessage(String address,String message){
         Channel channel=channelMap.get(address);
-        String message="你好，这是指定消息发送";
+//        String message="你好，这是指定消息发送";
         channel.writeAndFlush(new TextWebSocketFrame(message));
     }
 
     /**
      * 群发消息
      */
-    public void sendMessageAll(){
-        String meesage="这是群发信息";
-        channelGroup.writeAndFlush(new TextWebSocketFrame(meesage));
+    public void sendMessageAll(String message){
+//        String message="这是群发信息";
+        channelGroup.writeAndFlush(new TextWebSocketFrame(message));
     }
 
 }
