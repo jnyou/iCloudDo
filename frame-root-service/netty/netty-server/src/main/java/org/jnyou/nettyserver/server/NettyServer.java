@@ -10,7 +10,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import org.jnyou.nettyserver.handler.EventListener;
 import org.jnyou.nettyserver.handler.NettyServerHandler;
+import org.jnyou.nettyserver.handler.PacketData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,15 @@ public class NettyServer {
     public void setPort(int port) {
         this.port = port;
     }
+
+    private final EventListener linstener= new EventListener() {
+        @Override
+        public void onDataHandle(PacketData packetData) {
+
+            // data stor or push
+
+        }
+    };
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
@@ -57,7 +68,7 @@ public class NettyServer {
                             System.out.println("地址:" + ch.remoteAddress() + "链接到本服务端");
                             ch.pipeline().addLast(new LineBasedFrameDecoder(1024));
                             ch.pipeline().addLast(new StringDecoder());
-                            ch.pipeline().addLast(new NettyServerHandler());
+                            ch.pipeline().addLast(new NettyServerHandler(linstener));
                         }
                     });
             // 绑定端口，同步等待成功。返回 ChannelFuture 用于异步操作的通知回调
