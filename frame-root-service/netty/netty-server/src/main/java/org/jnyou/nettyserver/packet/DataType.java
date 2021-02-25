@@ -1,4 +1,4 @@
-package org.jnyou.nettyserver.handler;
+package org.jnyou.nettyserver.packet;
 
 /**
  * 振动数据位的数据类型

@@ -10,9 +10,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import org.jnyou.nettyserver.handler.EventListener;
+import org.jnyou.nettyserver.packet.EventListener;
 import org.jnyou.nettyserver.handler.NettyServerHandler;
-import org.jnyou.nettyserver.handler.PacketData;
+import org.jnyou.nettyserver.packet.PacketData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +37,7 @@ public class NettyServer {
     private final EventListener linstener= new EventListener() {
         @Override
         public void onDataHandle(PacketData packetData) {
-
-            // data stor or push
-
+            // TODO data store or push
         }
     };
 

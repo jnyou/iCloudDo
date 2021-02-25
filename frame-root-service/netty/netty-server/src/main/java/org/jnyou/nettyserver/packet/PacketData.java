@@ -1,4 +1,4 @@
-package org.jnyou.nettyserver.handler;
+package org.jnyou.nettyserver.packet;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;

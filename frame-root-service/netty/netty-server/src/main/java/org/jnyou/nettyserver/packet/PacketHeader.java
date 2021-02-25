@@ -1,5 +1,5 @@
 
-package org.jnyou.nettyserver.handler;
+package org.jnyou.nettyserver.packet;
 
 import java.nio.ByteBuffer;
 

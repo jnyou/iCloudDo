@@ -1,4 +1,4 @@
-package org.jnyou.nettyserver.handler;
+package org.jnyou.nettyserver.packet;
 
 /**
  * 事件监听器
