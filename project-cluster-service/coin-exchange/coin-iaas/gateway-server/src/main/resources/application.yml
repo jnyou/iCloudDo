@@ -18,7 +18,28 @@ spring:
           predicates:
             - Path=/admin/**
 
-        - id: test_router
-          uri: https://www.baidu.com
-          predicates:
-            - Path=/test
+    sentinel:
+      datasource:
+        ds1.nacos:
+          server-addr: nacos-server:8848
+          data-id: gw-flow
+          rule-type: gw-flow
+        ds2.nacos:
+          server-addr: nacos-server:8848
+          data-id:  api-group
+          rule-type: gw-api-group
+      transport:
+        dashboard: localhost:8868
+        port: 8868
+      eager: true # 服务启动直接建立心跳连接
+#        ds1.file:
+#          file: classpath:gw-flow.json # 网关 + API分组的限流
+#          ruleType: gw_flow
+#        ds2.file:
+#          file: classpath:api-group.json # api-flow.json 接口的分组
+#          ruleType: gw_api_group
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

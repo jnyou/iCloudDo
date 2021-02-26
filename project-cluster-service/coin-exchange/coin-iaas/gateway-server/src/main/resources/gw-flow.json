@@ -1,0 +1,20 @@
+[
+  {
+    "resource": "admin-service_router",
+    "resourceMode": 0,
+    "intervalSec": 60,
+    "count": 5
+  },
+  {
+    "resource": "admin-service-api",
+    "resourceMode": 1,
+    "intervalSec": 60, // 60 s
+    "count": 1 // 访问一次
+  }
+  //  {
+  //    "resource": "资源的名称：网关时router.id，api分组时：api分组的名称",
+  //    "resourceMode": "0 网关，1 api分组名称",
+  //    "intervalSec": 60,
+  //    "count": 5
+  //  }
+]
