@@ -4,14 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
@@ -42,6 +40,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * 配置第三方客户端
+     *
      * @param clients
      */
     @Override
@@ -51,12 +50,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(passwordEncoder.encode("coin-secret")) // 第三方客户端的秘钥
                 .scopes("all") // 第三方客户端的授权范围
                 .accessTokenValiditySeconds(3600) // token的有效期
-                .refreshTokenValiditySeconds(7*3600); // refresh_token的有效期
+                .refreshTokenValiditySeconds(7 * 3600); // refresh_token的有效期
         super.configure(clients);
     }
 
     /**
      * 配置验证管理器：userdetailService
+     *
      * @param endpoints
      */
     @Override
@@ -68,6 +68,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     private TokenStore redisTokenStore() {
-        return new RedisTokenStore(redisConnectionFactory) ;
+        return new RedisTokenStore(redisConnectionFactory);
     }
 }
