@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket 数据实时展示</title>
+</head>
+<body>
+    <!--<input id="text" type="text"/>
+    <button onclick="send()">send</button>
+    <button onclick="close()">close</button>
+    <div id="message"></div>-->
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 600px;height:400px;margin: 0 auto"></div>
+</body>
+<script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/3.7.2/echarts-en.js"></script>
+<script type="text/javascript">
+    let websocket = null;
+    //判断浏览器是否支持websocket
+    if('WebSocket' in window){
+        // 建立socket连接
+        websocket = new WebSocket("ws://127.0.0.1:6789/websocket/"+returnCitySN["cip"]+' --- '+returnCitySN["cname"]+' --- '+new Date().getTime());
+    }else {
+        alert("view page dosnt support websoket")
+    }
+    //连接成功回调函数
+    websocket.onopen = function(){
+        console.log("已成功连接!")
+    }
+    //连接关闭回调函数
+    websocket.onclose = function(){
+        websocket.close();
+    }
+    //接收消息回调函数
+    websocket.onmessage = function(event) {
+        console.log(event.data)
+        // 可视化页面重载
+        option.series = [];
+        option.series.push({data:event.data.split(','),type:'bar',name:'销量'})
+        myChart.setOption(option,true,true)
+    }
+    //监听窗口关闭事件
+    window.onbeforeunload = function(){
+        websocket.close();
+    }
+    //连接错误回调函数
+    websocket.onerror = function(){
+        setMessageInnerHTML("error")
+    }
+    //将消息展示在网页上
+    function setMessageInnerHTML(message){
+        document.getElementById('message').innerHTML += message + '</br/>';
+    }
+    //关闭连接函数
+    function close(){
+        websocket.close();
+    }
+    //发送消息
+    function send(){
+        let msg = document.getElementById('text').value;
+        websocket.send(msg);
+    }
+
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    // 指定图表的配置项和数据
+    var option = "";
+    $.get("/visual",function(result){
+        option = {
+            title: {
+                text: 'websocket 数据实时展示'
+            },
+            tooltip: {},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: result
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    });
+</script>
+</html>
