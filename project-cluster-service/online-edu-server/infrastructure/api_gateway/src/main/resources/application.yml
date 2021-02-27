@@ -1,0 +1,26 @@
+server:
+  port: 8222
+
+spring:
+  application:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: SERVICE-ACL
+          uri: lb://SERVICE-ACL
+          predicates:
+            - Path=/*/acl/** # 路径匹配
+        - id: SERVICE-EDU
+          uri: lb://SERVICE-EDU
+          predicates:
+            - Path=/eduservice/** # 路径匹配
+        - id: SERVICE-UCENTER
+          uri: lb://SERVICE-UCENTER
+          predicates:
+            - Path=/ucenter/** # 路径匹配
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848

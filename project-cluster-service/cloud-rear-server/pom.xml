@@ -14,7 +14,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <description>聚合服务</description>
+    <description>mall平台</description>
     <name>cloud-rear-server</name>
     <artifactId>cloud-rear-server</artifactId>
 

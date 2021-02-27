@@ -8,6 +8,7 @@
     <artifactId>coin-exchange</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
+    <description>货币交易平台</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
