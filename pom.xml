@@ -10,7 +10,6 @@
         <module>source-code-service</module>
         <module>temporary-storage-service</module>
         <module>anote-inventory-service</module>
-        <module>frame-root-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

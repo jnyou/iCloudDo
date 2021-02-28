@@ -3,31 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>icoding</artifactId>
-        <groupId>org.jnyou</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.0.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>org.jnyou</groupId>
     <artifactId>frame-root-service</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>netty</module>
-        <module>message-push</module>
-        <module>jwt</module>
-        <module>rabbit</module>
-        <module>custom-starter</module>
-        <module>event</module>
-        <module>redis</module>
-        <module>thread-pool</module>
-        <module>springsecurity</module>
-        <module>aop</module>
-        <module>actuator</module>
-        <module>sharding-srphee</module>
-        <module>quartz</module>
-        <module>rabbit</module>
-        <module>rate-limiter</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
