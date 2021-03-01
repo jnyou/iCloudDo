@@ -1,8 +1,5 @@
 package org.jnyou.nettyserver;
 
-import io.netty.channel.group.ChannelGroup;
-import org.jnyou.nettyserver.base.PushMsg;
-import org.jnyou.nettyserver.client.NettyChannelMap;
 import org.jnyou.nettyserver.handler.WebSocketServerHandler;
 import org.jnyou.nettyserver.server.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Date;
-import java.util.function.DoubleToIntFunction;
 
 @EnableScheduling
 @SpringBootApplication
@@ -35,8 +31,8 @@ public class NettyServerApplication {
         // 群发
 //        webSocketServerHandler.sendMessageAll(time + "");
         // 给指定用户发送
-        WebSocketServerHandler.channelMap.keySet().forEach(item-> {
-            webSocketServerHandler.sendMessage(item,time + "");
+        WebSocketServerHandler.channelMap.keySet().forEach(item -> {
+            webSocketServerHandler.sendMessage(item, time + "");
         });
 //        WebSocketServerHandler.channelMap.values().forEach(item-> {
 //            item.writeAndFlush(time);
