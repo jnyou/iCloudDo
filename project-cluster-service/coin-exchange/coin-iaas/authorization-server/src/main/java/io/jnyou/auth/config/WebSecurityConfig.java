@@ -41,14 +41,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 测试用户
      */
-    @Override
-    @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
-        User user = new User("admin", new BCryptPasswordEncoder().encode("123456"), Arrays.asList(new SimpleGrantedAuthority("Role_Admin")));
-        inMemoryUserDetailsManager.createUser(user);
-        return inMemoryUserDetailsManager;
-    }
+//    @Override
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
+//        User user = new User("admin", new BCryptPasswordEncoder().encode("123456"), Arrays.asList(new SimpleGrantedAuthority("Role_Admin")));
+//        inMemoryUserDetailsManager.createUser(user);
+//        return inMemoryUserDetailsManager;
+//    }
 
     /**
      * 密码加密
