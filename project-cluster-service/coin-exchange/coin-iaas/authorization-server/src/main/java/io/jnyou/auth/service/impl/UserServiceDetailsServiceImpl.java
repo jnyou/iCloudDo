@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +18,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,8 +47,13 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
         if (StringUtils.isEmpty(loginType)) {
             throw new AuthenticationServiceException("请添加login_type参数");
         }
+        String grantType = requestAttributes.getRequest().getParameter("grant_type");
         UserDetails userDetails = null;
         try {
+            if (LoginConstant.REFRESH_TOKEN.equals(grantType.toUpperCase())) {
+                // 为refresh_token 时，需要将id->username
+                username = adjustUsername(username, loginType);
+            }
             switch (loginType) {
                 case LoginConstant.ADMIN_TYPE:
                     // 管理员登录
@@ -63,10 +66,29 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
                 default:
                     throw new AuthenticationServiceException("暂不支持的登录方式" + loginType);
             }
-        } catch(IncorrectResultSizeDataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             throw new UsernameNotFoundException("用户名" + username + "不存在.");
         }
         return userDetails;
+    }
+
+    /**
+     * 纠正在refresh 场景下的登录问题
+     * 纠正用户的名称，存储的时候将用户的id当做username给userdetail；
+     *
+     * @param username
+     * @param loginType
+     */
+    private String adjustUsername(String username, String loginType) {
+
+        if (LoginConstant.ADMIN_TYPE.equals(loginType)) {
+            return jdbcTemplate.queryForObject(LoginConstant.QUERY_ADMIN_USER_WITH_ID, String.class, username);
+        }
+        if (LoginConstant.MEMBER_TYPE.equals(loginType)) {
+            return jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_USER_WITH_ID, String.class, username);
+        }
+        return username;
+
     }
 
     /**
@@ -75,8 +97,8 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
      * @param username
      */
     private UserDetails loadMemberUserByUsername(String username) {
-        jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_SQL,(ResultSet rs, int rowNum) -> {
-            if(rs.wasNull()){
+        jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_SQL, (ResultSet rs, int rowNum) -> {
+            if (rs.wasNull()) {
                 throw new UsernameNotFoundException("用户名" + username + "不存在.");
             }
             long id = rs.getLong("id");
@@ -92,7 +114,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
                     true,
                     Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
             );
-        },username,username);
+        }, username, username);
         return null;
     }
 
@@ -105,7 +127,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
     private UserDetails loadAdminUserByUsername(String username) {
         // 1、使用用户名查询用户信息
         jdbcTemplate.queryForObject(LoginConstant.QUERY_ADMIN_SQL, (ResultSet rs, int rowNum) -> {
-            if(rs.wasNull()){
+            if (rs.wasNull()) {
                 throw new UsernameNotFoundException("用户名" + username + "不存在.");
             }
             // 用户的id
@@ -126,7 +148,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
                     // 2、查询当前用户的权限信息
                     getSysUserPermissions(id)
             );
-        },username);
+        }, username);
         return null;
     }
 
@@ -134,14 +156,14 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
         // 判断超级管理员还是普通管理员
         String roleCode = jdbcTemplate.queryForObject(LoginConstant.QUERY_ROLE_CODE_SQL, String.class, id);
         List<String> permissions = null;
-        if(LoginConstant.ADMIN_CODE.equals(roleCode)){
+        if (LoginConstant.ADMIN_CODE.equals(roleCode)) {
             // 超级管理员的权限列表
-            permissions = jdbcTemplate.queryForList(LoginConstant.QUERY_ALL_PERMISSIONS,String.class);
+            permissions = jdbcTemplate.queryForList(LoginConstant.QUERY_ALL_PERMISSIONS, String.class);
         } else {
             // 普通管理员的权限列表
-            permissions = jdbcTemplate.queryForList(LoginConstant.QUERY_PERMISSION_SQL,String.class,id);
+            permissions = jdbcTemplate.queryForList(LoginConstant.QUERY_PERMISSION_SQL, String.class, id);
         }
-        if(CollectionUtils.isEmpty(permissions)){
+        if (CollectionUtils.isEmpty(permissions)) {
             return Collections.emptySet();
         }
         // 去重
