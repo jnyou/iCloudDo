@@ -49,4 +49,10 @@ public class LoginConstant {
      */
     public static final String QUERY_PERMISSION_SQL =
             "SELECT `name` FROM sys_privilege LEFT JOIN sys_role_privilege ON sys_role_privilege.privilege_id = sys_privilege.id LEFT JOIN sys_user_role  ON sys_role_privilege.role_id = sys_user_role.role_id WHERE sys_user_role.user_id = ?";
+
+    /**
+     * 会员登录，通过邮箱或者手机号
+     */
+    public static final String QUERY_MEMBER_SQL =
+            "SELECT `id`,`password`, `status` FROM `user` WHERE mobile = ? or email = ? ";
 }

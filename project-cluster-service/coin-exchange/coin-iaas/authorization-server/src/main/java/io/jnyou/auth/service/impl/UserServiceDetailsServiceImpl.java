@@ -20,6 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +75,24 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
      * @param username
      */
     private UserDetails loadMemberUserByUsername(String username) {
+        jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_SQL,(ResultSet rs, int rowNum) -> {
+            if(rs.wasNull()){
+                throw new UsernameNotFoundException("用户名" + username + "不存在.");
+            }
+            long id = rs.getLong("id");
+            String password = rs.getString("password");
+            int status = rs.getInt("status");
+
+            return new User(
+                    String.valueOf(id),
+                    password,
+                    status == 1,
+                    true,
+                    true,
+                    true,
+                    Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
+            );
+        },username,username);
         return null;
     }
 
