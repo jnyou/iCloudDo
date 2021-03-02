@@ -126,7 +126,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
      */
     private UserDetails loadAdminUserByUsername(String username) {
         // 1、使用用户名查询用户信息
-        jdbcTemplate.queryForObject(LoginConstant.QUERY_ADMIN_SQL, (ResultSet rs, int rowNum) -> {
+        User user = jdbcTemplate.queryForObject(LoginConstant.QUERY_ADMIN_SQL, (ResultSet rs, int rowNum) -> {
             if (rs.wasNull()) {
                 throw new UsernameNotFoundException("用户名" + username + "不存在.");
             }
@@ -149,7 +149,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
                     getSysUserPermissions(id)
             );
         }, username);
-        return null;
+        return user;
     }
 
     private Collection<? extends GrantedAuthority> getSysUserPermissions(long id) {

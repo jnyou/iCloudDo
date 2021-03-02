@@ -55,7 +55,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
-        ClassPathResource classPathResource = new ClassPathResource("coinexchange.pub");
+        ClassPathResource classPathResource = new ClassPathResource("coinexchange.txt");
         String publicKey = null;
         try {
             byte[] bytes = FileCopyUtils.copyToByteArray(classPathResource.getInputStream());

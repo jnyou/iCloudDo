@@ -71,7 +71,7 @@ public class WebLogAspect {
                 .ip(request.getRemoteAddr())
                 .parameter(getMethodParameter(method, proceedingJoinPoint.getArgs()))
                 .method(className + "." + method.getName())
-                .result(request == null ? "" : JSON.toJSONString(request))
+                .result(result == null ? "" : JSON.toJSONString(result))
                 .recodeTime(System.currentTimeMillis())
                 .spendTime(stopWatch.getTotalTimeMillis())
                 .uri(request.getRequestURI())
@@ -80,6 +80,24 @@ public class WebLogAspect {
                 .build();
         log.info(JSON.toJSONString(webLog, true));
         return result;
+        /**
+         * result{
+         * 	"basePath":"http://localhost:8080",
+         * 	"description":"测试方法",
+         * 	"ip":"0:0:0:0:0:0:0:1",
+         * 	"method":"io.jnyou.controller.TestController.testMethod",
+         * 	"parameter":{
+         * 		"param":"\"paramValue\"",
+         * 		"param1":"\"paramValue\""
+         *        },
+         * 	"recodeTime":1614673332184,
+         * 	"result":"{\"code\":200,\"data\":\"ok\"}",
+         * 	"spendTime":0,
+         * 	"uri":"/common/test",
+         * 	"url":"http://localhost:8080/common/test",
+         * 	"username":"1018715142409592835"
+         * }
+         */
     }
 
     /**
