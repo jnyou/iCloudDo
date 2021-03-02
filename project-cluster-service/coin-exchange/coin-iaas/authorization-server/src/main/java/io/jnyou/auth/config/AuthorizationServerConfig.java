@@ -37,8 +37,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private UserDetailsService userDetailsService;
 
-//    @Autowired
-//    private RedisConnectionFactory redisConnectionFactory;
 
     /**
      * 配置第三方客户端
@@ -48,12 +46,28 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("coin-api") // 第三方客户端的名称
-                .secret(passwordEncoder.encode("coin-secret")) // 第三方客户端的秘钥
-                .authorizedGrantTypes("password","refresh_token")
-                .scopes("all") // 第三方客户端的授权范围
-                .accessTokenValiditySeconds(7 * 24 * 3600) // token的有效期
-                .refreshTokenValiditySeconds(30 * 24 * 3600); // refresh_token的有效期
+                // 第三方客户端的名称
+                .withClient("coin-api")
+                // 第三方客户端的秘钥
+                .secret(passwordEncoder.encode("coin-secret"))
+                // grant-type:refresh_token ; 授权类型
+                .authorizedGrantTypes("password", "refresh_token")
+                // 第三方客户端的授权范围
+                .scopes("all")
+                // token的有效期
+                .accessTokenValiditySeconds(7 * 24 * 3600)
+                // refresh_token的有效期
+                .refreshTokenValiditySeconds(30 * 24 * 3600)
+
+                // 以下是OAuth2提供的应用之间内部获取token的方式
+                .and()
+                .withClient("inside-app")
+                .secret(passwordEncoder.encode("inside-secret"))
+                .secret("all")
+                // grant-type:client_credentials ; 授权类型
+                .authorizedGrantTypes("client_credentials")
+                .accessTokenValiditySeconds(7 * 24 * 3600);
+        ;
         super.configure(clients);
     }
 
@@ -66,7 +80,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
-                .tokenStore(jwtTokenStore()) // 使用jwt进行存储
+                // 使用jwt进行存储
+                .tokenStore(jwtTokenStore())
                 .tokenEnhancer(jwtAccessTokenConverter());
         super.configure(endpoints);
     }
@@ -76,7 +91,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return jwtTokenStore;
     }
 
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+    private JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
         // 读取classpath 下面的密钥文件
         ClassPathResource classPathResource = new ClassPathResource("coinexchange.jks");
@@ -87,7 +102,4 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return tokenConverter;
     }
 
-//    private TokenStore redisTokenStore() {
-//        return new RedisTokenStore(redisConnectionFactory);
-//    }
 }

@@ -29,6 +29,7 @@
         <org.mapstruct.version>1.4.0.Beta3</org.mapstruct.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <swagger-annotations.version>1.5.20</swagger-annotations.version>
+        <swagger2.version>2.8.0</swagger2.version>
         <googleauth.version>1.1.5</googleauth.version>
         <net.sf.supercsv.version>2.4.0</net.sf.supercsv.version>
         <springside-utils.version>5.0.0-RC1</springside-utils.version>
@@ -38,6 +39,7 @@
         <joda-time.version>2.10</joda-time.version>
         <okhttp.version>3.11.0</okhttp.version>
         <okio.version>1.15.0</okio.version>
+        <hutool.version>4.1.2</hutool.version>
     </properties>
 
     <dependencies>
@@ -194,6 +196,11 @@
                 <groupId>com.aliyun</groupId>
                 <artifactId>aliyun-java-sdk-dm</artifactId>
                 <version>${aliyun-java-sdk-dm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

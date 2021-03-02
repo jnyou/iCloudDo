@@ -98,7 +98,8 @@ public class JwtCheckFilter implements GlobalFilter, Ordered {
     private boolean isRequire(ServerWebExchange exchange) {
         String path = exchange.getRequest().getURI().getPath();
         if (noRequireTokenUris.contains(path)) {
-            return false; // 不需要token
+            // 不需要token
+            return false;
         }
         return Boolean.TRUE;
     }

@@ -20,7 +20,7 @@ spring:
     host: 192.168.56.10
     port: 5672
     virtual-host: /
-    # 开启发送端被broker收到的确认（P->B）
+    # 开启发送端被broker收到的确认（P->E）
     publisher-confirms: true
     # 开启发送端消息抵达队列的确认（E->Q）
     publisher-returns: true
