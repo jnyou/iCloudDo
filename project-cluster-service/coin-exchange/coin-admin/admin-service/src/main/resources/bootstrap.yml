@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: admin-service
+  cloud:
+    nacos:
+      server-addr: nacos-server:8848
+      config:
+        file-extension: yaml
+  profiles:
+    active: dev
+# dataID = admin-service-dev.yaml
