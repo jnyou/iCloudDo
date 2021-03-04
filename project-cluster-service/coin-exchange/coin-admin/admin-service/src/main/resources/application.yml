@@ -9,10 +9,16 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
-#  cloud:
-#    sentinel:
-#      transport:
-#        dashboard: sentinel-dashboard:8858
+  cloud:
+    sentinel:
+      transport:
+        dashboard: sentinel-dashboard:8858
+    alicloud:
+      access-key: LTAI4GEXnLoaQg6UraLEJL1v
+      secret-key: txr1DH29usTcQo5MUSsDGoVBusQQHX
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+
 
 mybatis-plus:
   configuration:
