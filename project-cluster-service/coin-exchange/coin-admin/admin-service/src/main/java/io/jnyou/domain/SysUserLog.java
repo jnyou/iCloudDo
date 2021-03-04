@@ -1,9 +1,6 @@
 package io.jnyou.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
@@ -25,12 +22,12 @@ public class SysUserLog {
      */
     @TableId(value = "id", type = IdType.INPUT)
     @ApiModelProperty(value = "主键")
-    private Integer id;
+    private Long id;
 
     /**
      * 组
      */
-    @TableField(value = "group")
+    @TableField(value = "`group`")
     @ApiModelProperty(value = "组")
     private String group;
 
@@ -39,7 +36,7 @@ public class SysUserLog {
      */
     @TableField(value = "user_id")
     @ApiModelProperty(value = "用户Id")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 日志类型 1查询 2修改 3新增 4删除 5导出 6审核
@@ -93,7 +90,7 @@ public class SysUserLog {
     /**
      * 创建时间
      */
-    @TableField(value = "created")
+    @TableField(value = "created",fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     private Date created;
 }
