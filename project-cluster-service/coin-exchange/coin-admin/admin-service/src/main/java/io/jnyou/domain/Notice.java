@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Notice {
     @TableId(value = "id", type = IdType.AUTO)
     @ApiModelProperty(value = "")
-    private Integer id;
+    private Long id;
 
     /**
      * 标题
