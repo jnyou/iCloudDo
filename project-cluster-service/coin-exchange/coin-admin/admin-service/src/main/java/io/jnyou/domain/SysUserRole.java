@@ -32,14 +32,14 @@ public class SysUserRole {
      */
     @TableField(value = "role_id")
     @ApiModelProperty(value = "角色ID")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 用户ID
      */
     @TableField(value = "user_id")
     @ApiModelProperty(value = "用户ID")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 创建人
