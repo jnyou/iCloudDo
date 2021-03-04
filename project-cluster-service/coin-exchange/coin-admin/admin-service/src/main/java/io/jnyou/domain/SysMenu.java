@@ -58,7 +58,7 @@ public class SysMenu {
     /**
      * 描述
      */
-    @TableField(value = "desc")
+    @TableField(value = "`desc`")
     @ApiModelProperty(value = "描述")
     private String desc;
 

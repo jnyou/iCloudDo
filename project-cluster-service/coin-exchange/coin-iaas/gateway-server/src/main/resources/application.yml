@@ -17,6 +17,8 @@ spring:
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
+          filters:
+            - StripPrefix=1 # 将当前访问/admin/login -> 将admin自动去掉
 
     sentinel:
       datasource:

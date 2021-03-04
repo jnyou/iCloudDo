@@ -3,6 +3,8 @@ package io.jnyou.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.jnyou.domain.SysMenu;
 
+import java.util.List;
+
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
     int deleteByPrimaryKey(Integer id);
 
@@ -15,4 +17,10 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     int updateByPrimaryKeySelective(SysMenu record);
 
     int updateByPrimaryKey(SysMenu record);
+
+    /**
+     * 通过用户id查询菜单数据
+     * @param userId
+     */
+    List<SysMenu> selectMenusByUserId(Long userId);
 }

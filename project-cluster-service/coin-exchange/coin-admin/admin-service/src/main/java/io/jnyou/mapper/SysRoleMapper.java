@@ -15,4 +15,10 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     int updateByPrimaryKeySelective(SysRole record);
 
     int updateByPrimaryKey(SysRole record);
+
+    /**
+     * 根据用户id查询用户角色code
+     * @param userId
+     */
+    String getUserRoleCode(Long userId);
 }
