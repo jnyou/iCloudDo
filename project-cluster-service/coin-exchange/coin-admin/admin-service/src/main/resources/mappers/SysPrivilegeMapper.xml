@@ -19,4 +19,11 @@
     <!--@mbg.generated-->
     id, menu_id, `name`, description, url, `method`, create_by, modify_by, created, last_update_time
   </sql>
+    <select id="getPrivilegesByRoleId" resultType="java.lang.Long">
+      SELECT
+      privilege_id
+      FROM
+      sys_role_privilege
+      WHERE role_id = #{roleId}
+    </select>
 </mapper>

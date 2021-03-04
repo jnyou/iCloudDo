@@ -25,9 +25,9 @@ public class SysRolePrivilege {
 
     @TableField(value = "role_id")
     @ApiModelProperty(value = "")
-    private Integer roleId;
+    private Long roleId;
 
     @TableField(value = "privilege_id")
     @ApiModelProperty(value = "")
-    private Integer privilegeId;
+    private Long privilegeId;
 }
