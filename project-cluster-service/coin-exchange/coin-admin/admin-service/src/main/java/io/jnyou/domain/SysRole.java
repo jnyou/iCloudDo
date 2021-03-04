@@ -1,9 +1,6 @@
 package io.jnyou.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
@@ -51,14 +48,14 @@ public class SysRole {
     /**
      * 创建人
      */
-    @TableField(value = "create_by")
+    @TableField(value = "create_by",fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建人")
     private Integer createBy;
 
     /**
      * 修改人
      */
-    @TableField(value = "modify_by")
+    @TableField(value = "modify_by",fill = FieldFill.UPDATE)
     @ApiModelProperty(value = "修改人")
     private Integer modifyBy;
 
@@ -72,14 +69,14 @@ public class SysRole {
     /**
      * 创建时间
      */
-    @TableField(value = "created")
+    @TableField(value = "created",fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     private Date created;
 
     /**
      * 修改时间
      */
-    @TableField(value = "last_update_time")
+    @TableField(value = "last_update_time",fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "修改时间")
     private Date lastUpdateTime;
 }
