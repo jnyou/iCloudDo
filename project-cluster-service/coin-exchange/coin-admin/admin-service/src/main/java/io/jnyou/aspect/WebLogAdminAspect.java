@@ -101,7 +101,7 @@ public class WebLogAdminAspect {
         sysUserLog.setCreated(new Date());
         sysUserLog.setDescription(webLog.getDescription());
         sysUserLog.setGroup(webLog.getDescription());
-        sysUserLog.setUserId(Long.valueOf(webLog.getUsername()));
+        sysUserLog.setUserId(Long.valueOf(webLog.getUsername())); // TODO  question
         sysUserLog.setMethod(webLog.getMethod());
         sysUserLog.setIp(sysUserLog.getIp());
         // 保存系统登录日志信息
@@ -146,8 +146,12 @@ public class WebLogAdminAspect {
         HashMap<String, Object> methodParameters = new HashMap<>(124);
         Parameter[] parameters = method.getParameters();
         if (args != null) {
-            for (int i = 0; i < parameterNames.length; i++) {
-                methodParameters.put(parameterNames[i], args[i] == null ? "" : JSON.toJSONString(args[i]));
+            for (int i = 0; i <parameterNames.length ; i++) {
+                if(parameterNames[i].equals("password") || parameterNames[i].equals("file")){
+                    methodParameters.put(parameterNames[i],"受限的支持类型") ;
+                }else{
+                    methodParameters.put(parameterNames[i],args[i]) ;
+                }
             }
         }
         return methodParameters;

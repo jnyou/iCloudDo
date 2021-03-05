@@ -120,7 +120,7 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
 
 
     /**
-     * 会员登录
+     * 管理员登录
      *
      * @param username
      */

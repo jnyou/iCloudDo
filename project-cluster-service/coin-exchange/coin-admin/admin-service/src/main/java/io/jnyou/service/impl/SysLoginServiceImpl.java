@@ -14,6 +14,7 @@ import io.jnyou.service.SysMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +23,7 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +47,9 @@ public class SysLoginServiceImpl implements SysLoginService {
 
     @Value("${basic.token:Basic Y29pbi1hcGk6Y29pbi1zZWNyZXQ=}")
     private String basicToken;
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     @Override
     public LoginResult login(String username, String password) {
@@ -74,7 +79,8 @@ public class SysLoginServiceImpl implements SysLoginService {
         // 3、查询权限
         JSONArray jsonArray = jwtJson.getJSONArray("authorities");
         List<SimpleGrantedAuthority> authorities = jsonArray.stream().map(authorityJson -> new SimpleGrantedAuthority(authorityJson.toString())).collect(Collectors.toList());
-
-        return new LoginResult(accessToken, menus, authorities);
+        // 保存token到redis中
+        redisTemplate.opsForValue().set(accessToken, "", jwtToken.getExpiresIn(), TimeUnit.SECONDS);
+        return new LoginResult(jwtToken.getTokenType() + " " + accessToken, menus, authorities);
     }
 }
