@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: coin-member-service
+  cloud:
+    nacos:
+      server-addr: nacos-server:8848
+      config:
+        file-extension: yaml
+  profiles:
+    active: dev
+# dataID = coin-member-service-dev.yaml
