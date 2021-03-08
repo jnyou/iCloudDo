@@ -19,6 +19,12 @@ spring:
             - Path=/admin/**
           filters:
             - StripPrefix=1 # 将当前访问/admin/login -> 将admin自动去掉
+        - id: member-service_router
+          uri: lb://coin-member-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1 # 将当前访问/user/login -> 将user自动去掉
 
     sentinel:
       datasource:
