@@ -91,7 +91,7 @@ public class WebLogAdminAspect {
                 .spendTime(stopWatch.getTotalTimeMillis())
                 .uri(request.getRequestURI())
                 .url(request.getRequestURL().toString())
-                .username(authentication == null ? "anonymous" : authentication.getPrincipal().toString())
+                .username(authentication == null ? "anonymous" : "1018715142409592835" /**authentication.getPrincipal().toString()**/)
                 .build();
         log.info(JSON.toJSONString(webLog, true));
 

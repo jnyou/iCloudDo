@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 @Service
 public class SysLoginServiceImpl implements SysLoginService {
 
+    ThreadLocal<LoginResult> threadLocal = new ThreadLocal<LoginResult>();
+
     @Autowired
     Oauth2FeignClient oauth2FeignClient;
 

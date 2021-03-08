@@ -21,7 +21,7 @@ public class AutoFiledValueHandler implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        Long userId = getUserId();
+//        Long userId = getUserId();
         /**
          * 3 种情况不填充
          * 1 值为null
@@ -29,7 +29,7 @@ public class AutoFiledValueHandler implements MetaObjectHandler {
          * 3 没有改字段
          */
         this.strictInsertFill(metaObject, "lastUpdateTime", Date.class, new Date());
-        this.strictInsertFill(metaObject, "createBy", Long.class, userId); // 创建人的填充
+//        this.strictInsertFill(metaObject, "createBy", Long.class, userId); // 创建人的填充
         this.strictInsertFill(metaObject, "created", Date.class, new Date());
 
     }
@@ -41,9 +41,9 @@ public class AutoFiledValueHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        Long userId = getUserId();
+//        Long userId = getUserId();
         this.strictInsertFill(metaObject, "lastUpdateTime", Date.class, new Date());
-        this.strictInsertFill(metaObject, "modifyBy", Long.class, userId); // 修改人的填充
+//        this.strictInsertFill(metaObject, "modifyBy", Long.class, userId); // 修改人的填充
 
     }
 
@@ -51,13 +51,13 @@ public class AutoFiledValueHandler implements MetaObjectHandler {
      * 获取安全上下文里的用户对象 --- 主要是在线程里面获取改值
      * @return
      */
-    private Long getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = null;
-        if (authentication != null) {
-            String principal = authentication.getPrincipal().toString();
-            userId = Long.valueOf(principal);
-        }
-        return userId;
-    }
+//    private Long getUserId() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long userId = null;
+//        if (authentication != null) {
+//            String principal = authentication.getPrincipal().toString();
+//            userId = Long.valueOf(principal);
+//        }
+//        return userId;
+//    }
 }

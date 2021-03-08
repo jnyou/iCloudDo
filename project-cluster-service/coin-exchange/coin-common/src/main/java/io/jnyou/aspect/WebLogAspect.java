@@ -119,7 +119,7 @@ public class WebLogAspect {
         Parameter[] parameters = method.getParameters();
         if (args != null) {
             for (int i = 0; i < parameterNames.length; i++) {
-                if(parameterNames[i].equals("password") || parameterNames[i].equals("file")){
+                if("password".equals(parameterNames[i]) || "file".equals(parameterNames[i])){
                     methodParameters.put(parameterNames[i], "受限的支持类型");
                 }
                 methodParameters.put(parameterNames[i], args[i] == null ? "" : JSON.toJSONString(args[i]));

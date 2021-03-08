@@ -31,8 +31,8 @@ spring:
           data-id:  api-group
           rule-type: gw-api-group
       transport:
-        dashboard: localhost:8868
-        port: 8868
+        dashboard: localhost:8333
+        port: 8333
       eager: true # 服务启动直接建立心跳连接
   redis:
     host: 192.168.56.10

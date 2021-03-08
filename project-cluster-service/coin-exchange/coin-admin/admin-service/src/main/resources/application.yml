@@ -12,7 +12,8 @@ spring:
   cloud:
     sentinel:
       transport:
-        dashboard: sentinel-dashboard:8858
+        dashboard: sentinel-dashboard:8333
+        port: 8333
     alicloud:
       access-key: LTAI4GEXnLoaQg6UraLEJL1v
       secret-key: txr1DH29usTcQo5MUSsDGoVBusQQHX
