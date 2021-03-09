@@ -32,14 +32,14 @@ public class UserAuthAuditRecord {
      */
     @TableField(value = "auth_code")
     @ApiModelProperty(value="对应user_auth_info表code")
-    private Integer authCode;
+    private Long authCode;
 
     /**
      * 用户ID
      */
     @TableField(value = "user_id")
     @ApiModelProperty(value="用户ID")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 状态1同意2拒絕
