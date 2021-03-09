@@ -8,4 +8,7 @@ spring:
         file-extension: yaml
   profiles:
     active: dev
+geetest:
+  geetest-id: 3a01ffc01c1d63b37c3dbe8ee9555290
+  geetest-key: 27c7b4a18124d5d649b9c58ca1830871
 # dataID = coin-member-service-dev.yaml
