@@ -179,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         UserAuthAuditRecord userAuthAuditRecord = userAuthAuditRecordList.get(0);
                         seniorAuthDesc = userAuthAuditRecord.getRemark();
                     }
-                    seniorAuthDesc = "原因未知";
+//                    seniorAuthDesc = "原因未知";
                     break;
                 case 0:
                     seniorAuthStatus = 0;
