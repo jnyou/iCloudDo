@@ -5,6 +5,8 @@ import io.jnyou.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.jnyou.model.UserAuthForm;
 
+import java.util.List;
+
 public interface UserService extends IService<User>{
 
     /**
@@ -57,4 +59,14 @@ public interface UserService extends IService<User>{
      *
      */
     boolean identifyVerify(Long valueOf, UserAuthForm userAuthForm);
+
+    /**
+     * 用户的高级认证
+     * @param id
+     *  用户的Id
+     *
+     * @param imgs
+     *  用户的图片地址
+     */
+    void authUser(Long id, List<String> imgs);
 }

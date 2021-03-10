@@ -1,15 +1,19 @@
 package io.jnyou.service.impl;
 
+import cn.hutool.core.lang.Snowflake;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.jnyou.config.IDGenConfig;
 import io.jnyou.config.IdAutoConfiguration;
 import io.jnyou.domain.User;
 import io.jnyou.domain.UserAuthAuditRecord;
+import io.jnyou.domain.UserAuthInfo;
 import io.jnyou.geetest.GeetestLib;
 import io.jnyou.mapper.UserMapper;
 import io.jnyou.model.UserAuthForm;
 import io.jnyou.service.UserAuthAuditRecordService;
+import io.jnyou.service.UserAuthInfoService;
 import io.jnyou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +41,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     GeetestLib geetestLib;
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
+    @Autowired
+    UserAuthInfoService userAuthInfoService;
+    @Autowired
+    Snowflake snowflake;
 
 
     /**
@@ -183,4 +192,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setSeniorAuthDesc(seniorAuthDesc);
         return user;
     }
+
+    /**
+     * 用户的高级认证
+     *
+     * @param id   用户的Id
+     * @param imgs
+     */
+    @Override
+    @Transactional
+    public void authUser(Long id, List<String> imgs) {
+        if (CollectionUtils.isEmpty(imgs)) {
+            throw new IllegalArgumentException("用户的身份证信息为null");
+        }
+        User user = getById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("请输入正确的userId");
+        }
+        long authCode = snowflake.nextId(); // 使用时间戳(有重复) --> 雪花算法
+        List<UserAuthInfo> userAuthInfoList = new ArrayList<>(imgs.size());
+        for (int i = 0; i < imgs.size(); i++) { // 有序排列
+            String s = imgs.get(i);
+            UserAuthInfo userAuthInfo = new UserAuthInfo();
+            userAuthInfo.setImageUrl(imgs.get(i));
+            userAuthInfo.setUserId(id);
+            userAuthInfo.setSerialno(i + 1);  // 设置序号 ,1 正面  2 反面 3 手持
+            userAuthInfo.setAuthCode(authCode); // 是一组身份信息的标识 3 个图片为一组
+            userAuthInfoList.add(userAuthInfo);
+        }
+        userAuthInfoService.saveBatch(userAuthInfoList); // 批量操作
+
+        user.setReviewsStatus(0); // 等待审核
+        updateById(user); // 更新用户的状态
+
+    }
+
 }

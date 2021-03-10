@@ -23,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -229,6 +230,17 @@ public class UserController {
             return R.ok() ;
         }
         return R.fail("认证失败") ;
+    }
+
+    @PostMapping("/authUser")
+    @ApiOperation(value = "用户进行高级认证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "imgs",value ="用户的图片地址" )
+    })
+    public  R authUser(@RequestBody  String []imgs){
+        String idStr = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        userService.authUser(Long.valueOf(idStr), Arrays.asList(imgs)) ;
+        return R.ok() ;
     }
 
 }

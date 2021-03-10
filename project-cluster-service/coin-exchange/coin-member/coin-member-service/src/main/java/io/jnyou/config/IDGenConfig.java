@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * id 生成器
+ * id 生成器 雪花算法
  */
 @Configuration
 public class IDGenConfig {

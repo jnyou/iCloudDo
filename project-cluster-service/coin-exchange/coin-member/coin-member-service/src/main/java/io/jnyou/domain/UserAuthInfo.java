@@ -32,7 +32,7 @@ public class UserAuthInfo {
      */
     @TableField(value = "user_id")
     @ApiModelProperty(value="用户ID")
-    private Integer userId;
+    private Long userId;
 
     /**
      * 图片地址
