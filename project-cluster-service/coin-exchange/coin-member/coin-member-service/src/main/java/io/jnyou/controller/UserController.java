@@ -7,6 +7,7 @@ import io.jnyou.domain.UserAuthAuditRecord;
 import io.jnyou.domain.UserAuthInfo;
 import io.jnyou.model.R;
 import io.jnyou.model.UseAuthInfoVo;
+import io.jnyou.model.UserAuthForm;
 import io.jnyou.service.UserAuthAuditRecordService;
 import io.jnyou.service.UserAuthInfoService;
 import io.jnyou.service.UserService;
@@ -213,6 +214,21 @@ public class UserController {
         user.setPassword("****");
         user.setPaypassword("*****");
         return R.ok(user) ;
+    }
+
+
+    @PostMapping("/authAccount")
+    @ApiOperation(value = "用户的实名认证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "" ,value = "")
+    })
+    public R identifyCheck(@RequestBody UserAuthForm userAuthForm){
+        String idStr = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        boolean isOk = userService.identifyVerify(Long.valueOf(idStr),userAuthForm) ;
+        if(isOk){
+            return R.ok() ;
+        }
+        return R.fail("认证失败") ;
     }
 
 }

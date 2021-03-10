@@ -3,6 +3,8 @@ package io.jnyou.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.jnyou.model.UserAuthForm;
+
 public interface UserService extends IService<User>{
 
     /**
@@ -45,4 +47,14 @@ public interface UserService extends IService<User>{
      *
      */
     void updateUserAuthStatus(Long id, Byte authStatus, Long authCode,String remark);
+
+    /**
+     * 用户的实名认证
+     * @param id 用户的Id
+     * @param userAuthForm 认证的结果
+     * 认证的表单数据
+     * @return
+     *
+     */
+    boolean identifyVerify(Long valueOf, UserAuthForm userAuthForm);
 }
