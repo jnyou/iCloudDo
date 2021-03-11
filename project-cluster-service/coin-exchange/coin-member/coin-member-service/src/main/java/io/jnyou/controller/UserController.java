@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.User;
 import io.jnyou.domain.UserAuthAuditRecord;
 import io.jnyou.domain.UserAuthInfo;
+import io.jnyou.dto.UserDto;
+import io.jnyou.feign.UserFeignClient;
 import io.jnyou.model.R;
+import io.jnyou.model.UpdatePhoneParam;
 import io.jnyou.model.UseAuthInfoVo;
 import io.jnyou.model.UserAuthForm;
 import io.jnyou.service.UserAuthAuditRecordService;
@@ -30,7 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @Api(tags = "会员的控制器")
-public class UserController {
+public class UserController implements UserFeignClient {
 
     @Autowired
     private UserAuthInfoService userAuthInfoService;
@@ -243,4 +246,41 @@ public class UserController {
         return R.ok() ;
     }
 
+
+    @PostMapping("/updatePhone")
+    @ApiOperation(value = "修改手机号")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "updatePhoneParam",value = "updatePhoneParam 的json数据")
+    })
+    public R updatePhone(@RequestBody UpdatePhoneParam updatePhoneParam){
+        String idStr = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        boolean isOk =  userService.updatePhone(Long.valueOf(idStr),updatePhoneParam) ;
+        if(isOk){
+            return R.ok() ;
+        }
+        return R.fail("修改失败") ;
+    }
+
+    @GetMapping("/checkTel")
+    @ApiOperation(value = "检查新的手机号是否可用,如可用,则给该新手机发送验证码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "mobile" ,value = "新的手机号"),
+            @ApiImplicitParam(name = "countryCode" ,value = "手机号的区域")
+    })
+    public R checkNewPhone(@RequestParam(required = true) String mobile,@RequestParam(required = true) String countryCode){
+        boolean isOk =   userService.checkNewPhone(mobile,countryCode) ;
+        return isOk ? R.ok():R.fail("新的手机号校验失败") ;
+    }
+
+    /**
+     * 用于admin-service 里面远程调用member-service
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<UserDto> userDtoList(List<Long> ids) {
+        List<UserDto> userDtos = userService.getBasicUsers(ids);
+        return userDtos;
+    }
 }

@@ -4,13 +4,18 @@ import cn.hutool.core.lang.Snowflake;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jnyou.config.IDGenConfig;
 import io.jnyou.config.IdAutoConfiguration;
+import io.jnyou.domain.Sms;
 import io.jnyou.domain.User;
 import io.jnyou.domain.UserAuthAuditRecord;
 import io.jnyou.domain.UserAuthInfo;
+import io.jnyou.dto.UserDto;
 import io.jnyou.geetest.GeetestLib;
 import io.jnyou.mapper.UserMapper;
+import io.jnyou.mappers.UserDtoMapper;
+import io.jnyou.model.UpdatePhoneParam;
 import io.jnyou.model.UserAuthForm;
 import io.jnyou.service.UserAuthAuditRecordService;
 import io.jnyou.service.UserAuthInfoService;
@@ -18,6 +23,7 @@ import io.jnyou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +33,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     UserAuthInfoService userAuthInfoService;
     @Autowired
     Snowflake snowflake;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
 
 
     /**
@@ -225,6 +234,78 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setReviewsStatus(0); // 等待审核
         updateById(user); // 更新用户的状态
 
+    }
+
+    /**
+     * 修改用户的手机号号
+     *
+     * @param updatePhoneParam
+     * @return
+     */
+    @Override
+    public boolean updatePhone(Long userId , UpdatePhoneParam updatePhoneParam) {
+        // 1 使用 userId 查询用户
+        User user = getById(userId);
+
+        // 2 验证旧手机
+        String oldMobile = user.getMobile(); // 旧的手机号 --- > 验证旧手机的验证码
+        String oldMobileCode = stringRedisTemplate.opsForValue().get("SMS:VERIFY_OLD_PHONE:" + oldMobile);
+        if(!updatePhoneParam.getOldValidateCode().equals(oldMobileCode)){
+            throw new IllegalArgumentException("旧手机的验证码错误") ;
+        }
+
+        // 3 验证新手机
+        String newPhoneCode = stringRedisTemplate.opsForValue().get("SMS:CHANGE_PHONE_VERIFY:" + updatePhoneParam.getNewMobilePhone());
+        if(!updatePhoneParam.getValidateCode().equals(newPhoneCode)){
+            throw new IllegalArgumentException("新手机的验证码错误") ;
+        }
+
+        // 4 修改手机号
+        user.setMobile(updatePhoneParam.getNewMobilePhone());
+
+        return updateById(user);
+    }
+
+
+    /**
+     * 检验新的手机号是否可用,若可用,则给新的手机号发送一个验证码
+     *
+     * @param mobile      新的手机号
+     * @param countryCode 国家代码
+     * @return
+     */
+    @Override
+    public boolean checkNewPhone(String mobile, String countryCode) {
+        //1 新的手机号,没有旧的用户使用
+        int count = count(new LambdaQueryWrapper<User>().eq(User::getMobile, mobile).eq(User::getCountryCode,countryCode));
+        if(count>0){ // 有用户占用这个手机号
+            throw new IllegalArgumentException("该手机号已经被占用") ;
+        }
+        // 2 向新的手机发送短信
+        Sms sms = new Sms();
+        sms.setMobile(mobile);
+        sms.setCountryCode(countryCode);
+        sms.setTemplateCode("CHANGE_PHONE_VERIFY"); // 模板代码  -- > 校验手机号
+//        smsService.sendSms(sms); 远程发送验证码
+        return Boolean.TRUE;
+    }
+
+    /**
+     * 查询用户的基本信息
+     *
+     * @param ids 用户的Id
+     * @return
+     */
+    @Override
+    public List<UserDto> getBasicUsers(List<Long> ids) {
+        if(CollectionUtils.isEmpty(ids)){
+            return Collections.emptyList() ;
+        }
+        List<User> list = list(new LambdaQueryWrapper<User>().in(User::getId, ids));
+        if(CollectionUtils.isEmpty(list)) return Collections.emptyList();
+        // 对象的转化
+        List<UserDto> userDtos = UserDtoMapper.INSTANCE.convert2Dto(list);
+        return userDtos;
     }
 
 }

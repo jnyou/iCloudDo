@@ -3,6 +3,8 @@ package io.jnyou.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.jnyou.dto.UserDto;
+import io.jnyou.model.UpdatePhoneParam;
 import io.jnyou.model.UserAuthForm;
 
 import java.util.List;
@@ -69,4 +71,29 @@ public interface UserService extends IService<User>{
      *  用户的图片地址
      */
     void authUser(Long id, List<String> imgs);
+
+    /**
+     * 修改用户的手机号号
+     * @param userId
+     * @param updatePhoneParam
+     * @return
+     */
+    boolean updatePhone(Long userId ,UpdatePhoneParam updatePhoneParam);
+
+    /**
+     * 检验新的手机号是否可用,若可用,则给新的手机号发送一个验证码
+     * @param mobile
+     * 新的手机号
+     * @param countryCode
+     * 国家代码
+     * @return
+     */
+    boolean checkNewPhone(String mobile, String countryCode);
+
+    /**
+     * 通过用户的id集合查询用户信息
+     * @param ids
+     * @return
+     */
+    List<UserDto> getBasicUsers(List<Long> ids);
 }
