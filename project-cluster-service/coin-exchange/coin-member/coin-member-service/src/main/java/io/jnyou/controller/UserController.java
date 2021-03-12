@@ -7,10 +7,7 @@ import io.jnyou.domain.UserAuthAuditRecord;
 import io.jnyou.domain.UserAuthInfo;
 import io.jnyou.dto.UserDto;
 import io.jnyou.feign.UserFeignClient;
-import io.jnyou.model.R;
-import io.jnyou.model.UpdatePhoneParam;
-import io.jnyou.model.UseAuthInfoVo;
-import io.jnyou.model.UserAuthForm;
+import io.jnyou.model.*;
 import io.jnyou.service.UserAuthAuditRecordService;
 import io.jnyou.service.UserAuthInfoService;
 import io.jnyou.service.UserService;
@@ -282,5 +279,16 @@ public class UserController implements UserFeignClient {
     public List<UserDto> userDtoList(List<Long> ids) {
         List<UserDto> userDtos = userService.getBasicUsers(ids);
         return userDtos;
+    }
+
+
+    @PostMapping("/register")
+    @ApiOperation(value = "用户的注册")
+    public R register(@RequestBody RegisterParam registerParam) {
+        boolean isOk = userService.register(registerParam);
+        if (isOk) {
+            return R.ok();
+        }
+        return R.fail("注册失败");
     }
 }

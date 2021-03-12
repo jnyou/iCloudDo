@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.jnyou.dto.UserDto;
+import io.jnyou.model.RegisterParam;
 import io.jnyou.model.UpdatePhoneParam;
 import io.jnyou.model.UserAuthForm;
 
@@ -96,4 +97,12 @@ public interface UserService extends IService<User>{
      * @return
      */
     List<UserDto> getBasicUsers(List<Long> ids);
+
+    /**
+     * 用户的注册
+     * @param registerParam
+     * 注册的表单参数
+     * @return
+     */
+    boolean register(RegisterParam registerParam);
 }

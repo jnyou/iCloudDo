@@ -25,16 +25,16 @@ public class GeetestForm {
     private String geetest_validate ;
     private String uuid ;
 
-    public void check(GeetestForm geetestForm, GeetestLib geetestLib, RedisTemplate<String,Object> redisTemplate){
-        String challenge = geetestForm.getGeetest_challenge();
-        String validate = geetestForm.getGeetest_validate();
-        String seccode = geetestForm.getGeetest_seccode();
+    public void check(GeetestLib geetestLib, RedisTemplate<String,Object> redisTemplate){
+        String challenge = this.getGeetest_challenge();
+        String validate = this.getGeetest_validate();
+        String seccode = this.getGeetest_seccode();
         int status = 0;
         String userId = "";
         // session必须取出值，若取不出值，直接当做异常退出
         String statusStr = redisTemplate.opsForValue().get(GeetestLib.GEETEST_SERVER_STATUS_SESSION_KEY).toString();
         status = Integer.valueOf(statusStr).intValue();
-        userId = redisTemplate.opsForValue().get(GeetestLib.GEETEST_SERVER_USER_KEY + ":" + geetestForm.getUuid()).toString();
+        userId = redisTemplate.opsForValue().get(GeetestLib.GEETEST_SERVER_USER_KEY + ":" + this.getUuid()).toString();
         GeetestLibResult result = null;
         if (status == 1) {
             /*
