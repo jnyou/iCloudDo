@@ -22,6 +22,11 @@
             <artifactId>coin-common</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.jnyou</groupId>
+            <artifactId>member-api</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

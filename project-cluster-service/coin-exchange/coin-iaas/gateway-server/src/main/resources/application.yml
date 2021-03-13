@@ -25,7 +25,12 @@ spring:
             - Path=/user/**
           filters:
             - StripPrefix=1 # 将当前访问/user/login -> 将user自动去掉
-
+        - id: finance-service_router
+          uri: lb://finance-service
+          predicates:
+            - Path=/finance/**
+          filters:
+            - StripPrefix=1 # 将当前访问/finance/xx -> 将finance自动去掉
     sentinel:
       datasource:
         ds1.nacos:
