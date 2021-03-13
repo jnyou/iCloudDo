@@ -12,4 +12,11 @@
     <artifactId>exchange-api</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>io.jnyou</groupId>
+            <artifactId>coin-common</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -1,17 +1,20 @@
-package io.jnyou.service.impl;
+package com.bjsxt.service.impl;
 
 
-import com.alibaba.nacos.api.config.ConfigService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.Account;
 import io.jnyou.domain.AccountDetail;
 import io.jnyou.domain.Coin;
+import io.jnyou.domain.Config;
+import io.jnyou.dto.MarketDto;
+import io.jnyou.feign.MarketServiceFeign;
 import io.jnyou.mapper.AccountMapper;
 import io.jnyou.mappers.AccountVoMappers;
 import io.jnyou.service.AccountDetailService;
 import io.jnyou.service.AccountService;
 import io.jnyou.service.CoinService;
+import io.jnyou.service.ConfigService;
 import io.jnyou.vo.AccountVo;
 import io.jnyou.vo.SymbolAssetVo;
 import io.jnyou.vo.UserTotalAccountVo;
@@ -25,6 +28,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -226,7 +230,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         SymbolAssetVo symbolAssetVo = new SymbolAssetVo();
         // 查询报价货币
         @NotNull Long buyCoinId = marketDto.getBuyCoinId(); // 报价货币的Id
-        Account buyCoinAccount = getCoinAccount(buyCoinId,userId) ;
+        Account buyCoinAccount = getCoinAccount(buyCoinId, userId);
         symbolAssetVo.setBuyAmount(buyCoinAccount.getBalanceAmount());
         symbolAssetVo.setBuyLockAmount(buyCoinAccount.getFreezeAmount());
         // 市场里面配置的值
@@ -241,13 +245,14 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         // 市场里面配置的值
         symbolAssetVo.setSellFeeRate(marketDto.getFeeSell());
         Coin sellCoin = coinService.getById(sellCoinId);
-        symbolAssetVo.setSellUnit(sellCoin.getName()) ;
+        symbolAssetVo.setSellUnit(sellCoin.getName());
 
         return symbolAssetVo;
     }
 
     /**
-     *  获取用户的某种币的资产
+     * 获取用户的某种币的资产
+     *
      * @param coinId
      * @param userId
      * @return
@@ -255,10 +260,159 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     private Account getCoinAccount(Long coinId, Long userId) {
 
         return getOne(new LambdaQueryWrapper<Account>()
-                                    .eq(Account::getCoinId,coinId)
-                                    .eq(Account::getUserId,userId)
-                                    .eq(Account::getStatus,1)
-        ) ;
+                .eq(Account::getCoinId, coinId)
+                .eq(Account::getUserId, userId)
+                .eq(Account::getStatus, 1)
+        );
+    }
+
+    /**
+     * 用户资金的划转
+     *
+     * @param adminId
+     * @param userId
+     * @param coinId
+     * @param num
+     * @param fee
+     * @return
+     */
+    @Override
+    public Boolean transferAccountAmount(Long adminId, Long userId, Long coinId, Long orderNum, BigDecimal num, BigDecimal fee, String remark, String businessType, Byte direction) {
+        Account coinAccount = getCoinAccount(coinId, userId);
+        if (coinAccount == null) {
+            throw new IllegalArgumentException("用户当前的该币种的余额不存在");
+        }
+        // 增加一条流水记录
+        AccountDetail accountDetail = new AccountDetail();
+        accountDetail.setCoinId(coinId);
+        accountDetail.setUserId(userId);
+        accountDetail.setAmount(num);
+        accountDetail.setFee(fee);
+        accountDetail.setOrderId(orderNum);
+        accountDetail.setAccountId(coinAccount.getId());
+        accountDetail.setRefAccountId(coinAccount.getId());
+        accountDetail.setRemark(remark);
+        accountDetail.setBusinessType(businessType);
+        accountDetail.setDirection(direction);
+        accountDetail.setCreated(new Date());
+        boolean save = accountDetailService.save(accountDetail);
+        if (save) { // 用户余额的增加
+            coinAccount.setBalanceAmount(coinAccount.getBalanceAmount().add(num));
+            boolean updateById = updateById(coinAccount);
+            return updateById;
+        }
+        return save;
+    }
+
+
+    /**
+     * 给用户扣减钱
+     *
+     * @param adminId      操作的人
+     * @param userId       用户的id
+     * @param coinId       币种的id
+     * @param orderNum     订单的编号
+     * @param num          扣减的余额
+     * @param fee          费用
+     * @param remark       备注
+     * @param businessType 业务类型
+     * @param direction    方向
+     * @return
+     */
+    @Override
+    public Boolean decreaseAccountAmount(Long adminId, Long userId, Long coinId, Long orderNum, BigDecimal num, BigDecimal fee, String remark, String businessType, byte direction) {
+        Account coinAccount = getCoinAccount(coinId, userId);
+        if (coinAccount == null) {
+            throw new IllegalArgumentException("账户不存在");
+        }
+        AccountDetail accountDetail = new AccountDetail();
+        accountDetail.setUserId(userId);
+        accountDetail.setCoinId(coinId);
+        accountDetail.setAmount(num);
+        accountDetail.setFee(fee);
+        accountDetail.setAccountId(coinAccount.getId());
+        accountDetail.setRefAccountId(coinAccount.getId());
+        accountDetail.setRemark(remark);
+        accountDetail.setBusinessType(businessType);
+        accountDetail.setDirection(direction);
+        boolean save = accountDetailService.save(accountDetail);
+        if (save) { // 新增了流水记录
+            BigDecimal balanceAmount = coinAccount.getBalanceAmount();
+            BigDecimal result = balanceAmount.add(num.multiply(BigDecimal.valueOf(-1)));
+            if (result.compareTo(BigDecimal.ONE) > 0) {
+                coinAccount.setBalanceAmount(result);
+                return updateById(coinAccount);
+            } else {
+                throw new IllegalArgumentException("余额不足");
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void transferBuyAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId) {
+        Account fromAccount = getCoinAccount(coinId, fromUserId);
+        if (fromAccount == null) {
+            log.error("资金划转-资金账户异常，userId:{}, coinId:{}", fromUserId, coinId);
+            throw new IllegalArgumentException("资金账户异常");
+        } else {
+            Account toAccount = getCoinAccount(toUserId, coinId);
+            if (toAccount == null) {
+                throw new IllegalArgumentException("资金账户异常");
+            } else {
+                boolean count1 = decreaseAmount(fromAccount, amount);
+                boolean count2 = addAmount(toAccount, amount);
+                if (count1 && count2) {
+                    List<AccountDetail> accountDetails = new ArrayList(2);
+                    AccountDetail fromAccountDetail = new AccountDetail(fromUserId, coinId, fromAccount.getId(), toAccount.getId(), orderId, 2, businessType, amount, BigDecimal.ZERO, businessType);
+                    AccountDetail toAccountDetail = new AccountDetail(toUserId, coinId, toAccount.getId(), fromAccount.getId(), orderId, 1, businessType, amount, BigDecimal.ZERO, businessType);
+                    accountDetails.add(fromAccountDetail);
+                    accountDetails.add(toAccountDetail);
+
+                    accountDetails.addAll(accountDetails);
+                } else {
+                    throw new RuntimeException("资金划转失败");
+                }
+            }
+        }
+    }
+
+    private boolean addAmount(Account account, BigDecimal amount) {
+        account.setBalanceAmount(account.getBalanceAmount().add(amount));
+        return updateById(account);
+    }
+
+    private boolean decreaseAmount(Account account, BigDecimal amount) {
+        account.setBalanceAmount(account.getBalanceAmount().subtract(amount));
+        return updateById(account);
+    }
+
+    @Override
+    public void transferSellAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId) {
+        Account fromAccount = getCoinAccount(coinId, fromUserId);
+        if (fromAccount == null) {
+            log.error("资金划转-资金账户异常，userId:{}, coinId:{}", fromUserId, coinId);
+            throw new IllegalArgumentException("资金账户异常");
+        } else {
+            Account toAccount = getCoinAccount(toUserId, coinId);
+            if (toAccount == null) {
+                throw new IllegalArgumentException("资金账户异常");
+            } else {
+                boolean count1 = addAmount(fromAccount, amount);
+                boolean count2 = decreaseAmount(toAccount, amount);
+                if (count1 && count2) {
+                    List<AccountDetail> accountDetails = new ArrayList(2);
+                    AccountDetail fromAccountDetail = new AccountDetail(fromUserId, coinId, fromAccount.getId(), toAccount.getId(), orderId, 2, businessType, amount, BigDecimal.ZERO, businessType);
+                    AccountDetail toAccountDetail = new AccountDetail(toUserId, coinId, toAccount.getId(), fromAccount.getId(), orderId, 1, businessType, amount, BigDecimal.ZERO, businessType);
+                    accountDetails.add(fromAccountDetail);
+                    accountDetails.add(toAccountDetail);
+
+                    accountDetails.addAll(accountDetails);
+                } else {
+                    throw new RuntimeException("资金划转失败");
+                }
+            }
+        }
     }
 }
 

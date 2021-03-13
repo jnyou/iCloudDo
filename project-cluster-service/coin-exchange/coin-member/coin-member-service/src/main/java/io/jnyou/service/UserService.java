@@ -9,6 +9,7 @@ import io.jnyou.model.UpdatePhoneParam;
 import io.jnyou.model.UserAuthForm;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService extends IService<User>{
 
@@ -94,9 +95,11 @@ public interface UserService extends IService<User>{
     /**
      * 通过用户的id集合查询用户信息
      * @param ids
+     * @param userName
+     * @param mobile
      * @return
      */
-    List<UserDto> getBasicUsers(List<Long> ids);
+    Map<Long, UserDto> getBasicUsers(List<Long> ids, String userName, String mobile);
 
     /**
      * 用户的注册
@@ -105,4 +108,5 @@ public interface UserService extends IService<User>{
      * @return
      */
     boolean register(RegisterParam registerParam);
+
 }

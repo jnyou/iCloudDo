@@ -3,19 +3,21 @@ package io.jnyou.service.impl;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.RandomUtil;
-import com.alibaba.nacos.api.config.ConfigService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.CashRecharge;
 import io.jnyou.domain.Coin;
+import io.jnyou.domain.Config;
 import io.jnyou.dto.AdminBankDto;
 import io.jnyou.dto.UserDto;
+import io.jnyou.feign.AdminBankServiceFeign;
 import io.jnyou.feign.UserFeignClient;
 import io.jnyou.mapper.CashRechargeMapper;
 import io.jnyou.model.CashParam;
 import io.jnyou.service.CashRechargeService;
 import io.jnyou.service.CoinService;
+import io.jnyou.service.ConfigService;
 import io.jnyou.vo.CashTradeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,7 +137,7 @@ public class CashRechargeServiceImpl extends ServiceImpl<CashRechargeMapper, Cas
      * @return
      */
     @Override
-    public CashTradeVo buy(Long userId, CashParam cashParam) {
+        public CashTradeVo buy(Long userId, CashParam cashParam) {
         //1 校验现金参数
         checkCashParam(cashParam);
         // 2 查询我们公司的银行卡

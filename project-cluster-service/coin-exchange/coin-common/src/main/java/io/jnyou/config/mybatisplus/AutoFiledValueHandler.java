@@ -48,16 +48,18 @@ public class AutoFiledValueHandler implements MetaObjectHandler {
     }
 
     /**
-     * 获取安全上下文里的用户对象 --- 主要是在线程里面获取改值
+     * 获取当前操作的用户对象
      * @return
      */
-//    private Long getUserId() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        Long userId = null;
-//        if (authentication != null) {
-//            String principal = authentication.getPrincipal().toString();
-//            userId = Long.valueOf(principal);
+//    private Long getCurrentUserId() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // 从安全的上下文里面获取用户的ud
+//        if(authentication!=null){
+//            String s = authentication.getPrincipal().toString(); // userId ->Long  anonymousUser
+//            if("anonymousUser".equals(s)){ //是因为用户没有登录访问时,就是这个用户
+//                return null ;
+//            }
+//            return Long.valueOf(s) ;
 //        }
-//        return userId;
+//        return null ;
 //    }
 }

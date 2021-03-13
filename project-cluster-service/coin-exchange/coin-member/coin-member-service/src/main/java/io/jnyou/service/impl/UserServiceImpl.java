@@ -36,10 +36,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -301,15 +299,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return
      */
     @Override
-    public List<UserDto> getBasicUsers(List<Long> ids) {
-        if(CollectionUtils.isEmpty(ids)){
-            return Collections.emptyList() ;
+    public Map<Long, UserDto> getBasicUsers(List<Long> ids, String userName, String mobile) {
+        if (CollectionUtils.isEmpty(ids) && StringUtils.isEmpty(userName) && StringUtils.isEmpty(mobile)) {
+            return Collections.emptyMap();
         }
-        List<User> list = list(new LambdaQueryWrapper<User>().in(User::getId, ids));
-        if(CollectionUtils.isEmpty(list)) return Collections.emptyList();
-        // 对象的转化
+        List<User> list = list(new LambdaQueryWrapper<User>()
+                .in(!CollectionUtils.isEmpty(ids), User::getId, ids)
+                .like(!StringUtils.isEmpty(userName), User::getUsername, userName)
+                .like(!StringUtils.isEmpty(mobile), User::getMobile, mobile));
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyMap();
+        }
+        // 将user->userDto
         List<UserDto> userDtos = UserDtoMapper.INSTANCE.convert2Dto(list);
-        return userDtos;
+        Map<Long, UserDto> userDtoMaps = userDtos.stream().collect(Collectors.toMap(UserDto::getId, userDto -> userDto));
+        return userDtoMaps;
     }
 
     /**

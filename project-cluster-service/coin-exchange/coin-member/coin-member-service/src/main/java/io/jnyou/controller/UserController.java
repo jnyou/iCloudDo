@@ -26,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -269,17 +270,6 @@ public class UserController implements UserFeignClient {
         return isOk ? R.ok():R.fail("新的手机号校验失败") ;
     }
 
-    /**
-     * 用于admin-service 里面远程调用member-service
-     *
-     * @param ids
-     * @return
-     */
-    @Override
-    public List<UserDto> userDtoList(List<Long> ids) {
-        List<UserDto> userDtos = userService.getBasicUsers(ids);
-        return userDtos;
-    }
 
 
     @PostMapping("/register")
@@ -290,5 +280,17 @@ public class UserController implements UserFeignClient {
             return R.ok();
         }
         return R.fail("注册失败");
+    }
+
+    /**
+     * 用于admin-service 里面远程调用member-service
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public Map<Long, UserDto> getBasicUsers(List<Long> ids, String userName, String mobile) {
+        Map<Long, UserDto> basicUsers = userService.getBasicUsers(ids, userName, mobile);
+        return basicUsers;
     }
 }
