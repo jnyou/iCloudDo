@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.AccountDetail;
+import io.jnyou.dto.UserDto;
+import io.jnyou.feign.UserFeignClient;
 import io.jnyou.mapper.AccountDetailMapper;
 import io.jnyou.service.AccountDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,15 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class AccountDetailServiceImpl extends ServiceImpl<AccountDetailMapper, AccountDetail> implements AccountDetailService {
 
     @Autowired
-    private UserServiceFeign userServiceFeign;
+    private UserFeignClient userServiceFeign;
 
     /**
      * 分页查询我们的资金流水

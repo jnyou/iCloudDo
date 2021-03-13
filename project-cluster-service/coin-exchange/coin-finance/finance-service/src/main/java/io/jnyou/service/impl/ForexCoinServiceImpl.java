@@ -1,12 +1,11 @@
 package io.jnyou.service.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.mapper.ForexCoinMapper;
-import com.bjsxt.domain.ForexCoin;
-import com.bjsxt.service.ForexCoinService;
+import io.jnyou.domain.ForexCoin;
+import io.jnyou.mapper.ForexCoinMapper;
+import io.jnyou.service.ForexCoinService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ForexCoinServiceImpl extends ServiceImpl<ForexCoinMapper, ForexCoin> implements ForexCoinService {

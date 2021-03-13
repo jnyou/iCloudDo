@@ -1,12 +1,11 @@
 package io.jnyou.service.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.domain.CoinBalance;
-import com.bjsxt.mapper.CoinBalanceMapper;
-import com.bjsxt.service.CoinBalanceService;
+import io.jnyou.domain.CoinBalance;
+import io.jnyou.mapper.CoinBalanceMapper;
+import io.jnyou.service.CoinBalanceService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CoinBalanceServiceImpl extends ServiceImpl<CoinBalanceMapper, CoinBalance> implements CoinBalanceService {

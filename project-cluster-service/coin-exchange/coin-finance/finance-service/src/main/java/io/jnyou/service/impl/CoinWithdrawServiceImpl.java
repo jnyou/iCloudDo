@@ -1,13 +1,14 @@
 package io.jnyou.service.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.domain.CoinWithdraw;
-import com.bjsxt.dto.UserDto;
-import com.bjsxt.feign.UserServiceFeign;
-import com.bjsxt.mapper.CoinWithdrawMapper;
-import com.bjsxt.service.CoinWithdrawService;
+import io.jnyou.domain.CoinWithdraw;
+import io.jnyou.dto.UserDto;
+import io.jnyou.feign.UserFeignClient;
+import io.jnyou.mapper.CoinWithdrawMapper;
+import io.jnyou.service.CoinWithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class CoinWithdrawServiceImpl extends ServiceImpl<CoinWithdrawMapper, CoinWithdraw> implements CoinWithdrawService {
 
     @Autowired
-    private UserServiceFeign userServiceFeign ;
+    private UserFeignClient userServiceFeign ;
     /**
      * 分页条件查询充值记录
      *

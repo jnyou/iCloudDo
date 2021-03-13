@@ -3,6 +3,7 @@ package io.jnyou.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.jnyou.domain.Coin;
+import io.jnyou.dto.CoinDto;
 
 import java.util.List;
 

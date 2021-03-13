@@ -1,12 +1,11 @@
 package io.jnyou.service.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.mapper.CoinWithdrawAuditRecordMapper;
-import com.bjsxt.domain.CoinWithdrawAuditRecord;
-import com.bjsxt.service.CoinWithdrawAuditRecordService;
+import io.jnyou.domain.CoinWithdrawAuditRecord;
+import io.jnyou.mapper.CoinWithdrawAuditRecordMapper;
+import io.jnyou.service.CoinWithdrawAuditRecordService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CoinWithdrawAuditRecordServiceImpl extends ServiceImpl<CoinWithdrawAuditRecordMapper, CoinWithdrawAuditRecord> implements CoinWithdrawAuditRecordService {

@@ -1,21 +1,19 @@
 package io.jnyou.service.impl;
 
+
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.nacos.api.config.ConfigService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.domain.Account;
-import com.bjsxt.domain.CashWithdrawals;
-import com.bjsxt.domain.Config;
-import com.bjsxt.dto.UserBankDto;
-import com.bjsxt.dto.UserDto;
-import com.bjsxt.feign.UserBankServiceFeign;
-import com.bjsxt.feign.UserServiceFeign;
-import com.bjsxt.mapper.CashWithdrawalsMapper;
-import com.bjsxt.model.CashSellParam;
-import com.bjsxt.service.AccountService;
-import com.bjsxt.service.CashWithdrawalsService;
-import com.bjsxt.service.ConfigService;
+import io.jnyou.domain.Account;
+import io.jnyou.domain.CashWithdrawals;
+import io.jnyou.dto.UserDto;
+import io.jnyou.feign.UserFeignClient;
+import io.jnyou.mapper.CashWithdrawalsMapper;
+import io.jnyou.model.CashSellParam;
+import io.jnyou.service.AccountService;
+import io.jnyou.service.CashWithdrawalsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,7 +35,7 @@ public class CashWithdrawalsServiceImpl extends ServiceImpl<CashWithdrawalsMappe
 
 
     @Autowired
-    private UserServiceFeign userServiceFeign;
+    private UserFeignClient userServiceFeign;
 
     @Autowired
     private ConfigService configService ;
@@ -208,7 +206,7 @@ public class CashWithdrawalsServiceImpl extends ServiceImpl<CashWithdrawalsMappe
 
 
         // 通过费率计算的手续费
-        BigDecimal poundageFee = amount.multiply(new BigDecimal(withdrawPoundageRate.getValue())).setScale(2,RoundingMode.HALF_UP);
+        BigDecimal poundageFee = amount.multiply(new BigDecimal(withdrawPoundageRate.getValue())).setScale(2, RoundingMode.HALF_UP);
 
         //min 取2 个的最小值
         return poundageFee.min(withdrawMinPoundageFee).equals(poundageFee)?withdrawMinPoundageFee:poundageFee ;

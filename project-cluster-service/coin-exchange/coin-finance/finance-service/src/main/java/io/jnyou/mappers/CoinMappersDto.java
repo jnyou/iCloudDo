@@ -1,7 +1,8 @@
 package io.jnyou.mappers;
 
-import com.bjsxt.domain.Coin;
-import com.bjsxt.dto.CoinDto;
+
+import io.jnyou.domain.Coin;
+import io.jnyou.dto.CoinDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

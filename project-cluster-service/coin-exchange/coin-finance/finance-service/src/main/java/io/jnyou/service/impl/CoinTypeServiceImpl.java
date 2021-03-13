@@ -1,11 +1,12 @@
 package io.jnyou.service.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.domain.CoinType;
-import com.bjsxt.mapper.CoinTypeMapper;
-import com.bjsxt.service.CoinTypeService;
+import io.jnyou.domain.CoinType;
+import io.jnyou.mapper.CoinTypeMapper;
+import io.jnyou.service.CoinTypeService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

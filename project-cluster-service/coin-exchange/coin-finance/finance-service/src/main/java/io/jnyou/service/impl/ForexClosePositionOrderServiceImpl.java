@@ -1,12 +1,11 @@
 package io.jnyou.service.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bjsxt.mapper.ForexClosePositionOrderMapper;
-import com.bjsxt.domain.ForexClosePositionOrder;
-import com.bjsxt.service.ForexClosePositionOrderService;
+import io.jnyou.domain.ForexClosePositionOrder;
+import io.jnyou.mapper.ForexClosePositionOrderMapper;
+import io.jnyou.service.ForexClosePositionOrderService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ForexClosePositionOrderServiceImpl extends ServiceImpl<ForexClosePositionOrderMapper, ForexClosePositionOrder> implements ForexClosePositionOrderService {

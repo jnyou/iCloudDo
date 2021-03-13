@@ -9,6 +9,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.CashRecharge;
 import io.jnyou.domain.Coin;
+import io.jnyou.dto.AdminBankDto;
+import io.jnyou.dto.UserDto;
+import io.jnyou.feign.UserFeignClient;
 import io.jnyou.mapper.CashRechargeMapper;
 import io.jnyou.model.CashParam;
 import io.jnyou.service.CashRechargeService;
@@ -23,16 +26,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class CashRechargeServiceImpl extends ServiceImpl<CashRechargeMapper, CashRecharge> implements CashRechargeService {
 
     @Autowired
-    private UserServiceFeign userServiceFeign;
+    private UserFeignClient userServiceFeign;
 
     @Autowired
     private ConfigService configService;

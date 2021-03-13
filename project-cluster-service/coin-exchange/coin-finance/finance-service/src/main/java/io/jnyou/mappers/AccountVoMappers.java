@@ -1,7 +1,8 @@
 package io.jnyou.mappers;
 
-import com.bjsxt.domain.Account;
-import com.bjsxt.vo.AccountVo;
+
+import io.jnyou.domain.Account;
+import io.jnyou.vo.AccountVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

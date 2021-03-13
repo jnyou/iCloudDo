@@ -2,6 +2,8 @@ package io.jnyou.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.Coin;
+import io.jnyou.dto.CoinDto;
+import io.jnyou.feign.CoinServiceFeign;
 import io.jnyou.model.R;
 import io.jnyou.service.CoinService;
 import io.swagger.annotations.Api;

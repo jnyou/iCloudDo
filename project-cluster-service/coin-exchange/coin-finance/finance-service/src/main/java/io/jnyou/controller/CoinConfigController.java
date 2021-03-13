@@ -17,30 +17,30 @@ import org.springframework.web.bind.annotation.*;
 public class CoinConfigController {
 
     @Autowired
-    private CoinConfigService coinConfigService ;
+    private CoinConfigService coinConfigService;
 
 
     @GetMapping("/info/{coinId}")
     @ApiOperation(value = "查询币种的配置信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "coinId" ,value = "币种的id值")
+            @ApiImplicitParam(name = "coinId", value = "币种的id值")
     })
-    public R<CoinConfig> getCoinConfig(@PathVariable("coinId") Long coinId){
-        CoinConfig coinConfig =  coinConfigService.findByCoinId(coinId) ;
-        return R.ok(coinConfig) ;
+    public R<CoinConfig> getCoinConfig(@PathVariable("coinId") Long coinId) {
+        CoinConfig coinConfig = coinConfigService.findByCoinId(coinId);
+        return R.ok(coinConfig);
     }
 
 
     @PatchMapping
     @ApiOperation(value = "币种配置的修改操作")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "coinConfig" ,value ="coinConfig的json数据" )
+            @ApiImplicitParam(name = "coinConfig", value = "coinConfig的json数据")
     })
-    public R  update(@RequestBody  @Validated  CoinConfig coinConfig){
-       boolean saveOrUpdate  =  coinConfigService.updateOrSave(coinConfig) ;
-        if(saveOrUpdate){
-            return R.ok() ;
+    public R update(@RequestBody @Validated CoinConfig coinConfig) {
+        boolean saveOrUpdate = coinConfigService.updateOrSave(coinConfig);
+        if (saveOrUpdate) {
+            return R.ok();
         }
-        return R.fail("修改失败") ;
+        return R.fail("修改失败");
     }
 }
