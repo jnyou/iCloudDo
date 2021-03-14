@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * 资金账户流水
  */
-@ApiModel(value = "com-bjsxt-domain-AccountDetail")
+@ApiModel(value = "io-jnyou-domain-AccountDetail")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -130,4 +130,27 @@ public class AccountDetail {
     @TableField(exist = false)
     @ApiModelProperty(value = "用户的真实名称")
     private String realName ;
+
+
+    public AccountDetail(Long userId,
+                         Long coinId,
+                         Long accountId,
+                         Long refAccountId,
+                         Long orderId,
+                         Integer direction,
+                         String businessType,
+                         BigDecimal amount,
+                         BigDecimal fee,
+                         String remark) {
+        this.userId = userId;
+        this.coinId = coinId;
+        this.accountId = accountId;
+        this.refAccountId = refAccountId;
+        this.orderId = orderId;
+        this.direction = direction.byteValue();
+        this.businessType = businessType;
+        this.amount = amount;
+        this.fee = fee;
+        this.remark = remark;
+    }
 }

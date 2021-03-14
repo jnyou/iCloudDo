@@ -2,11 +2,12 @@ package io.jnyou.mappers;
 
 
 import io.jnyou.domain.Coin;
-import io.jnyou.dto.CoinDto;
+import io.jnyou.feign.dto.CoinDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+
 
 @Mapper(componentModel = "spring")
 public interface CoinMappersDto {

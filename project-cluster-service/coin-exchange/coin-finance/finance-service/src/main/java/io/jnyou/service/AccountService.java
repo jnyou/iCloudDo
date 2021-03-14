@@ -1,5 +1,6 @@
 package io.jnyou.service;
 
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.jnyou.domain.Account;
 import io.jnyou.vo.SymbolAssetVo;
@@ -52,5 +53,66 @@ public interface AccountService extends IService<Account> {
      * @return
      */
     SymbolAssetVo getSymbolAssert(String symbol, Long userId);
+
+
+    /**
+     * 用户资金的划转
+     * @param adminId
+     * @param userId
+     * @param coinId
+     * @param num
+     * @param fee
+     * @param remark
+     * @param businessType
+     * @param direction
+     * @return
+     */
+    Boolean transferAccountAmount(Long adminId, Long userId, Long coinId,Long orderNum , BigDecimal num, BigDecimal fee,String remark,String businessType,Byte direction);
+
+    /**
+     * 给用户扣减钱
+     * @param adminId
+     *   操作的人
+     * @param userId
+     * 用户的id
+     * @param coinId
+     * 币种的id
+     * @param orderNum
+     * 订单的编号
+     * @param num
+     * 扣减的余额
+     * @param fee
+     * 费用
+     * @param remark
+     * 备注
+     * @param businessType
+     * 业务类型
+     * @param direction
+     * 方向
+     * @return
+     */
+    Boolean decreaseAccountAmount(Long adminId, Long userId, Long coinId, Long orderNum ,BigDecimal num, BigDecimal fee,String remark, String businessType, byte direction);
+
+    /**
+     *
+     * @param fromUserId
+     * @param toUserId
+     * @param coinId
+     * @param amount
+     * @param businessType
+     * @param orderId
+     */
+    void transferBuyAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId);
+
+    /**
+     *
+     * @param fromUserId
+     * @param toUserId
+     * @param coinId
+     * @param amount
+     * @param businessType
+     * @param orderId
+     */
+    void transferSellAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId);
 }
 

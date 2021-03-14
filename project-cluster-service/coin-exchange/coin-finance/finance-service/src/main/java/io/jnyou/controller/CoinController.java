@@ -1,9 +1,10 @@
 package io.jnyou.controller;
 
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.jnyou.domain.Coin;
-import io.jnyou.dto.CoinDto;
-import io.jnyou.feign.CoinServiceFeign;
+import io.jnyou.feign.dto.CoinDto;
+import io.jnyou.feign.feign.CoinServiceFeign;
 import io.jnyou.model.R;
 import io.jnyou.service.CoinService;
 import io.swagger.annotations.Api;
@@ -95,7 +96,7 @@ public class CoinController implements CoinServiceFeign {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "coin" ,value = "coin的json数据")
     })
-    public R update(@RequestBody @Validated  Coin coin){
+    public R update(@RequestBody @Validated Coin coin){
         boolean updateById = coinService.updateById(coin);
         if(updateById){
             return R.ok() ;

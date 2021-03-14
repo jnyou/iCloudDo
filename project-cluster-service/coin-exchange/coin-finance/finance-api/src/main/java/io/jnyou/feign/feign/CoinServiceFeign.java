@@ -1,7 +1,8 @@
-package io.jnyou.feign;
+package io.jnyou.feign.feign;
+
 
 import io.jnyou.config.feign.FeignConfig;
-import io.jnyou.dto.CoinDto;
+import io.jnyou.feign.dto.CoinDto;
 import org.springframework.cloud.openfeign.FeignClient;
 
 import java.util.List;

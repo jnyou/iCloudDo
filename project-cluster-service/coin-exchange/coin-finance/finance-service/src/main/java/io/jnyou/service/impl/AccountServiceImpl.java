@@ -1,4 +1,4 @@
-package com.bjsxt.service.impl;
+package io.jnyou.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

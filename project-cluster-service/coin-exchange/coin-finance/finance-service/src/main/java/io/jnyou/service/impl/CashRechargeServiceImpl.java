@@ -3,18 +3,24 @@ package io.jnyou.service.impl;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.RandomUtil;
+import com.alicp.jetcache.Cache;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.CreateCache;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.CashRecharge;
+import io.jnyou.domain.CashRechargeAuditRecord;
 import io.jnyou.domain.Coin;
 import io.jnyou.domain.Config;
 import io.jnyou.dto.AdminBankDto;
 import io.jnyou.dto.UserDto;
 import io.jnyou.feign.AdminBankServiceFeign;
 import io.jnyou.feign.UserFeignClient;
+import io.jnyou.mapper.CashRechargeAuditRecordMapper;
 import io.jnyou.mapper.CashRechargeMapper;
 import io.jnyou.model.CashParam;
+import io.jnyou.service.AccountService;
 import io.jnyou.service.CashRechargeService;
 import io.jnyou.service.CoinService;
 import io.jnyou.service.ConfigService;
@@ -29,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,12 +49,18 @@ public class CashRechargeServiceImpl extends ServiceImpl<CashRechargeMapper, Cas
 
     @Autowired
     private AdminBankServiceFeign adminBankServiceFeign;
-
+    @Autowired
+    private CashRechargeAuditRecordMapper cashRechargeAuditRecordMapper;
+    @Autowired
+    private AccountService accountService;
     @Autowired
     private CoinService coinService;
 
     @Autowired
     private Snowflake snowflake;
+
+    @CreateCache(name = "CASH_RECHARGE_LOCK:", expire = 100, timeUnit = TimeUnit.SECONDS, cacheType = CacheType.BOTH)
+    private Cache<String, String> cache;
 
     /**
      * 分页条件查询充值记录  -- 最多进行一次远程调用
@@ -219,5 +232,62 @@ public class CashRechargeServiceImpl extends ServiceImpl<CashRechargeMapper, Cas
             throw new IllegalArgumentException("充值数量太小");
         }
     }
+
+
+    /**
+     * 现金的充值审核
+     *
+     * @param userId                  审核人
+     * @param cashRechargeAuditRecord 审核的数据
+     * @return 是否审核成功
+     */
+    @Override
+    public boolean cashRechargeAudit(Long userId, CashRechargeAuditRecord cashRechargeAuditRecord) {
+        //1 当一个员工审核时,另一个员工不能在审核
+        //CASH_RECHARGE_LOCK:1231123
+        boolean tryLockAndRun = cache.tryLockAndRun(cashRechargeAuditRecord.getId() + "", 300, TimeUnit.SECONDS, () -> {
+            Long rechargeId = cashRechargeAuditRecord.getId();
+            CashRecharge cashRecharge = getById(rechargeId);
+            if (cashRecharge == null) {
+                throw new IllegalArgumentException("充值记录不存在");
+            }
+            Byte status = cashRecharge.getStatus();
+            if (status == 1) {
+                throw new IllegalArgumentException("充值记录审核已经通过");
+            }
+            CashRechargeAuditRecord cashRechargeAuditRecordDb = new CashRechargeAuditRecord();
+            cashRechargeAuditRecordDb.setAuditUserId(userId);
+            cashRechargeAuditRecordDb.setStatus(cashRechargeAuditRecord.getStatus());
+            cashRechargeAuditRecordDb.setRemark(cashRechargeAuditRecord.getRemark());
+            Integer step = cashRecharge.getStep() + 1;
+            cashRechargeAuditRecordDb.setStep(step.byteValue());
+            // 2 保存审核记录
+
+            int insert = cashRechargeAuditRecordMapper.insert(cashRechargeAuditRecordDb);
+
+            if (insert == 0) {
+                throw new IllegalArgumentException("审核记录保存失败");
+            }
+            cashRecharge.setStatus(cashRechargeAuditRecord.getStatus());
+            cashRecharge.setAuditRemark(cashRechargeAuditRecord.getRemark());
+            cashRecharge.setStep(step.byteValue());
+            //管理员没有通过审核
+            if (cashRechargeAuditRecord.getStatus() == 2) { // 拒绝
+                updateById(cashRecharge);
+            } else {  // 管理员通过审核 ,给用户的账户充值
+
+                // 用户的余额增加
+                Boolean isOk = accountService.transferAccountAmount(userId,
+                        cashRecharge.getUserId(), cashRecharge.getCoinId(), cashRecharge.getId(), cashRecharge.getNum(), cashRecharge.getFee(),
+                        "充值", "recharge_into",(byte)1);
+                if (isOk) {
+                    cashRecharge.setLastTime(new Date()); // 设置完成时间
+                    updateById(cashRecharge);
+                }
+            }
+        });
+        return tryLockAndRun;
+    }
+
 }
 

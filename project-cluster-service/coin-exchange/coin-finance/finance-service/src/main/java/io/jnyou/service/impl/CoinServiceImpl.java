@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jnyou.domain.Coin;
-import io.jnyou.dto.CoinDto;
+import io.jnyou.feign.dto.CoinDto;
 import io.jnyou.mapper.CoinMapper;
 import io.jnyou.mappers.CoinMappersDto;
 import io.jnyou.service.CoinService;

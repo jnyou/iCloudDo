@@ -55,4 +55,10 @@ public class UserDto {
     @ApiModelProperty(value="真实姓名")
     private String realName;
 
+    /**
+     * 支付密码
+     */
+    @ApiModelProperty(value="支付密码")
+    private String paypassword ;
+
 }

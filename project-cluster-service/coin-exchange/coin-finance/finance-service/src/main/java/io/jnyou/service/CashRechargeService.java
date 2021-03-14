@@ -3,6 +3,7 @@ package io.jnyou.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.jnyou.domain.CashRecharge;
+import io.jnyou.domain.CashRechargeAuditRecord;
 import io.jnyou.model.CashParam;
 import io.jnyou.vo.CashTradeVo;
 
@@ -56,5 +57,16 @@ public interface CashRechargeService extends IService<CashRecharge> {
      * @return
      */
     CashTradeVo buy(Long userId, CashParam cashParam);
+
+    /**
+     * 现金的充值审核
+     * @param userId
+     *  审核人
+     * @param cashRechargeAuditRecord
+     *  审核的数据
+     * @return
+     *  是否审核成功
+     */
+    boolean cashRechargeAudit(Long userId, CashRechargeAuditRecord cashRechargeAuditRecord);
 }
 
