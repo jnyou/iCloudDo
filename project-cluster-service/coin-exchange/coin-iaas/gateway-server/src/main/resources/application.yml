@@ -31,20 +31,34 @@ spring:
             - Path=/finance/**
           filters:
             - StripPrefix=1 # 将当前访问/finance/xx -> 将finance自动去掉
+        - id: exchange-service_router # 交易系统的路由
+          uri: lb://exchange-service   # 转发到那个目的地
+          predicates:
+            - Path=/exchange/**
+          filters:
+            - StripPrefix=1 # 当前端访问/exchange/xx,exchange
+    # 通过网关来完成对2 种维度的限流： 网关维度 + API 分组
     sentinel:
-      datasource:
-        ds1.nacos:
-          server-addr: nacos-server:8848
-          data-id: gw-flow
-          rule-type: gw-flow
-        ds2.nacos:
-          server-addr: nacos-server:8848
-          data-id:  api-group
-          rule-type: gw-api-group
       transport:
-        dashboard: localhost:8333
-        port: 8333
+        dashboard: sentinel-server:8858  # sentinel-dashboard 放在ecs 里面
+      datasource:
+#        ds1.file:
+#          file: classpath:gw-flow.json  # 网关 + API分组的限流
+#          ruleType: gw_flow
+        ds1.nacos: #com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource 使用Nacos持久化我的sentinel 数据时，需要添加nacos-datasource的依赖
+          serverAddr: nacos-server:8848
+          dataId: gw-flow
+          ruleType: gw_flow
+#
+#        ds2.file:
+#          file: classpath:api-group.json
+#          ruleType: gw_api_group
+        ds2.nacos:
+          serverAddr: nacos-server:8848
+          dataId: api-group
+          ruleType: gw_api_group # 我们演示了sentinel-dashboard 的规则的定义，而且规则定义好了后，我们的网关能立马的感知到（生效）（nacos无法感知），但是我们下次重启，会丢失规则。--》nacos
       eager: true # 服务启动直接建立心跳连接
+
   redis:
     host: 192.168.56.10
     port: 6379

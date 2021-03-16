@@ -4,7 +4,6 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.GatewayApiDefinitionManager;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +15,7 @@ import java.util.Set;
  * <p>
  * GatewayRulesController
  * 网关限流策略
+ *
  * @version 1.0.0
  * @author: JnYou
  **/
@@ -25,16 +25,16 @@ public class GatewayRulesController {
     /**
      * 获取当前系统的限流策略
      */
-    @GetMapping("/gateway")
-    public Set<GatewayFlowRule> apiGateway() {
+    @GetMapping("/gw/flow/rules")
+    public Set<GatewayFlowRule> getCurrentGatewayFlowRules() {
         return GatewayRuleManager.getRules();
     }
 
     /**
-     * 获取定义的api分组
+     * 获取我定义的api分组
      */
-    @GetMapping("/api")
-    public Set<ApiDefinition> getApiGroupRules(){
+    @GetMapping("/gw/api/groups")
+    public Set<ApiDefinition> getApiGroups() {
         return GatewayApiDefinitionManager.getApiDefinitions();
     }
 }
