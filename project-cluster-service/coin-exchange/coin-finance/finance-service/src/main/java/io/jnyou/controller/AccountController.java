@@ -1,6 +1,7 @@
 package io.jnyou.controller;
 
 import io.jnyou.domain.Account;
+import io.jnyou.feign.feign.AccountServiceFeign;
 import io.jnyou.model.R;
 import io.jnyou.service.AccountService;
 import io.jnyou.vo.SymbolAssetVo;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/account")
 @Api(tags = "资产服务的控制器")
-public class AccountController {
+public class AccountController implements AccountServiceFeign {
 
 
     @Autowired
@@ -51,5 +54,20 @@ public class AccountController {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()) ;
         SymbolAssetVo symbolAssetVo =  accountService.getSymbolAssert(symbol,userId) ;
         return R.ok(symbolAssetVo) ;
+    }
+
+    @Override
+    public void lockUserAmount(Long userId, Long coinId, BigDecimal mum, String type, Long orderId, BigDecimal fee) {
+        accountService.lockUserAmount(userId,coinId,mum,type,orderId,fee);
+    }
+
+    @Override
+    public void transferBuyAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId) {
+
+    }
+
+    @Override
+    public void transferSellAmount(Long fromUserId, Long toUserId, Long coinId, BigDecimal amount, String businessType, Long orderId) {
+
     }
 }

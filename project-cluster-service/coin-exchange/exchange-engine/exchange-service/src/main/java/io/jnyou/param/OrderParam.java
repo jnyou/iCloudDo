@@ -16,20 +16,20 @@ public class OrderParam {
 
     @NotBlank
     @ApiModelProperty(value = "交易对的符号")
-    private String symbol ;
+    private String symbol;
 
 
     @NotNull
-   @ApiModelProperty(value = "价格")
-    private BigDecimal price ;
+    @ApiModelProperty(value = "价格")
+    private BigDecimal price;
 
     @NotNull
     @ApiModelProperty(value = "数量")
-    private BigDecimal volume ;
+    private BigDecimal volume;
 
 
     @NotNull
     @ApiModelProperty(value = "类型: 1 :  买入 2 :卖出")
-    private Integer  type ;
+    private Integer type;
 
 }
