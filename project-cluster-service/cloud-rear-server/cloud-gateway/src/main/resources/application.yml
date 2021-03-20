@@ -98,9 +98,6 @@ spring:
           uri: lb://product-service
           predicates:
             - Host=gmall.com,item.gmall.com
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
     sentinel:
       transport:
         dashboard: localhost:8333

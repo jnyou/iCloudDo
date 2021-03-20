@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     username: root
-    password: admin
-    url: jdbc:mysql://localhost:3306/gmall_wms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    password: root
+    url: jdbc:mysql://mysql-server:3306/db_mall_wms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: ware-service
@@ -14,13 +14,10 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:8333
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   rabbitmq:
-    host: 192.168.56.10
+    host: rabbit-server
     virtual-host: /
     listener:
       simple:
@@ -28,7 +25,7 @@ spring:
 
   # 服务追踪发现
   zipkin:
-    base-url: http://192.168.56.10:9411/
+    base-url: http://zipkin-server:9411/
     # 关闭自己的服务发现功能
     discovery-client-enabled: false
     sender:

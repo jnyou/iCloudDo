@@ -1,10 +1,6 @@
 spring:
   application:
     name: seckill-service
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
     sentinel:
       transport:
         port: 8719
@@ -20,13 +16,13 @@ spring:
   session:
     store-type: redis
   rabbitmq:
-    host: 192.168.56.10
+    host: rabbit-server
     virtual-host: /
   thymeleaf:
     cache: false
   # 服务追踪发现
   zipkin:
-    base-url: http://192.168.56.10:9411/
+    base-url: http://zipkin-server:9411/
     # 关闭自己的服务发现功能
     discovery-client-enabled: false
     sender:

@@ -25,7 +25,7 @@ spring:
   redis:
     open: false  # 是否开启redis缓存  true开启   false关闭
     database: 0
-    host: localhost
+    host: redis-server
     port: 6379
     password:    # 密码（默认为空）
     timeout: 6000ms  # 连接超时时长（毫秒）
@@ -39,16 +39,12 @@ spring:
     throw-exception-if-no-handler-found: true
   application:
     name: admin-vue
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
 #  resources:
 #    add-mappings: false
 
   # 服务追踪发现
   zipkin:
-    base-url: http://192.168.56.10:9411/
+    base-url: http://zipkin-server:9411/
     # 关闭自己的服务发现功能
     discovery-client-enabled: false
     sender:
