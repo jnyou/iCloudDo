@@ -6,19 +6,16 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:8333
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
   application:
     name: cart-service
   redis:
-    host: 192.168.56.10
+    host: redis-server
   session:
     store-type: redis
 
   # 服务追踪发现
   zipkin:
-    base-url: http://192.168.56.10:9411/
+    base-url: http://zipkin-server:9411/
     # 关闭自己的服务发现功能
     discovery-client-enabled: false
     sender:

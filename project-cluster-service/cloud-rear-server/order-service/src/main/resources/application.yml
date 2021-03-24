@@ -3,8 +3,8 @@ server:
 spring:
   datasource:
     username: root
-    password: admin
-    url: jdbc:mysql://127.0.0.1:3306/gmall_oms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    password: root
+    url: jdbc:mysql://mysql-server:3306/db_mall_oms?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: order-service
@@ -13,11 +13,8 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:8333
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
   rabbitmq:
-    host: 192.168.56.10
+    host: rabbit-server
     port: 5672
     virtual-host: /
     # 开启发送端被broker收到的确认（P->E）
@@ -36,14 +33,14 @@ spring:
   session:
     store-type: redis
   redis:
-    host: 192.168.56.10
+    host: redis-server
     port: 6379
   mvc:
     date-format: yyyy-MM-dd HH:mm:ss
 
   # 服务追踪发现
   zipkin:
-    base-url: http://192.168.56.10:9411/
+    base-url: http://zipkin-server:9411/
     # 关闭自己的服务发现功能
     discovery-client-enabled: false
     sender:
