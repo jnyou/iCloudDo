@@ -14,6 +14,7 @@ import java.util.Date;
  * @Author: jnyou
  **/
 @Data
+@AllArgsConstructor
 public class Student {
 
     private Long id;
@@ -34,6 +35,4 @@ public class Student {
         this.socre = score;
     }
 
-    public Student(long l, String 张三, String s, String 一年级, int i, BigDecimal one, Date date) {
-    }
 }

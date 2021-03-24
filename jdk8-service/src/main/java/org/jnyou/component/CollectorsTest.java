@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jnyou.entity.Student;
 import org.jnyou.util.BigDecimalUtils;
 
@@ -158,8 +159,8 @@ public class CollectorsTest {
     }
 
     private static void distinct1() {
-        String[] arr1 = { "a", "b", "c", "d" };
-        String[] arr2 = { "d", "e", "f", "g" };
+        String[] arr1 = {"a", "b", "c", "d"};
+        String[] arr2 = {"d", "e", "f", "g"};
 
         Stream<String> stream1 = Stream.of(arr1);
         Stream<String> stream2 = Stream.of(arr2);
@@ -208,25 +209,48 @@ public class CollectorsTest {
         System.out.println("员工按性别、地区：" + group2);
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Engine {
+        Integer code;
+        String value;
+        Date moment;
+    }
+
     private static void statistics() {
         List<Person> personList = new ArrayList<Person>();
         personList.add(new Person("Tom", 8900, 23, "male", "New York"));
         personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
         personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
 
+        List<Engine> engines = new ArrayList<>();
+        engines.add(new Engine(1115, "300", new Date()));
+        engines.add(new Engine(1116, "300", new Date()));
+        engines.add(new Engine(1117, "457", new Date()));
+
         // 求总数
         Long count = personList.stream().collect(Collectors.counting());
+
         // 求平均工资
         Double average = personList.stream().collect(Collectors.averagingDouble(Person::getSalary));
+
+        double v = engines.stream().map(item -> Double.parseDouble(item.getValue().trim())).mapToLong(Double::intValue).average().orElse(0D);
+        // 保留两位小数
+        BigDecimal b = new BigDecimal(v);
+        double f = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         // 求最高工资
         Optional<Integer> max = personList.stream().map(Person::getSalary).collect(Collectors.maxBy(Integer::compare));
+
         // 求工资之和
         Integer sum = personList.stream().collect(Collectors.summingInt(Person::getSalary));
+
         // 一次性统计所有信息
         DoubleSummaryStatistics collect = personList.stream().collect(Collectors.summarizingDouble(Person::getSalary));
 
         System.out.println("员工总数：" + count);
         System.out.println("员工平均工资：" + average);
+        System.out.println("String类型的平均值" + f);
         System.out.println("员工工资总和：" + sum);
         System.out.println("员工工资所有统计：" + collect);
     }
@@ -332,6 +356,7 @@ public class CollectorsTest {
         loadData().stream().forEach(student -> System.out.println(student.getId()));
         System.out.println();
     }
+
     public static void sorted1() {
         List<Person> personList = new ArrayList<Person>();
 
@@ -467,12 +492,12 @@ public class CollectorsTest {
     //初始化数据
     public static List<Student> loadData() {
         List<Student> list = Arrays.asList(
-                new Student(1001L, "张三", "2班", "一年级", 85, BigDecimal.ONE, new Date()),
-                new Student(1002L, "李四", "2班", "一年级", 50, BigDecimal.ONE, new Date()),
-                new Student(1003L, "李四", "2班", "二年级", 55, BigDecimal.ONE, new Date()),
-                new Student(1004L, "张三", "1班", "一年级", 70, BigDecimal.ONE, new Date()),
-                new Student(1005L, "李四", "2班", "二年级", 60, BigDecimal.ONE, new Date()),
-                new Student(1006L, "张三", "2班", "一年级", 98, BigDecimal.ONE, new Date())
+                new Student(1001L, "张三", "2班", "一年级", 85, 50, BigDecimal.ONE, new Date()),
+                new Student(1002L, "李四", "2班", "一年级", 50, 70, BigDecimal.ONE, new Date()),
+                new Student(1003L, "李四", "2班", "二年级", 55, 70, BigDecimal.ONE, new Date()),
+                new Student(1004L, "张三", "1班", "一年级", 70, 70, BigDecimal.ONE, new Date()),
+                new Student(1005L, "李四", "2班", "二年级", 60, 70, BigDecimal.ONE, new Date()),
+                new Student(1006L, "张三", "2班", "一年级", 98, 70, BigDecimal.ONE, new Date())
         );
         return list;
     }
