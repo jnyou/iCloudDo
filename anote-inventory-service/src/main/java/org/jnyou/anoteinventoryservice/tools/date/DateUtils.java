@@ -5,6 +5,10 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -1182,14 +1186,20 @@ public class DateUtils {
             e.printStackTrace();
         }*/
 
-        String a = DateUtils.getAppointChar(11);
-        long b = DateUtils.getAppointTime(11.49);
-        Date c = DateUtils.stampToDate(String.valueOf(b));
-        Date d = new Date();
-        System.out.println(a);
-        System.out.println(b);
-        System.out.println(c);
-        System.out.println(d);
+//        String a = DateUtils.getAppointChar(11);
+//        long b = DateUtils.getAppointTime(11.49);
+//        Date c = DateUtils.stampToDate(String.valueOf(b));
+//        Date d = new Date();
+//        System.out.println(a);
+//        System.out.println(b);
+//        System.out.println(c);
+//        System.out.println(d);
+
+        System.out.println(getMondayChar());
+        LocalDate localDate = LocalDate.parse(getMondayChar(),DateTimeFormatter.ofPattern(FORMAT_yyyy_MM_ddHHmmss));
+        System.out.println(localDate);
+        LocalDateTime today_end = LocalDateTime.of(localDate, LocalTime.MAX);//当天零点
+        System.out.println(today_end.format(DateTimeFormatter.ofPattern(FORMAT_yyyy_MM_ddHHmmss)));
 
     }
 
