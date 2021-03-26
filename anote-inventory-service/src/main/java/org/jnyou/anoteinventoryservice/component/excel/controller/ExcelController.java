@@ -3,6 +3,8 @@ package org.jnyou.anoteinventoryservice.component.excel.controller;
 import com.alibaba.excel.EasyExcel;
 import org.jnyou.anoteinventoryservice.component.R;
 import org.jnyou.anoteinventoryservice.component.excel.entity.PaymentChangeRecord;
+import org.jnyou.anoteinventoryservice.component.excel.service.ExcelService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +28,9 @@ import java.util.List;
 @RequestMapping("/excel/operate")
 public class ExcelController {
 
+    @Autowired
+    ExcelService excelService;
+
     /**
      * 导入excel
      *
@@ -37,6 +42,7 @@ public class ExcelController {
     @RequestMapping(value = "excelImport", method = {RequestMethod.GET, RequestMethod.POST})
     public R excelImport(HttpServletRequest request, @RequestParam("uploadFile") MultipartFile[] files) {
         // TODO 调用service方法  xxxService.excelImport(request, files)
+        excelService.excelImport(request,files);
         return R.ok();
     }
 
@@ -50,6 +56,7 @@ public class ExcelController {
     @RequestMapping(value = "/downloadExcel", method = {RequestMethod.GET, RequestMethod.POST})
     public void downloadExcel(HttpServletResponse response, HttpServletRequest request) {
         // TODO 调用service方法  xxxService.downloadExcel(response,request);
+        excelService.downloadExcel(response,request);
     }
 
     /**

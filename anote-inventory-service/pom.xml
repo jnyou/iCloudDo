@@ -168,6 +168,12 @@
             <version>1.2.0.Final</version>
         </dependency>
 
+        <!-- hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.5.7</version>
+        </dependency>
 
     </dependencies>
 
