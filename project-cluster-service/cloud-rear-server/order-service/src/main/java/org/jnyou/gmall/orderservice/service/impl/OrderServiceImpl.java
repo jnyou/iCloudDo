@@ -167,8 +167,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         responseVo.setCode(0);
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
 
-        // 1、验证防重令牌[令牌的对比和删除应该是原子操作，0-令牌失败 - 1、删除成功]
-        // 译：如果从redis中获取一个key和传递过来的树进行对比，删除这个key，成功后返回1，失败返回0
+        // 1、验证防重令牌[令牌的对比和删除应该是原子操作，0-令牌失败 - 1、删除成功] 保证接口幂等性
+        // 译：如果从redis中获取一个key和传递过来的数进行对比，删除这个key，成功后返回1，失败返回0
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         String redisToken = stringRedisTemplate.opsForValue().get(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId());
         Long result = stringRedisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId()), vo.getOrderToken());
@@ -179,7 +179,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         } else {
             // 验证成功
             responseVo.setCode(0);
-            // TODO  创建订单、验令牌、验价格、锁库存
+            // 创建订单、验价格、锁库存
             // 1、创建订单
             OrderCreateTo ordered = createOrdered();
 
@@ -219,13 +219,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 responseVo.setCode(2);
             }
         }
-//        if(null != vo.getOrderToken() && redisToken.equals(vo.getOrderToken())){
-//            // 令牌验证通过
-//
-//        } else {
-//            // 不通过
-//
-//        }
         return responseVo;
     }
 
@@ -251,7 +244,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 定期扫描数据库，将失败的消息再发送一遍
             rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTo);
         } catch (Exception e) {
-            // 将设法将消息进行重试发送
+            // 想方法将消息进行重试发送
         }
 
     }
@@ -406,7 +399,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderSn);
         orderEntity.setMemberId(memberResponseVo.getId());
-        // 远程获取收回地址信息
+        // 远程获取收货地址信息
         R r = wareFeignClient.getFare(orderSubmitVo.getAddrId());
         FareVo data = r.getData(new TypeReference<FareVo>() {
         });

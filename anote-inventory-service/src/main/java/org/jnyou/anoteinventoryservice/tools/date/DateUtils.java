@@ -1195,9 +1195,11 @@ public class DateUtils {
 //        System.out.println(c);
 //        System.out.println(d);
 
-        System.out.println(getMondayChar());
+//        System.out.println(getMondayChar());
         LocalDate localDate = LocalDate.parse(getMondayChar(),DateTimeFormatter.ofPattern(FORMAT_yyyy_MM_ddHHmmss));
-        System.out.println(localDate);
+        LocalDateTime of = LocalDateTime.of(localDate, LocalTime.MIN);
+        System.out.println(of.format(DateTimeFormatter.ofPattern(FORMAT_yyyy_MM_ddHHmmss)));
+
         LocalDateTime today_end = LocalDateTime.of(localDate, LocalTime.MAX);//当天零点
         System.out.println(today_end.format(DateTimeFormatter.ofPattern(FORMAT_yyyy_MM_ddHHmmss)));
 
