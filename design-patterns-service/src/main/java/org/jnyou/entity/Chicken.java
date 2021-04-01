@@ -6,19 +6,16 @@ import lombok.Data;
  * 代码千万行，注释第一行
  * 注释不规范，同事泪两行
  * <p>
- * Food
+ * Chicken
  *
  * @author: youjiannan
- * @date 03月30日 11:47
+ * @date 04月01日 10:00
  **/
 @Data
-public class Food {
+public class Chicken extends Food{
 
-    String name;
-    Integer weight;
-    private String chicken;
-    private String spicy;
-    private String salt;
-
+//    private String chicken;
+//    private String spicy;
+//    private String salt;
 
 }
