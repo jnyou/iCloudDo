@@ -1,27 +1,50 @@
-// getSingleton
-@Nullable
-protected Object getSingleton(String beanName, boolean allowEarlyReference) {
- // 尝试从缓存中获取成品的目标对象，如果存在，则直接返回
- Object singletonObject = this.singletonObjects.get(beanName);
- // 如果缓存中不存在目标对象，则判断当前对象是否已经处于创建过程中，在前面的讲解中，第一次尝试获取A对象
- // 的实例之后，就会将A对象标记为正在创建中，因而最后再尝试获取A对象的时候，这里的if判断就会为true
- if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
-  synchronized (this.singletonObjects) {
-   singletonObject = this.earlySingletonObjects.get(beanName);
-   if (singletonObject == null && allowEarlyReference) {
-    // 这里的singletonFactories是一个Map，其key是bean的名称，而值是一个ObjectFactory类型的
-    // 对象，这里对于A和B而言，调用图其getObject()方法返回的就是A和B对象的实例，无论是否是半成品
-    ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
-    if (singletonFactory != null) {
-     // 获取目标对象的实例
-     singletonObject = singletonFactory.getObject();
-     this.earlySingletonObjects.put(beanName, singletonObject);
-     this.singletonFactories.remove(beanName);
-    }
-   }
-  }
- }
- return singletonObject;
+1. spring bean的注入方式有哪些，循环依赖问题如何解决的？
+   构造函数注入，属性注入
+
+   构造函数注入无法解决循环依赖问题（双方都通过构造函数注入对方）
+
+   属性注入可以解决循环依赖问题：使用了三级缓存
+
+   以单例为例 DefaultSingletonBeanRegistry ，看一下其中的源码：
+
+public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
+
+	/** 一级缓存：用于存放完全初始化好的 bean **/
+	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+
+	/** 二级缓存：存放原始的 bean 对象（已经初始化但是尚未填充属性），用于解决循环依赖 */
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+
+	/** 三级级缓存：存放 bean 工厂对象，用于解决循环依赖 */
+	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
+
+        @Nullable
+	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+		// 先从一级缓存查找，如果没有，判断当前对象是否正在初始化，如果该bean正在创建中，说明发生了循环依赖
+		Object singletonObject = this.singletonObjects.get(beanName);
+		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+                        // 从二级缓存中查找，如果找到就返回，否则从三级缓存中查找
+			singletonObject = this.earlySingletonObjects.get(beanName);
+			if (singletonObject == null && allowEarlyReference) {
+				synchronized (this.singletonObjects) {
+					//
+					singletonObject = this.singletonObjects.get(beanName);
+					if (singletonObject == null) {
+						singletonObject = this.earlySingletonObjects.get(beanName);
+						if (singletonObject == null) {
+							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
+							if (singletonFactory != null) {
+								singletonObject = singletonFactory.getObject();
+								this.earlySingletonObjects.put(beanName, singletonObject);
+								this.singletonFactories.remove(beanName);
+							}
+						}
+					}
+				}
+			}
+		}
+		return singletonObject;
+	}
 }
 
 
@@ -59,3 +82,11 @@ protected Object doCreateBean(final String beanName, final RootBeanDefinition mb
 
  return exposedObject;
 }
+
+
+过滤器(filter)、拦截器(interceptor)、和AOP的区别
+过滤器(filter)拦截web请求的url地址，只是适用于web中，依赖于Servlet容器，利用Java的回调机制进行实现。可以拦截到请求和响应的过程，做一些额外的处理，主要做过滤，认证等
+
+拦截器(interceptor) 拦截 url请求，主要有三个方法preHandle，postHandle，afterCompletion，主要做国际化，主题更换，过滤等
+
+AOP 面向切面，更加细粒度的控制，如拦截包、类、方法等，如事务，日志等。
