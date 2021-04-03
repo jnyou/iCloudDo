@@ -198,11 +198,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
+     * redisson分布式锁的实现原理：
      * Redis分布式锁测试：官方文档：http://www.redis.cn/topics/distlock.html
-     * 总结：分布式锁两个核心原理：1、原子加锁，使用 SET resource_name my_random_value NX PX 30000。
+     *
+     * 总结：分布式锁两个核心原理： 最基本的原理是set NX EX原理（命令：set lock uuid EX 300 NX），（redis中不存某个key时加锁） 对应java中的redisTemplate.opsForValue().setIfAbsent()方法
+     * 1、原子加锁，使用 set(key,value,NX,EX,timeout)：SET resource_name my_random_value NX EX 30000。
      * 2、原子解锁，使用Lua脚本原子解锁
      *
-     * @Author JnYou
+     * @return java.util.Map<java.lang.String, java.util.List < org.jnyou.gmall.productservice.vo.web.Catelog2Vo>>
      */
     public Map<String, List<Catelog2Vo>> getCatelogJsonFromDbWithRedisLock() {
 
@@ -332,6 +335,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return getDataFromDb();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList, Long parentId) {
         List<CategoryEntity> collect = selectList.stream().filter(item -> item.getParentCid().equals(parentId)).collect(Collectors.toList());

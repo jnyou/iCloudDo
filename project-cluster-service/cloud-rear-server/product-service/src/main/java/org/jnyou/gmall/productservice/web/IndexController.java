@@ -53,8 +53,16 @@ public class IndexController {
     }
 
     /**
-     * 看门狗（LockWatchdogTimeout） 实现原理：
-     * @Author JnYou
+     * redisson的强大之处：（内部有一个看门狗（LockWatchdogTimeout）机制）
+     *  1、锁的自动续期：如果业务处理时间超长，运行期间自动给锁续上新的30s（默认时间）。不用担心业务时间长，锁自动过期被删掉的问题。前提是自动解锁时间一定要大于业务执行时间
+     *  2、解决死锁问题：加锁的业务只要运行完成，就不会给当前的锁续期，即使不手动解锁，锁默认在30s以后自动删除。
+     *
+     * 看门狗（LockWatchdogTimeout）实现原理：
+     *      如果指定了锁的超时时间，就发送给Redis执行lua脚本执行，进行占锁，默认超时就是我们指定的时间；不会执行看门狗机制。
+     *      未指定锁的超时时间。就使用30 * 1000 【LockWatchdogTimeout看门狗的默认时间30s】，只要占锁成功，就会启动一个定时任务，重新给锁设置过期时间，新的过期时间就是看门狗的默认时间
+     *      啥时候蓄积？this.internalLockLeaseTime / 3L 。 当前看门狗默认时长/3 。 也就是10s蓄积一次，蓄积到满时间，也就是20s的时候就会蓄积一次到30s
+     *    总结：推荐使用lock.lock(30, TimeUnit.SECONDS);这种方式，跳过看门狗机制，过期时间设置稍微大点，如果这个时间还是有异常，那就是程序有问题了。
+     *
      */
     @ResponseBody
     @GetMapping("/hello")
@@ -62,17 +70,19 @@ public class IndexController {
         // 1、获取一把可重入锁（可避免死锁的锁），只要锁的名字一样。就是同一把锁
         RLock lock = redisson.getLock("my-lock");
 
+        //  lock.lock(10, TimeUnit.SECONDS); 会报错抛出异常，在锁到期之后，不会自动续期，因为自动解锁时间一定要大于业务执行时间
         // 加锁
 //        lock.lock(); // 阻塞式等待，相当于自旋方式. 默认加的锁为30s，Redisson内部提供了一个监控锁的看门狗，有自动蓄积的锁时长，执行完成后30s就释放锁
         // 看门狗（LockWatchdogTimeout） 实现原理：
-        // 如果指定了锁的超时时间，就发送给Redis执行lua脚本执行，进行占锁，默认超时就是我们指定的时间
-        // 没有指定时间。就使用30 * 1000 【LockWatchdogTimeout看门狗的默认时间30000L】，只要占锁成功，就会启动一个定时任务，重新给锁设置过期时间，新的过期时间就是看门狗的默认时间
+        // 如果指定了锁的超时时间，就发送给Redis执行lua脚本执行，进行占锁，默认超时就是我们指定的时间；不会执行看门狗机制。
+        // 未指定锁的超时时间。就使用30 * 1000 【LockWatchdogTimeout看门狗的默认时间30s】，只要占锁成功，就会启动一个定时任务，重新给锁设置过期时间，新的过期时间就是看门狗的默认时间
         // 啥时候蓄积？this.internalLockLeaseTime / 3L 。 当前看门狗默认时长/3 。 也就是10s蓄积一次，蓄积到满时间，也就是20s的时候就会蓄积一次到30s
         // 最佳实践
+        // 推荐使用lock.lock(30, TimeUnit.SECONDS);这种方式，跳过看门狗机制，过期时间设置稍微大点，如果这个时间还是有异常，那就是程序有问题了。
         lock.lock(30, TimeUnit.SECONDS);
         try {
             System.out.println("加锁成功，执行业务。。。" + Thread.currentThread().getId());
-            Thread.sleep(30000);
+            Thread.sleep(30000); // 30s业务时间
         }catch (Exception e) {
 
         } finally {
