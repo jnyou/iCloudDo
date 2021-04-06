@@ -96,7 +96,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @return
      * @CacheEvict:失效模式，allEntries:删除某个分区下的所有数据
      * @Caching：同时进行多种缓存操作
-     * @Author jnyou
      */
 //    @CacheEvict(value = {"category"},key = "'getLevel1Category'")
 //    @Caching(evict = {
@@ -120,7 +119,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 因为spel动态取值，所有需要额外加''表示字符串
      * SPEL表达式参考：https://docs.spring.io/spring/docs/5.2.7.RELEASE/spring-framework-reference/integration.html#cache-spel-context
      *
-     * @Author JnYou
      */
     @Override
     @Cacheable(cacheNames = {"category"}, key = "#root.methodName")
@@ -130,10 +128,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     /**
-     * 常规数据，读多写少，即时性，一致性要求不高的额数据，使用spring-cache。
-     * 特殊数据：1、可以使用canal，感知到mysql的更新去更新缓存。2、读写加锁
+     * 常规数据，读多写少，即时性，一致性要求不高的额数据，使用spring-cache。sync：读模式加本地锁，不需要使用分布式这个大锁；
+     * 特殊数据（实时性要求高的）：1、可以使用canal，感知到mysql的更新去更新缓存。 2、读写加锁 3、排队公平锁
      *
-     * @Author JnYou
+     * spring-cache解决redis引发的问题的解决方案：
+     *      缓存穿透：缓存空对象（cache-null-values: true）
+     *      缓存雪崩：加过期时间（time-to-live: 3600000）
+     *      缓存击穿：加本地锁（sync = true）
      */
     @Cacheable(cacheNames = "category", key = "#root.methodName", sync = true)
     @Override
@@ -335,10 +336,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return getDataFromDb();
         }
     }
-
-
-
-
 
 
 
