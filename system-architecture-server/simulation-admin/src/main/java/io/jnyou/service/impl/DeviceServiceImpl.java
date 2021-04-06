@@ -2,17 +2,12 @@ package io.jnyou.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.jnyou.constant.NumberConstant;
 import io.jnyou.core.dos.DeviceDO;
 import io.jnyou.core.dtos.DeviceDTO;
-import io.jnyou.core.enums.AssetState;
 import io.jnyou.core.type.DeviceType;
 import io.jnyou.mapper.DeviceMapper;
 import io.jnyou.service.DeviceService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 

@@ -3,6 +3,12 @@ package io.jnyou.core.dtos;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.sun.tracing.Probe;
+import io.jnyou.core.base.BaseAsset;
+import io.jnyou.core.base.BaseDevice;
+import io.jnyou.core.base.Device;
+import io.jnyou.core.type.ControlType;
+import io.jnyou.core.type.ProbeType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +20,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProbeDTO implements Serializable {
+public class ProbeDTO extends BaseAsset<ProbeType> implements Serializable {
     @TableId(value = "id", type = IdType.INPUT)
     @ApiModelProperty(value="")
     private Integer id;

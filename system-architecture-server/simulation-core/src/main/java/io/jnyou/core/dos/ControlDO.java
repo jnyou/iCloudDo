@@ -1,15 +1,14 @@
 package io.jnyou.core.dos;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-
 
 /**
  * <p>
@@ -17,13 +16,14 @@ import java.io.Serializable;
  * </p>
  *
  * @author jnyou
- * @since 2020-12-21
+ * @since 2020-12-28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName(value="t_probe",autoResultMap = true)
-public class ProbeDO implements Serializable {
+@TableName("t_control")
+@ApiModel(value="Control对象", description="")
+public class ControlDO implements Serializable {
 
 private static final long serialVersionUID=1L;
 
@@ -32,8 +32,8 @@ private static final long serialVersionUID=1L;
 
     private Integer parent;
 
-    private String templateId;
-    
+    private String type;
+
     private Integer catalog;
 
     private String name;
@@ -44,7 +44,7 @@ private static final long serialVersionUID=1L;
 
     private String timeInterval;
 
-    private String savingInterval;
+    private Integer refreshDelay;
 
     private String transform;
 
@@ -52,21 +52,11 @@ private static final long serialVersionUID=1L;
 
     private String memo;
 
+    private Integer removed;
+
     private Float minValue;
 
     private Float maxValue;
 
-    private Integer removed;
 
-    private Integer jobId;
-
-    private Integer state;
-    
-    //用于分组查询
-    @TableField(exist = false)
-    private Integer group;
-    
-    @TableField(exist = false)
-    private ServiceDO service;
-    
 }
