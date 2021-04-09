@@ -164,6 +164,8 @@ public class CollectorsTest {
 
         Stream<String> stream1 = Stream.of(arr1);
         Stream<String> stream2 = Stream.of(arr2);
+        List<String> newLists = Stream.concat(stream1,stream2).collect(Collectors.toList());
+        System.out.println(newLists+"合并");
         // concat:合并两个流 distinct：去重
         List<String> newList = Stream.concat(stream1, stream2).distinct().collect(Collectors.toList());
         // limit：限制从流中获得前n个数据
