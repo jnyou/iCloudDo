@@ -3,7 +3,8 @@ package org.jnyou.reflex;
 import org.jnyou.entity.Goods;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -39,7 +40,7 @@ public class ExamReflex {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Goods goods = (Goods)aClazz.newInstance();
+        Goods goods = (Goods) aClazz.newInstance();
         goods.setGoodName("xiaomi");
         System.out.println(goods.getGoodName());
     }
@@ -52,12 +53,12 @@ public class ExamReflex {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        Goods goods = (Goods)aClazz.newInstance();
+        Goods goods = (Goods) aClazz.newInstance();
         // 获取当前类中的属性
         Field idfiled = aClazz.getDeclaredField("id");
         // 修改属性/方法访问权限（方法使用invoke调用）
         idfiled.setAccessible(true);
-        idfiled.set(goods,1);
+        idfiled.set(goods, 1);
         System.out.println(goods.getId()); // 报错(需要修改属性/方法)：Exception in thread "main" java.lang.IllegalAccessException: Class org.jnyou.reflex.ExamReflex can not access a member of class org.jnyou.entity.Goods with modifiers "private"
 
         // 获取当前类中的方法
@@ -80,19 +81,19 @@ public class ExamReflex {
 
         // 获取指定的构造  在反射类型中  包装类和基本数据类型是两种类型
         Constructor<?> constructor = aClazz.getConstructor(Integer.class);
-        Goods o = (Goods)constructor.newInstance(1);
+        Goods o = (Goods) constructor.newInstance(1);
         System.out.println(o);
 
         // 获取私有的构造(访问需要设置访问权限)
         Constructor<?> declaredConstructor = aClazz.getDeclaredConstructor(String.class);
         declaredConstructor.setAccessible(true);
-        Goods o1 = (Goods)declaredConstructor.newInstance("zs");
+        Goods o1 = (Goods) declaredConstructor.newInstance("zs");
         System.out.println(o1);
 
     }
 
     // 使用反射操作动态的一维数组
-    public static void array1() throws Exception{
+    public static void array1() throws Exception {
 
         Scanner input = new Scanner(System.in);
         System.out.println("请输入数组类型：");
@@ -103,34 +104,48 @@ public class ExamReflex {
         Class<?> aClass = Class.forName(type);
         Object o = Array.newInstance(aClass, num);
 
-        Array.set(o,1,"zs");
-        Array.set(o,2,"zs");
-        Array.set(o,3,"zs");
+        Array.set(o, 1, "zs");
+        Array.set(o, 2, "zs");
+        Array.set(o, 3, "zs");
 
-        System.out.println(Array.get(o,1));
-        System.out.println(Array.get(o,2));
-        System.out.println(Array.get(o,3));
+        System.out.println(Array.get(o, 1));
+        System.out.println(Array.get(o, 2));
+        System.out.println(Array.get(o, 3));
 
 
     }
 
 
     // 使用反射操作动态的二维数组
-    public static void array2() throws Exception{
+    public static void array2() throws Exception {
         Class<Integer> type = Integer.TYPE;
         // 数组的长度
-        int [] dim = {3,3} ;
+        int[] dim = {3, 3};
 
         Object o = Array.newInstance(type, dim);
 
         // 从二维数组获取行
         Object o1 = Array.get(o, 2);
         // 从第二行第一列获取值100
-        Array.set(o1,1,100);
+        Array.set(o1, 1, 100);
 
         // 从第二行第一列取值
-        System.out.println(Array.get(o1,1));
+        System.out.println(Array.get(o1, 1));
 
+    }
+
+    // 动态代理反射实现
+    public static void runProxy() {
+        final List<String> list = new ArrayList<String>();
+        List<String> proxyInstance = (List<String>) Proxy.newProxyInstance(list.getClass().getClassLoader(), list.getClass().getInterfaces(),
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return method.invoke(list, args);
+                    }
+                });
+        proxyInstance.add("你好");
+        System.out.println(list);
     }
 
 }
