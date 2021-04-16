@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <table>
+            <ul v-for="(item,index) in userList">
+                <li>{{item.name}}</li>
+                <li>{{item.age}}</li>
+            </ul>
+        </table>
+    </div>
+    <script src="vue.min.js"></script>
+    <script src="axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: { // 可以定义变量和初始值
+                // 定义变量
+                userList:[]
+            },
+            created(){ // 页面渲染之前执行
+                // 调用定义的方法 this表示当前vue对象
+                this.queryAll()
+
+            },
+            methods:{ // 编写具体的方法
+                // 查询所有用户
+                queryAll(){
+                    // 使用axios发送ajxa请求
+                    // axios.提交方式("请求的接口路径").then(箭头函数).catch(箭头函数)
+                    axios.get("data.json")
+                        .then(res =>{ // 请求成功执行then方法
+                            // res返回的数据
+                            console.log(res);
+                            this.userList = res.data.data.items
+                            
+                        }) 
+                        .catch(error =>{ // 请求失败执行catch方法
+    
+                        }) 
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

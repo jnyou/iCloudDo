@@ -1,0 +1,25 @@
+<script>
+
+   // 1、传统方式创建方法
+   var f1 = function(m){
+       return m;
+   }
+   console.log(f1(2)) // 2
+
+   // 使用箭头函数改造 第一个m：参数；第二个m：返回值
+   var f2 = m => m
+   console.log(f2(8))  // 8
+
+   // demo
+
+   var sum = function(a,b){
+       return a + b
+   }
+   console.log(sum(1,2)) // 3
+
+   // 箭头函数
+   var sum1 = (a,b) => (a + b)
+   console.log(sum1(2,2)) // 4
+
+
+</script>

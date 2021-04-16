@@ -1,0 +1,15 @@
+<script>
+
+   // 1、对象复制
+   let p1 = {name:"zs",age:20}
+
+   let p2 = {...p1}
+   console.log(p2) // {name: "zs",age: 20}
+
+   // 对象合并
+   let age = {age: 15}
+    let name = {name: "Amy"}
+    let person2 = {...age, ...name}
+    console.log(person2)  //{age: 15, name: "Amy"}
+
+</script>

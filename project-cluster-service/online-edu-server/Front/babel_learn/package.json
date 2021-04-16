@@ -1,0 +1,15 @@
+{
+  "name": "babel_learn",
+  "version": "1.0.0",
+  "description": "babel是转换器，把es6代码转换成es5代码，因为写的es6代码对于浏览器的兼容性很差，es5代码兼容性很好，编写es6代码，转换成es5运行",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1"
+  }
+}

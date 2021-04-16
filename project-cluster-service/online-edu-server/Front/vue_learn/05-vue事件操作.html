@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <!--绑定事件-->
+        <button v-on:click="search()">查询</button>
+
+        <!--绑定事件简写-->
+        <button @click="search">查询1</button>
+
+    </div>
+
+
+    <script src="vue.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                // 定义对象
+                searchMap:{
+                    key: 'jnyou'
+                },
+                // 查询结果
+                result:{}
+            },
+            // 定义方法,可多个
+            methods:{
+                search(){
+                    console.log("search");
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
