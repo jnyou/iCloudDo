@@ -19,8 +19,8 @@ public class MinimumDistance {
 
     public static void main(String[] args) {
         String a = "xiao孩子？教育是很重要的！";
-        String b = "教育";
-        System.out.println(SimilarDegree(b, a));
+        String b = "教育很重要啊";
+        System.out.println(SimilarDegree(a,b));
     }
 
     /*
