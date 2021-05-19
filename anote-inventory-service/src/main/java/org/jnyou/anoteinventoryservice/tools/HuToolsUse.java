@@ -24,7 +24,22 @@ public class HuToolsUse {
 
     public static void main(String[] args) {
 //        useDate();
-        test();
+//        test();
+        industryKeyword();
+    }
+
+
+    public static void industryKeyword() {
+
+        String industryRes = "、招聘类[简历]、教育类[简历]";
+        System.out.println(industryRes.split("、").length);
+
+        HashMap<String,Integer> map = new HashMap<>();
+        map.put("招聘类",5);
+        map.put("教育类",1);
+        System.out.println(map.keySet());
+        System.out.println(map.entrySet());
+
     }
 
     /**
