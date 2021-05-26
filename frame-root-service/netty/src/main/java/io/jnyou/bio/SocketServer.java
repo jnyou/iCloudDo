@@ -23,13 +23,11 @@ public class SocketServer {
             final Socket client = serverSocket.accept();
             System.out.println("客户端连接成功！");
             // 优化一点BIO程序的不足和问题，让主线接受连接，开启新的子线程来进行处理
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        handler(client);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            new Thread(() -> {
+                try {
+                    handler(client);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }).start();
         }
