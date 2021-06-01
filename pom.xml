@@ -12,6 +12,7 @@
         <module>anote-inventory-service</module>
         <module>java-basics-service</module>
         <module>algorithm-root-service</module>
+        <module>java-leetcode-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
