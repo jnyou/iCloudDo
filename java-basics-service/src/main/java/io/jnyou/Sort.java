@@ -1,5 +1,7 @@
 package io.jnyou;
 
+import java.util.Arrays;
+
 /**
  * 代码千万行，注释第一行
  * 注释不规范，同事泪两行
@@ -14,6 +16,9 @@ public class Sort {
 
 }
 
+/**
+ * 插入排序
+ */
 class BubbleSort {
 
     public static void main(String[] args) {
@@ -49,6 +54,9 @@ class BubbleSort {
     }
 }
 
+/**
+ * 选择排序
+ */
 class SelectorSort {
 
     /**
@@ -84,4 +92,44 @@ class SelectorSort {
         }
     }
 
+}
+
+
+/**
+ * 插入排序
+ */
+class InsertSort{
+    /**
+     *
+     * 从后往前进行比较，记住操作的数，如果操作的数小于前面的数，那就前面的数往后移动，最后在将记录的操作数替换到前面的数位置上
+     * 50, 2, 33, 90, 57, 1
+     * 50 50 33 90 57 1 记录操作数为2，第一轮，替换位置：2 50 33 90 57 1
+     * 2 50 50 90 57 1 记录数为33 第二轮：替换位置：2 33 50 90 57 1
+     * .....
+     *
+     */
+    public static void main(String[] args) {
+
+        Integer[] nums = {50, 2, 33, 90, 57, 1};
+
+        for(int i = 1;i < nums.length; i++) {
+            // 记录操作数
+            int temp = nums[i];
+            int j = 0;
+            for(j = i - 1;j>=0;j--){
+                if(nums[j] > temp){
+                    nums[j + 1] = nums[j];
+                } else {
+                    break;
+                }
+            }
+            // 因为上面剪掉了一个  所以是j+1
+            if(nums[j+1] != temp){
+                nums[j+1] = temp;
+            }
+        }
+
+        // 打印输出
+        System.out.println(Arrays.toString(nums));
+    }
 }
