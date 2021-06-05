@@ -17,7 +17,7 @@ public class Sort {
 }
 
 /**
- * 插入排序
+ * 冒泡排序
  */
 class BubbleSort {
 
