@@ -12,9 +12,12 @@ package io.jnyou;
  **/
 public class BinaryTree {
 
+    // 根节点
     private Node root;
 
+    // 添加
     public void add(int data){
+         // 根节点为空，直接插入到根节点中，否则递归插入
         if(root == null){
             root = new Node(data);
         } else {
@@ -22,13 +25,29 @@ public class BinaryTree {
         }
     }
 
+    // 打印输出
     public void print(){
         root.printNode();
     }
 
+    // 查找
+    public boolean find(int data){
+        if(root != null){
+            if(root.data == data){
+                return true;
+            } else {
+                return root.findNode(data);
+            }
+        }
+        return false;
+    }
+
     private class Node{
+        // 插入的数据
         private int data;
+        // 左子节点
         private Node left;
+        // 右子节点
         private Node right;
 
         public Node(int data){
@@ -52,7 +71,7 @@ public class BinaryTree {
             }
         }
         public void printNode(){
-            // 中序排序输出  左中右
+            // 中序遍历输出  左中右
             if(this.left != null){
                 this.left.printNode();
             }
@@ -60,6 +79,28 @@ public class BinaryTree {
             if(this.right != null){
                 this.right.printNode();
             }
+        }
+
+        public boolean findNode(int data){
+            if(this.data > data){
+                // 左边找
+                if(this.left != null){
+                    if(this.left.data == data){
+                        return true;
+                    }else {
+                        return this.left.findNode(data);
+                    }
+                }
+            } else {
+                if(this.right != null){
+                    if(this.right.data == data){
+                        return true;
+                    } else {
+                        return this.right.findNode(data);
+                    }
+                }
+            }
+            return false;
         }
     }
 }
@@ -77,5 +118,7 @@ class Test{
         bt.add(32);
 
         bt.print();
+
+        System.out.println(bt.find(15));
     }
 }
