@@ -10,17 +10,22 @@ import org.jnyou.util.BigDecimalUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.summingInt;
 
 /**
  * 分类名称
  *
- * @ClassName CollectorsTest
+ * @ClassName CollectorsCode
  * @Description: jdk8 stream operate jdk8处理流操作
  * @Author: jnyou
  **/
-public class CollectorsTest {
+public class CollectorsCode {
 
     /**
      * 分组、过滤、求和、最值、排序、去重
@@ -80,7 +85,7 @@ public class CollectorsTest {
          */
         // 去重
         distinct();
-        distinct1();
+//        distinct1();
 
         // TreeSet单个属性去重
         clearSameSinglton();
@@ -209,6 +214,14 @@ public class CollectorsTest {
         System.out.println("员工按薪资是否大于8000分组情况：" + part);
         System.out.println("员工按性别分组情况：" + group);
         System.out.println("员工按性别、地区：" + group2);
+
+        // 根据性别和地区同时分组
+        System.out.println("==========================================================================");
+        Map<String, List<Person>> collect = personList.stream().collect(Collectors.groupingBy(value -> value.getSex() + "#" + value.getArea()));
+        for (Map.Entry<String, List<Person>> stringListEntry : collect.entrySet()) {
+            System.out.println(stringListEntry.getKey()); // female#New York
+            System.out.println(stringListEntry.getValue()); // [CollectorsCode.Person(name=Anni, salary=8200, age=0, sex=female, area=New York), CollectorsTest.Person(name=Alisa, salary=7900, age=0, sex=female, area=New York)]
+        }
     }
 
     @Data
@@ -232,7 +245,7 @@ public class CollectorsTest {
         engines.add(new Engine(1117, "457", new Date()));
 
         // 求总数
-        Long count = personList.stream().collect(Collectors.counting());
+        Long count = personList.stream().collect(counting());
 
         // 求平均工资
         Double average = personList.stream().collect(Collectors.averagingDouble(Person::getSalary));
@@ -245,7 +258,7 @@ public class CollectorsTest {
         Optional<Integer> max = personList.stream().map(Person::getSalary).collect(Collectors.maxBy(Integer::compare));
 
         // 求工资之和
-        Integer sum = personList.stream().collect(Collectors.summingInt(Person::getSalary));
+        Integer sum = personList.stream().collect(summingInt(Person::getSalary));
 
         // 一次性统计所有信息
         DoubleSummaryStatistics collect = personList.stream().collect(Collectors.summarizingDouble(Person::getSalary));
@@ -504,4 +517,208 @@ public class CollectorsTest {
         return list;
     }
 
+}
+
+class newCollectors{
+    //    toCollection
+//    toList
+//    toSet
+//    toMap
+//    joining
+//    mapping/flatMapping
+//    filtering
+//    collectingAndThen
+//    counting
+//    minBy
+//    maxBy
+//    summingInt/summingLong/summingDouble
+//    averagingInt/averagingLong/averagingDouble
+//    groupingBy
+//    groupingByConcurrent
+//    partitioningBy
+//    BinaryOperator
+//    summarizingInt
+    public static void toCollection() {
+        List<String> strList = Arrays.asList("a", "b", "c", "b", "a");
+        // toCollection()
+        Collection<String> strCollection = strList.parallelStream().collect(Collectors.toCollection(HashSet::new));
+        System.out.println(strCollection); // [a, b, c]
+
+        Set<String> strSet = strList.parallelStream().collect(Collectors.toCollection(HashSet::new));
+        System.out.println(strSet); // [a, b, c]
+
+        List<String> strList1 = strList.parallelStream().sorted(String::compareToIgnoreCase)
+                .collect(Collectors.toCollection(ArrayList::new));
+        System.out.println(strList1); // [a, a, b, b, c]
+    }
+
+    public static void toList() {
+
+        List<String> strList = Arrays.asList("a", "b", "c", "b", "a");
+
+        List<String> uppercaseList = strList.parallelStream().map(String::toUpperCase).collect(Collectors.toList());
+        System.out.println(uppercaseList); // [A, B, C, B, A]
+
+        List<String> uppercaseUnmodifiableList = strList.parallelStream().map(String::toUpperCase)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        System.out.println(uppercaseUnmodifiableList); // [A, B, C, B, A]
+    }
+
+    public static void toSet() {
+
+        List<String> strList = Arrays.asList("a", "b", "c", "b", "a");
+
+        Set<String> uppercaseSet = strList.parallelStream().map(String::toUpperCase).collect(Collectors.toSet());
+        System.out.println(uppercaseSet); // [A, B, C]
+
+        Set<String> uppercaseUnmodifiableSet = strList.parallelStream().map(String::toUpperCase)
+                .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
+        System.out.println(uppercaseUnmodifiableSet); // [A, B, C]
+    }
+
+    // toMap
+    public static void toMap() {
+        Map<String, String> map = Stream.of("a", "b", "c")
+                .collect(Collectors.toMap(Function.identity(), String::toUpperCase));
+        System.out.println(map); // {a=A, b=B, c=C}
+
+        // Duplicate Keys will throw: Exception in thread "main"
+        // java.lang.IllegalStateException: Duplicate key a (attempted merging values A and A)
+        Map<String, String> mapD = Stream.of("a", "b", "c", "b", "a")
+                .collect(Collectors.toMap(Function.identity(), String::toUpperCase, String::concat));
+        System.out.println(mapD); // {a=AA, b=BB, c=C}
+
+        // above are HashMap, use below to create different types of Map
+        TreeMap<String, String> mapTree = Stream.of("a", "b", "c", "b")
+                .collect(Collectors.toMap(Function.identity(), String::toUpperCase, String::concat, TreeMap::new));
+        System.out.println(mapTree); // {a=A, b=BB, c=C}
+    }
+
+    // 连接字符串
+    public static void joining() {
+
+        String concat = Stream.of("a", "b").collect(Collectors.joining());
+        System.out.println(concat); // ab
+
+        String csv = Stream.of("a", "b").collect(Collectors.joining(","));
+        System.out.println(csv); // a,b
+
+        String csv1 = Stream.of("a", "b").collect(Collectors.joining(",", "[", "]"));
+        System.out.println(csv1); // [a,b]
+
+        String csv2 = Stream.of("a", new StringBuilder("b"), new StringBuffer("c")).collect(Collectors.joining(","));
+        System.out.println(csv2); // a,b
+
+    }
+
+    // mapping/flatMapping
+    public static void flat_mapping() {
+
+        Set<String> setStr = Stream.of("a", "a", "b")
+                .collect(Collectors.mapping(String::toUpperCase, Collectors.toSet()));
+        System.out.println(setStr); // [A, B]
+
+        Set<String> setStr1 = Stream.of("a", "a", "b").flatMap(s -> Stream.of(s.toUpperCase()))
+                .collect(Collectors.toSet());
+        System.out.println(setStr1); // [A, B]
+    }
+
+    // 设置过滤条件
+    public static void filtering() {
+        List<String> strList2 = new ArrayList<>(Arrays.asList("1", "2", "10", "100", "20", "999"));
+        Set<String> set = strList2.parallelStream().filter(s -> s.length() < 2)
+                .collect(Collectors.toSet());
+        System.out.println(set); // [1, 2]
+
+    }
+
+    // 返回一个收集器，该收集器将输入元素累积到给定的收集器中，然后执行其他完成功能
+    public static void collectingAndThen() {
+        List<String> strList2 = new ArrayList<>(Arrays.asList("1", "2", "10", "100", "20", "999"));
+
+        List<String> unmodifiableList = strList2.parallelStream()
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+        System.out.println(unmodifiableList); // [1, 2, 10, 100, 20, 999]
+    }
+
+    // 计数
+    public static void counting() {
+
+        Long evenCount = Stream.of(1, 2, 3, 4, 5).filter(x -> x % 2 == 0).collect(Collectors.counting());
+        System.out.println(evenCount); // 2
+
+    }
+
+    // 根据给定的比较器返回最小元素
+    public static void minBy() {
+        Optional<Integer> min = Stream.of(1, 2, 3, 4, 5).collect(Collectors.minBy((x, y) -> x - y));
+        System.out.println(min); // Optional[1]
+    }
+
+    // 根据给定的比较器返回最大元素
+    public static void maxBy() {
+        Optional<Integer> max = Stream.of(1, 2, 3, 4, 5).collect(Collectors.maxBy((x, y) -> x - y));
+        System.out.println(max); // Optional[5]
+    }
+
+    // summingInt/summingLong/summingDouble 求总和
+    public static void summing() {
+        List<String> strList3 = Arrays.asList("1", "2", "3", "4", "5");
+        Integer sum = strList3.parallelStream().collect(Collectors.summingInt(Integer::parseInt));
+        System.out.println(sum); // 15
+
+        Long sumL = Stream.of("12", "23").collect(Collectors.summingLong(Long::parseLong));
+        System.out.println(sumL); // 35
+
+        Double sumD = Stream.of("1e2", "2e3").collect(Collectors.summingDouble(Double::parseDouble));
+        System.out.println(sumD); // 2100.0
+    }
+
+
+    // averagingInt/averagingLong/averagingDouble  求平均值
+    public static void averaging() {
+        List<String> strList4 = Arrays.asList("1", "2", "3", "4", "5");
+        Double average = strList4.parallelStream().collect(Collectors.averagingInt(Integer::parseInt));
+        System.out.println(average); // 3.0
+
+        Double averageL = Stream.of("12", "23").collect(Collectors.averagingLong(Long::parseLong));
+        System.out.println(averageL); // 17.5
+
+        Double averageD = Stream.of("1e2", "2e3").collect(Collectors.averagingDouble(Double::parseDouble));
+        System.out.println(averageD); // 1050.0
+    }
+
+    // 分组
+    public static void groupingBy() {
+        Map<Integer, List<Integer>> mapGroupBy = Stream.of(1, 2, 3, 4, 5, 4, 3).collect(Collectors.groupingBy(x -> x * 10));
+        System.out.println(mapGroupBy); // {50=[5], 20=[2], 40=[4, 4], 10=[1], 30=[3, 3]}
+    }
+
+    // 分组，是并发和无序的
+    public static void groupingByConcurrent() {
+        Map<Integer, List<Integer>> mapGroupBy = Stream.of(1, 2, 3, 4, 5, 4, 3).collect(Collectors.groupingByConcurrent(x -> x * 10));
+        System.out.println(mapGroupBy); // {50=[5], 20=[2], 40=[4, 4], 10=[1], 30=[3, 3]}
+    }
+
+    // 返回一个Collector，它根据Predicate对输入元素进行分区，并将它们组织成Map <Boolean，List <T>>。
+    public static void partitioningBy() {
+        Map<Boolean, List<Integer>> mapPartitionBy = Stream.of(1, 2, 3, 4, 5, 4, 3).collect(Collectors.partitioningBy(x -> x % 2 == 0));
+        System.out.println(mapPartitionBy); // {false=[1, 3, 5, 3], true=[2, 4, 4]}
+    }
+
+    // 返回一个收集器，它在指定的BinaryOperator下执行其输入元素的减少。这主要用于多级缩减，例如使用groupingBy（）和partitioningBy（）方法指定下游收集器
+    public static void BinaryOperator() {
+
+        Map<Boolean, Optional<Integer>> reducing = Stream.of(1, 2, 3, 4, 5, 4, 3).collect(Collectors.partitioningBy(
+                x -> x % 2 == 0, Collectors.reducing(BinaryOperator.maxBy(Comparator.comparing(Integer::intValue)))));
+        System.out.println(reducing); // {false=Optional[5], true=Optional[4]}
+    }
+
+    // 返回统计数据：min, max, average, count, sum
+    public static void summarizingInt() {
+        IntSummaryStatistics summarizingInt = Stream.of("12", "23", "35")
+                .collect(Collectors.summarizingInt(Integer::parseInt));
+        System.out.println(summarizingInt);
+        //IntSummaryStatistics{count=3, sum=70, min=12, average=23.333333, max=35}
+    }
 }

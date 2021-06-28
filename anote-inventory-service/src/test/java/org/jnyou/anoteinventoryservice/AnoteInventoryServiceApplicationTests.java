@@ -3,9 +3,12 @@ package org.jnyou.anoteinventoryservice;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,11 +34,13 @@ class AnoteInventoryServiceApplicationTests {
         System.out.println(beginOfMonth);
         System.out.println(DateUtil.endOfMonth(new Date()));
 
+
         System.out.println(DateUtil.date());
 
         Date date = Convert.toDate("2020-5-21", new Date());
         System.out.println(date);
 
+        System.out.println(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString());
 
     }
 
