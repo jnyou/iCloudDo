@@ -73,7 +73,6 @@ public class CollectorsCode {
          * 排序(sorted)
          */
         sorted();
-        sorted1();
 
         /**
          * 接合(joining)
@@ -96,6 +95,68 @@ public class CollectorsCode {
          * 分组(partitioningBy/groupingBy)
          */
         group();
+
+    }
+
+    private static void distinct1() {
+        String[] arr1 = {"a", "b", "c", "d"};
+        String[] arr2 = {"d", "e", "f", "g"};
+
+        Stream<String> stream1 = Stream.of(arr1);
+        Stream<String> stream2 = Stream.of(arr2);
+        List<String> newLists = Stream.concat(stream1,stream2).collect(Collectors.toList());
+        System.out.println(newLists+"合并");
+        // concat:合并两个流 distinct：去重
+        List<String> newList = Stream.concat(stream1, stream2).distinct().collect(Collectors.toList());
+        // limit：限制从流中获得前n个数据
+        List<Integer> collect = Stream.iterate(1, x -> x + 2).limit(10).collect(Collectors.toList());
+        // skip：跳过前n个数据
+        List<Integer> collect2 = Stream.iterate(1, x -> x + 2).skip(1).limit(5).collect(Collectors.toList());
+
+        System.out.println("流合并：" + newList);
+        System.out.println("limit：" + collect);
+        System.out.println("skip：" + collect2);
+    }
+
+    private static void joinin() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
+        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
+
+        String names = personList.stream().map(p -> p.getName()).collect(Collectors.joining(","));
+        System.out.println("所有员工的姓名：" + names);
+        List<String> list = Arrays.asList("A", "B", "C");
+        String string = list.stream().collect(Collectors.joining("-"));
+        System.out.println("拼接后的字符串：" + string);
+    }
+
+    private static void group() {
+        List<Person> personList = new ArrayList<Person>();
+        personList.add(new Person("Tom", 8900, "male", "New York"));
+        personList.add(new Person("Jack", 7000, "male", "Washington"));
+        personList.add(new Person("Lily", 7800, "female", "Washington"));
+        personList.add(new Person("Anni", 8200, "female", "New York"));
+        personList.add(new Person("Owen", 9500, "male", "New York"));
+        personList.add(new Person("Alisa", 7900, "female", "New York"));
+
+        // 将员工按薪资是否高于8000分组
+        Map<Boolean, List<Person>> part = personList.stream().collect(Collectors.partitioningBy(x -> x.getSalary() > 8000));
+        // 将员工按性别分组
+        Map<String, List<Person>> group = personList.stream().collect(Collectors.groupingBy(Person::getSex));
+        // 将员工先按性别分组，再按地区分组
+        Map<String, Map<String, List<Person>>> group2 = personList.stream().collect(Collectors.groupingBy(Person::getSex, Collectors.groupingBy(Person::getArea)));
+        System.out.println("员工按薪资是否大于8000分组情况：" + part);
+        System.out.println("员工按性别分组情况：" + group);
+        System.out.println("员工按性别、地区：" + group2);
+
+        // 根据性别和地区同时分组
+        System.out.println("==========================================================================");
+        Map<String, List<Person>> collect = personList.stream().collect(Collectors.groupingBy(value -> value.getSex() + "#" + value.getArea()));
+        for (Map.Entry<String, List<Person>> stringListEntry : collect.entrySet()) {
+            System.out.println(stringListEntry.getKey()); // female#New York
+            System.out.println(stringListEntry.getValue()); // [CollectorsCode.Person(name=Anni, salary=8200, age=0, sex=female, area=New York), CollectorsTest.Person(name=Alisa, salary=7900, age=0, sex=female, area=New York)]
+        }
 
         // 分组：根据name进行分组 得到的是对象
         Map<String, List<Student>> resultListObj = loadData().stream().collect(Collectors.groupingBy(Student::getName));
@@ -161,67 +222,6 @@ public class CollectorsCode {
          * 	]
          * }
          */
-    }
-
-    private static void distinct1() {
-        String[] arr1 = {"a", "b", "c", "d"};
-        String[] arr2 = {"d", "e", "f", "g"};
-
-        Stream<String> stream1 = Stream.of(arr1);
-        Stream<String> stream2 = Stream.of(arr2);
-        List<String> newLists = Stream.concat(stream1,stream2).collect(Collectors.toList());
-        System.out.println(newLists+"合并");
-        // concat:合并两个流 distinct：去重
-        List<String> newList = Stream.concat(stream1, stream2).distinct().collect(Collectors.toList());
-        // limit：限制从流中获得前n个数据
-        List<Integer> collect = Stream.iterate(1, x -> x + 2).limit(10).collect(Collectors.toList());
-        // skip：跳过前n个数据
-        List<Integer> collect2 = Stream.iterate(1, x -> x + 2).skip(1).limit(5).collect(Collectors.toList());
-
-        System.out.println("流合并：" + newList);
-        System.out.println("limit：" + collect);
-        System.out.println("skip：" + collect2);
-    }
-
-    private static void joinin() {
-        List<Person> personList = new ArrayList<Person>();
-        personList.add(new Person("Tom", 8900, 23, "male", "New York"));
-        personList.add(new Person("Jack", 7000, 25, "male", "Washington"));
-        personList.add(new Person("Lily", 7800, 21, "female", "Washington"));
-
-        String names = personList.stream().map(p -> p.getName()).collect(Collectors.joining(","));
-        System.out.println("所有员工的姓名：" + names);
-        List<String> list = Arrays.asList("A", "B", "C");
-        String string = list.stream().collect(Collectors.joining("-"));
-        System.out.println("拼接后的字符串：" + string);
-    }
-
-    private static void group() {
-        List<Person> personList = new ArrayList<Person>();
-        personList.add(new Person("Tom", 8900, "male", "New York"));
-        personList.add(new Person("Jack", 7000, "male", "Washington"));
-        personList.add(new Person("Lily", 7800, "female", "Washington"));
-        personList.add(new Person("Anni", 8200, "female", "New York"));
-        personList.add(new Person("Owen", 9500, "male", "New York"));
-        personList.add(new Person("Alisa", 7900, "female", "New York"));
-
-        // 将员工按薪资是否高于8000分组
-        Map<Boolean, List<Person>> part = personList.stream().collect(Collectors.partitioningBy(x -> x.getSalary() > 8000));
-        // 将员工按性别分组
-        Map<String, List<Person>> group = personList.stream().collect(Collectors.groupingBy(Person::getSex));
-        // 将员工先按性别分组，再按地区分组
-        Map<String, Map<String, List<Person>>> group2 = personList.stream().collect(Collectors.groupingBy(Person::getSex, Collectors.groupingBy(Person::getArea)));
-        System.out.println("员工按薪资是否大于8000分组情况：" + part);
-        System.out.println("员工按性别分组情况：" + group);
-        System.out.println("员工按性别、地区：" + group2);
-
-        // 根据性别和地区同时分组
-        System.out.println("==========================================================================");
-        Map<String, List<Person>> collect = personList.stream().collect(Collectors.groupingBy(value -> value.getSex() + "#" + value.getArea()));
-        for (Map.Entry<String, List<Person>> stringListEntry : collect.entrySet()) {
-            System.out.println(stringListEntry.getKey()); // female#New York
-            System.out.println(stringListEntry.getValue()); // [CollectorsCode.Person(name=Anni, salary=8200, age=0, sex=female, area=New York), CollectorsTest.Person(name=Alisa, salary=7900, age=0, sex=female, area=New York)]
-        }
     }
 
     @Data
@@ -358,21 +358,6 @@ public class CollectorsCode {
 
     // 排序  可通过Sort对单字段多字段排序
     public static void sorted() {
-        //单字段排序，根据id排序  默认升序
-        loadData().sort(Comparator.comparing(Student::getId));
-        //多字段排序，根据id，年龄排序 默认升序
-        loadData().sort(Comparator.comparing(Student::getId).thenComparing(Student::getSocre));
-
-        // 使用stream和sort--降序排列-----------
-        loadData().stream().sorted(Comparator.comparing(Student::getId).reversed()).collect(Collectors.toList());
-
-        // 使用集合的sort排序，集合自身排序发生变化
-        loadData().sort((a, b) -> a.getId().compareTo(b.getId()));
-        loadData().stream().forEach(student -> System.out.println(student.getId()));
-        System.out.println();
-    }
-
-    public static void sorted1() {
         List<Person> personList = new ArrayList<Person>();
 
         personList.add(new Person("Sherry", 9000, 24, "female", "New York"));
@@ -404,6 +389,11 @@ public class CollectorsCode {
         System.out.println("按工资降序排序：" + newList2);
         System.out.println("先按工资再按年龄升序排序：" + newList3);
         System.out.println("先按工资再按年龄自定义降序排序：" + newList4);
+
+        // 使用集合的sort排序，集合自身排序发生变化
+        loadData().sort((a, b) -> a.getId().compareTo(b.getId()));
+        loadData().stream().forEach(student -> System.out.println(student.getId()));
+        System.out.println();
     }
 
 
