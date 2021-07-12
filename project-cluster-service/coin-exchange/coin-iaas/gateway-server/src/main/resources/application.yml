@@ -48,14 +48,14 @@ spring:
         ds1.nacos: #com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource 使用Nacos持久化我的sentinel 数据时，需要添加nacos-datasource的依赖
           serverAddr: nacos-server:8848
           dataId: gw-flow
-          ruleType: gw-api-group
+          ruleType: gw-flow
 #
 #        ds2.file:
 #          file: classpath:api-group.json
 #          ruleType: gw-api-group
         ds2.nacos:
           serverAddr: nacos-server:8848
-          dataId: api-group
+          dataId: gw-api-group
           ruleType: gw-api-group # 我们演示了sentinel-dashboard 的规则的定义，而且规则定义好了后，我们的网关能立马的感知到（生效）（nacos无法感知），但是我们下次重启，会丢失规则。--》nacos
       eager: true # 服务启动直接建立心跳连接
 
