@@ -37,7 +37,7 @@ spring:
             - Path=/exchange/**
           filters:
             - StripPrefix=1 # 当前端访问/exchange/xx,exchange
-    # 通过网关来完成对2 种维度的限流： 网关维度 + API 分组
+    # 通过网关来完成对2 种维度的限流： 网关维度 + API 分组  ps；使用Nacos持久化我的sentinel 数据时，需要添加nacos-datasource的依赖
     sentinel:
       transport:
         dashboard: sentinel-server:8858  # sentinel-dashboard 放在ecs 里面
@@ -45,15 +45,15 @@ spring:
 #        ds1.file:
 #          file: classpath:gw-flow.json  # 网关 + API分组的限流
 #          ruleType: gw-flow
-        ds1.nacos: #com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource 使用Nacos持久化我的sentinel 数据时，需要添加nacos-datasource的依赖
+        ds1.nacos: # com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule
           serverAddr: nacos-server:8848
           dataId: gw-flow
           ruleType: gw-flow
 #
 #        ds2.file:
-#          file: classpath:api-group.json
+#          file: classpath:gw-api-group.json  # gw-api-group.json 接口的分组
 #          ruleType: gw-api-group
-        ds2.nacos:
+        ds2.nacos: # com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition
           serverAddr: nacos-server:8848
           dataId: gw-api-group
           ruleType: gw-api-group # 我们演示了sentinel-dashboard 的规则的定义，而且规则定义好了后，我们的网关能立马的感知到（生效）（nacos无法感知），但是我们下次重启，会丢失规则。--》nacos
@@ -62,12 +62,7 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
-#        ds1.file:
-#          file: classpath:gw-flow.json # 网关 + API分组的限流
-#          ruleType: gw-flow
-#        ds2.file:
-#          file: classpath:api-group.json # api-flow.json 接口的分组
-#          ruleType: gw-api-group
+
 management:
   endpoints:
     web:
