@@ -1,57 +1,57 @@
-#server:
-#  port: 8080
-#spring:
-#  application:
-#    name: coin-common
-#  profiles:
-#    active: dev
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://127.0.0.1:3306/coin-exchange?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
-#    username: root
-#    password: admin
-#  redis:
-#    host: 192.168.56.10
-#    port: 6379
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: nacos-server:8848
-#      config:
-#        enabled: false
-#        file-extension: yaml
-##    sentinel:
-##      transport:
-##        dashboard: sentinel-dashboard:8858
-#
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#  mapper-locations: classpath:/mappers/*.xml
-#jetcache:
-#  statIntervalMinutes: 15
-#  areaInCacheName: false
-#  local:
-#    default:
-#      type: linkedhashmap
-#      keyConvertor: fastjson
-#  remote:
-#    default:
-#      type: redis
-#      keyConvertor: fastjson
-#      valueEncoder: kryo
-#      valueDecoder: kryo
-#      poolConfig:
-#        minIdle: 5
-#        maxIdle: 20
-#        maxTotal: 50
-#      host: ${spring.redis.host}
-#      port: ${spring.redis.port}
-#swagger2:
-#  base-package: io.jnyou.controller
-#  name: jnyou
-#  url: https://github.com/jnyou
-#  email: xiaojian19970910@gmail.com
-#  description: Coin-Common模块开发测试
-#  version: 2.0
-#  terms-of-service-url: jnyou.io
+server:
+  port: 8080
+spring:
+  application:
+    name: coin-common
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/coin-exchange?serverTimezone=UTC&useSSL=false&allowMultiQueries=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: admin
+  redis:
+    host: 192.168.56.10
+    port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-server:8848
+      config:
+        enabled: false
+        file-extension: yaml
+#    sentinel:
+#      transport:
+#        dashboard: sentinel-dashboard:8858
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:/mappers/*.xml
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: ${spring.redis.host}
+      port: ${spring.redis.port}
+swagger2:
+  base-package: io.jnyou.controller
+  name: jnyou
+  url: https://github.com/jnyou
+  email: xiaojian19970910@gmail.com
+  description: Coin-Common模块开发测试
+  version: 2.0
+  terms-of-service-url: jnyou.io
