@@ -21,25 +21,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private String port;
-
-    @Value("${spring.redis.database}")
-    private int database;
-
-    /**
-     * 这里只配置单节点的，支持集群、哨兵等发誓配置
-     * 可以用Config.fromYAML加载yml文件中的配置
-     */
-    @Bean
-    public RedissonClient redissonClient() {
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress(String.format("redis://%s:%s", host, port))
-                .setDatabase(database);
-        return Redisson.create(config);
-    }
+//    @Value("${spring.redis.host}")
+//    private String host;
+//
+//    @Value("${spring.redis.port}")
+//    private String port;
+//
+//    @Value("${spring.redis.database}")
+//    private int database;
+//
+//    /**
+//     * 这里只配置单节点的，支持集群、哨兵等发誓配置
+//     * 可以用Config.fromYAML加载yml文件中的配置
+//     */
+//    @Bean
+//    public RedissonClient redissonClient() {
+//        Config config = new Config();
+//        config.useSingleServer()
+//                .setAddress(String.format("redis://%s:%s", host, port))
+//                .setDatabase(database);
+//        return Redisson.create(config);
+//    }
 }

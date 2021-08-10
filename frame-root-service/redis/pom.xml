@@ -66,6 +66,12 @@
             <version>5.2.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.76</version>
+        </dependency>
+
         <!-- bloomFilter  -->
         <dependency>
             <groupId>com.google.guava</groupId>
