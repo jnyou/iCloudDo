@@ -13,6 +13,7 @@
         <module>java-basics-service</module>
         <module>algorithm-root-service</module>
         <module>java-leetcode-service</module>
+        <module>spring-source-code-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
