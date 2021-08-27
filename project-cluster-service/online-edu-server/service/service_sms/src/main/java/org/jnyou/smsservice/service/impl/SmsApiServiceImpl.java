@@ -2,7 +2,6 @@ package org.jnyou.smsservice.service.impl;
 
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
-import com.sun.org.apache.regexp.internal.RE;
 import org.jnyou.smsservice.service.SmsApiService;
 import org.jnyou.smsservice.utils.RandomUtil;
 import org.jnyou.smsservice.utils.SendSms;
