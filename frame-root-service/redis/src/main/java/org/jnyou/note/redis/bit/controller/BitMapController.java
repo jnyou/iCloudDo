@@ -1,7 +1,15 @@
 package org.jnyou.note.redis.bit.controller;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.jnyou.note.redis.service.RedisService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 代码千万行，注释第一行，
@@ -24,7 +30,11 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/redis/bit")
+@Slf4j
 public class BitMapController {
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     private final DateTimeFormatter formatters = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -63,7 +73,7 @@ public class BitMapController {
         // 获取本年的日期列表
         List<String> dateKeyList = new ArrayList<>();
         LocalDate curDate = LocalDate.now();
-        LocalDate beginDate = LocalDate.parse("2020-01-01");
+        LocalDate beginDate = LocalDate.parse("2021-01-01");
         while (beginDate.isBefore(curDate)) {
             dateKeyList.add(SIGN_PREFIX + beginDate.format(formatters));
             beginDate = beginDate.plusDays(1);
@@ -175,6 +185,47 @@ public class BitMapController {
         redisService.bitOp(RedisStringCommands.BitOperation.OR, SIGN_IN_WEEK_KEY, weekDays);
         return String.format("近7天有过签到的用户数：%d", redisService.bitCount(SIGN_IN_WEEK_KEY));
     }
+
+    public static void main(String[] args) {
+        JSONArray json = new JSONArray();
+        json.add("success");
+        if(json instanceof JSONArray){
+            JSONArray array = JSONArray.parseArray(json.toString());
+        }
+
+        DateTime date = DateUtil.date();
+        Date uploadTimeBegin = DateUtil.beginOfDay(date);
+        System.out.println(date);
+        System.out.println(uploadTimeBegin);
+
+        List<Map<String, Object>> map = new ArrayList<>();
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("company_id",1);
+        objectMap.put("enterprise_id",2);
+        map.add(objectMap);
+        Map<String, Object> objectMap1 = new HashMap<>();
+        objectMap1.put("company_id",5);
+        objectMap1.put("enterprise_id",202);
+        map.add(objectMap1);
+        Asert asert = null;
+        for (Map<String, Object> strategyMap : map) {
+            asert = new Asert();
+            asert.setCompanyId(Convert.toLong(strategyMap.get("company_id")));
+            asert.setDeptId(Convert.toLong(strategyMap.get("dept_id")));
+            asert.setEnterpriseId(Convert.toLong(strategyMap.get("enterprise_id")));
+        }
+        System.out.println(asert);
+    }
+
+    @Data
+    static
+    class Asert{
+        private Long companyId;
+        private Long enterpriseId;
+        private Long deptId;
+        private Long groundId;
+    }
+
 
     /**
      * 获取当天的日期

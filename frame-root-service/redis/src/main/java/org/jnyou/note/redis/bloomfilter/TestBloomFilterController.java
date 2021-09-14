@@ -59,8 +59,8 @@ public class TestBloomFilterController {
 
     private final String redisKey = "task:core:form:data:distinct:batch610ba36ff3a95e28b8dd4251:2";
 
-    @Value("${lua.luaPath}")
-    private String luaPath;//lua脚本路径
+//    @Value("${lua.luaPath}")
+//    private String luaPath;//lua脚本路径
 
     @PostMapping(value = "/addEmailToBloom", produces = "application/json")
     public ResponseEntity<String> addUser(@RequestBody String params) {
