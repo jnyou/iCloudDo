@@ -30,10 +30,11 @@
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-vod</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-sdk-vod-upload</artifactId>
-        </dependency>
+        <!-- 先关闭，使用视频点播在开启 -->
+<!--        <dependency>-->
+<!--            <groupId>com.aliyun</groupId>-->
+<!--            <artifactId>aliyun-sdk-vod-upload</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>

@@ -12,6 +12,10 @@
     <groupId>org.jnyou</groupId>
     <artifactId>frame-root-service</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>kafka</module>
+        <module>queue</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
