@@ -143,7 +143,7 @@
             <!--mapStruct依赖-->
             <dependency>
                 <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct-jdk8</artifactId>
+                <artifactId>mapstruct</artifactId>
                 <version>${org.mapstruct.version}</version>
             </dependency>
             <dependency>
