@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>jdk8-source-code-service</module>
+        <module>mybatis-source-code-service</module>
     </modules>
 
 

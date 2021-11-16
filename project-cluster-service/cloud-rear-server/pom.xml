@@ -31,7 +31,6 @@
         <module>renren-generator</module>
         <module>cloud-common</module>
         <module>search-service</module>
-        <module>xxl-job</module>
         <module>auth-service</module>
         <module>cart</module>
         <module>thrid-party-service</module>
