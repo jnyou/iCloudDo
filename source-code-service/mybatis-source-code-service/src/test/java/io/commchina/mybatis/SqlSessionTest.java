@@ -16,7 +16,7 @@ public class SqlSessionTest  extends  BaseTest{
     public void sqlSessionTest(){
 
         // 获取statement SQL映射
-        ms = configuration.getMappedStatement("com.artisan.UserMapper.selectByid");
+        ms = configuration.getMappedStatement("io.commchina.mybatis.dao.UserMapper.selectByid");
 
         // 开启会话  第一个参数 执行器类型  第二个参数 是否自动提交
         SqlSession sqlSession = factory.openSession(ExecutorType.SIMPLE, true);

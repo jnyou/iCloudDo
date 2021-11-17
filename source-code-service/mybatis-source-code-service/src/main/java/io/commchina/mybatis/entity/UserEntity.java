@@ -2,6 +2,8 @@ package io.commchina.mybatis.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * <p>
  * UserEntity
@@ -12,10 +14,13 @@ import lombok.Data;
  * @create: 2021-11-16 11:28
  **/
 @Data
-public class UserEntity {
+public class UserEntity implements java.io.Serializable{
 
-    private String username;
-    private String password;
-    private Integer gender;
-
+    private Integer id;
+    private String name;
+    private String age;
+    private String sex;
+    private String email;
+    private String phoneNumber;
+    private Date createTime;
 }
